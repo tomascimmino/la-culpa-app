@@ -34,10 +34,10 @@
         }
         
         .logo {
-            width: 150px;
-            height: 150px;
+            width: 350px;
+            height: 350px;
             margin: 0 auto 15px;
-            background: url('https://i.imgur.com/b01b7ec9-d202-4bc5-93d8-b8bc8d39f9d9.png') center/contain no-repeat;
+            background: url('https://i.imgur.com/wpGfqwD.png') center/contain no-repeat;
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -320,8 +320,8 @@
 
         <!-- Main App -->
         <div id="mainApp" style="display: none;">
-            <div class="header" style="position: relative;">
-                <button onclick="logout()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer;">
+            <div class="header">
+                <button onclick="logout()" style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer;">
                     🚪 Cerrar sesión
                 </button>
                 <div class="logo"></div>
