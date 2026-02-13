@@ -34,10 +34,10 @@
         }
         
         .logo {
-            width: 350px;
-            height: 350px;
+            width: 150px;
+            height: 150px;
             margin: 0 auto 15px;
-            background: url('https://i.imgur.com/wpGfqwD.png') center/contain no-repeat;
+            background: url('https://i.imgur.com/b01b7ec9-d202-4bc5-93d8-b8bc8d39f9d9.png') center/contain no-repeat;
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -485,23 +485,11 @@
         function renderRanking() {
             const sorted = [...culpososData].sort((a, b) => parseFloat(b.Porcentaje) - parseFloat(a.Porcentaje));
             
-            // Mapeo de fotos de culposos
-            const fotos = {
-                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
-                'Caamaño': 'https://i.imgur.com/N056gxD.png',
-                'Rama': 'https://i.imgur.com/8hsqIL8.png',
-                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
-                'Santi': 'https://i.imgur.com/iXHdIVT.png',
-                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
-                'Tirri': 'https://i.imgur.com/biqacxq.png',
-                'Toti': 'https://i.imgur.com/dXMpfSk.png'
-            };
-            
             const html = sorted.map((culposo, index) => {
                 const rank = index + 1;
                 const percentage = parseFloat(culposo.Porcentaje).toFixed(0);
                 const isTop3 = rank <= 3;
-                const fotoUrl = fotos[culposo.Nombre] || '';
+                const fotoUrl = culposo.Foto || ''; // Lee la foto del Sheet
                 
                 return `
                     <div class="ranking-item ${isTop3 ? 'top3' : ''}">
@@ -542,20 +530,7 @@
             
             const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
             const isPerfecto = percentage == 100;
-            
-            // Mapeo de fotos
-            const fotos = {
-                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
-                'Caamaño': 'https://i.imgur.com/N056gxD.png',
-                'Rama': 'https://i.imgur.com/8hsqIL8.png',
-                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
-                'Santi': 'https://i.imgur.com/iXHdIVT.png',
-                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
-                'Tirri': 'https://i.imgur.com/biqacxq.png',
-                'Toti': 'https://i.imgur.com/dXMpfSk.png'
-            };
-            
-            const fotoUrl = fotos[usuario.Nombre] || '';
+            const fotoUrl = usuario.Foto || ''; // Lee la foto del Sheet
             
             const html = `
                 ${fotoUrl ? `
