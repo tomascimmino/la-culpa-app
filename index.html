@@ -382,6 +382,7 @@
         let currentUser = null;
         let juntadasData = [];
         let culpososData = [];
+        let premiosData = [];
         
         // Login con validación
         async function login() {
@@ -442,6 +443,7 @@
                 // URL pública del sheet como CSV
                 const juntadasURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Hoja%201`;
                 const culpososURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`;
+                const premiosURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PREMIOS`;
                 
                 // Cargar juntadas
                 const juntadasResponse = await fetch(juntadasURL);
@@ -452,6 +454,11 @@
                 const culpososResponse = await fetch(culpososURL);
                 const culpososCSV = await culpososResponse.text();
                 culpososData = parseCSV(culpososCSV);
+                
+                // Cargar premios
+                const premiosResponse = await fetch(premiosURL);
+                const premiosCSV = await premiosResponse.text();
+                premiosData = parseCSV(premiosCSV);
                 
                 // Renderizar datos
                 renderHome();
@@ -605,6 +612,51 @@
             
             const fotoUrl = fotos[usuario.Nombre] || '';
             
+            // Obtener premios del usuario
+            const premiosUsuario = premiosData.filter(p => 
+                p.Ganador && p.Ganador.trim() === usuario.Nombre && p.Tipo === 'Persona'
+            );
+            
+            // Separar Culposo de Oro de otros premios
+            const culposoOro = premiosUsuario.filter(p => p.Terna && p.Terna.includes('CULPOSO DE ORO'));
+            const otrosPremios = premiosUsuario.filter(p => p.Terna && !p.Terna.includes('CULPOSO DE ORO'));
+            
+            // Generar HTML de premios
+            let premiosHTML = '';
+            if (premiosUsuario.length > 0) {
+                premiosHTML = `
+                    <div class="section-title" style="margin-top: 25px;">🏆 Palmarés</div>
+                    
+                    ${culposoOro.length > 0 ? `
+                        <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%); border-left-color: #FFD700; border-left-width: 6px;">
+                            <div class="card-title" style="font-size: 20px; color: #FFD700;">
+                                👑 CULPOSO DE ORO
+                            </div>
+                            <div class="card-details" style="margin-top: 10px;">
+                                ${culposoOro.map(p => `• ${p.Año || 'Año desconocido'}`).join('<br>')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${otrosPremios.length > 0 ? `
+                        <div class="card">
+                            <div class="card-title" style="font-size: 18px;">
+                                🏅 Otros Premios
+                            </div>
+                            <div class="card-details" style="margin-top: 10px; line-height: 1.8;">
+                                ${otrosPremios.map(p => `• ${p.Año || '?'}: ${p.Terna || 'Premio'}`).join('<br>')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="card" style="text-align: center; background: rgba(139, 77, 143, 0.1);">
+                        <div class="card-title" style="font-size: 16px;">
+                            Total: ${culposoOro.length} 👑 Oro, ${otrosPremios.length} 🏅 Premios
+                        </div>
+                    </div>
+                `;
+            }
+            
             const html = `
                 ${fotoUrl ? `
                     <div style="text-align: center; margin-bottom: 20px;">
@@ -636,6 +688,8 @@
                         <div class="card-details">No te perdiste ninguna juntada. Sos un crack.</div>
                     </div>
                 ` : ''}
+                
+                ${premiosHTML}
                 
                 <div class="section-title">📅 Mi Historial</div>
                 <div class="card">
