@@ -320,7 +320,10 @@
 
         <!-- Main App -->
         <div id="mainApp" style="display: none;">
-            <div class="header">
+            <div class="header" style="position: relative;">
+                <button onclick="logout()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer;">
+                    🚪 Cerrar sesión
+                </button>
                 <div class="logo"></div>
                 <div class="title">LA CULPA</div>
                 <div class="subtitle">Ranking de Asistencias</div>
@@ -380,13 +383,34 @@
         let juntadasData = [];
         let culpososData = [];
         
-        // Login
-        function login() {
+        // Login con validación
+        async function login() {
             const email = document.getElementById('emailInput').value.trim().toLowerCase();
             const errorMsg = document.getElementById('errorMessage');
             
             if (!email || !email.includes('@')) {
                 errorMsg.textContent = 'Por favor ingresá un email válido';
+                return;
+            }
+            
+            // Cargar datos de culposos para validar
+            try {
+                const culpososURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`;
+                const culpososResponse = await fetch(culpososURL);
+                const culpososCSV = await culpososResponse.text();
+                const culpososTemp = parseCSV(culpososCSV);
+                
+                // Verificar si el email está en la lista
+                const emailValido = culpososTemp.some(c => c.Email && c.Email.toLowerCase() === email);
+                
+                if (!emailValido) {
+                    errorMsg.textContent = '❌ Email no autorizado. Solo culposos pueden entrar.';
+                    return;
+                }
+                
+            } catch (error) {
+                console.error('Error validando email:', error);
+                errorMsg.textContent = 'Error conectando con el servidor. Intentá de nuevo.';
                 return;
             }
             
@@ -400,6 +424,16 @@
             
             // Cargamos los datos
             loadData();
+        }
+        
+        // Logout
+        function logout() {
+            localStorage.removeItem('culpaUserEmail');
+            currentUser = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('emailInput').value = '';
+            document.getElementById('errorMessage').textContent = '';
         }
         
         // Cargar datos del Sheet
