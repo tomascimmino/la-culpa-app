@@ -485,11 +485,30 @@
         function renderRanking() {
             const sorted = [...culpososData].sort((a, b) => parseFloat(b.Porcentaje) - parseFloat(a.Porcentaje));
             
+            // Mapeo de fotos - TODOS los culposos y novias
+            const fotos = {
+                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
+                'Caamaño': 'https://i.imgur.com/N056gxD.png',
+                'Rama': 'https://i.imgur.com/8hsqIL8.png',
+                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
+                'Santi': 'https://i.imgur.com/iXHdIVT.png',
+                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
+                'Tirri': 'https://i.imgur.com/biqacxq.png',
+                'Toti': 'https://i.imgur.com/dXMpfSk.png',
+                'Cata': 'https://i.imgur.com/jhme4wb.png',
+                'Lola': 'https://i.imgur.com/qTP4eT2.png',
+                'Sami': 'https://i.imgur.com/HP41gaP.png',
+                'Leila': 'https://i.imgur.com/wcf3be4.png',
+                'Juli': 'https://i.imgur.com/cn779x3.png',
+                'Manu': 'https://i.imgur.com/BzDK66B.png',
+                'Matu': 'https://i.imgur.com/gNabdVm.png'
+            };
+            
             const html = sorted.map((culposo, index) => {
                 const rank = index + 1;
                 const percentage = parseFloat(culposo.Porcentaje).toFixed(0);
                 const isTop3 = rank <= 3;
-                const fotoUrl = culposo.Foto || ''; // Lee la foto del Sheet
+                const fotoUrl = fotos[culposo.Nombre] || '';
                 
                 return `
                     <div class="ranking-item ${isTop3 ? 'top3' : ''}">
@@ -530,7 +549,27 @@
             
             const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
             const isPerfecto = percentage == 100;
-            const fotoUrl = usuario.Foto || ''; // Lee la foto del Sheet
+            
+            // Mapeo de fotos - TODOS
+            const fotos = {
+                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
+                'Caamaño': 'https://i.imgur.com/N056gxD.png',
+                'Rama': 'https://i.imgur.com/8hsqIL8.png',
+                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
+                'Santi': 'https://i.imgur.com/iXHdIVT.png',
+                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
+                'Tirri': 'https://i.imgur.com/biqacxq.png',
+                'Toti': 'https://i.imgur.com/dXMpfSk.png',
+                'Cata': 'https://i.imgur.com/jhme4wb.png',
+                'Lola': 'https://i.imgur.com/qTP4eT2.png',
+                'Sami': 'https://i.imgur.com/HP41gaP.png',
+                'Leila': 'https://i.imgur.com/wcf3be4.png',
+                'Juli': 'https://i.imgur.com/cn779x3.png',
+                'Manu': 'https://i.imgur.com/BzDK66B.png',
+                'Matu': 'https://i.imgur.com/gNabdVm.png'
+            };
+            
+            const fotoUrl = fotos[usuario.Nombre] || '';
             
             const html = `
                 ${fotoUrl ? `
