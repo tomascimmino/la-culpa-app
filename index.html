@@ -34,20 +34,14 @@
         }
         
         .logo {
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
             margin: 0 auto 15px;
-            background: rgba(255,255,255,0.1);
+            background: url('https://drive.google.com/uc?export=view&id=1p6IUK_OdYacLxMK6bbO7wkB2VrHyFrBE') center/contain no-repeat;
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 3px solid #FFD700;
-            font-size: 14px;
-            font-weight: bold;
-            color: #FFD700;
-            text-align: center;
-            line-height: 1.3;
         }
         
         .title {
@@ -311,7 +305,7 @@
         <!-- Login Screen -->
         <div id="loginScreen" class="login-screen">
             <div class="header">
-                <div class="logo">JUNTADAS<br>CULPOSAS<br>⭐</div>
+                <div class="logo"></div>
                 <div class="title">LA CULPA</div>
                 <div class="subtitle">Ranking de Asistencias</div>
             </div>
@@ -327,7 +321,7 @@
         <!-- Main App -->
         <div id="mainApp" style="display: none;">
             <div class="header">
-                <div class="logo">JUNTADAS<br>CULPOSAS<br>⭐</div>
+                <div class="logo"></div>
                 <div class="title">LA CULPA</div>
                 <div class="subtitle">Ranking de Asistencias</div>
             </div>
@@ -445,10 +439,21 @@
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue;
                 const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim());
+                
+                // Ignorar filas donde todos los valores están vacíos
+                const hasData = values.some(v => v && v.length > 0);
+                if (!hasData) continue;
+                
                 const row = {};
                 headers.forEach((header, index) => {
                     row[header] = values[index] || '';
                 });
+                
+                // Para juntadas: solo agregar si tiene fecha o descripción
+                if (headers.includes('Fecha') && !row.Fecha && !row.Descripción && !row.Descripcion) {
+                    continue;
+                }
+                
                 data.push(row);
             }
             
@@ -480,15 +485,30 @@
         function renderRanking() {
             const sorted = [...culpososData].sort((a, b) => parseFloat(b.Porcentaje) - parseFloat(a.Porcentaje));
             
+            // Mapeo de fotos de culposos
+            const fotos = {
+                'Toto': 'https://drive.google.com/uc?export=view&id=1hJDOht-o22lHaKkkdOavSwNSADA0UNxj',
+                'Caamaño': 'https://drive.google.com/uc?export=view&id=1Xp6rrXlYhzKFYY2HQTf9lzELtIMPMeBk',
+                'Rama': 'https://drive.google.com/uc?export=view&id=1WgcnbrspaN-E9aXHPqimD7FXhsMlnxIx',
+                'Zabala': 'https://drive.google.com/uc?export=view&id=1bgjHPGx65wg3CvJqmBIEQKMZ_OR6eqNp',
+                'Santi': 'https://drive.google.com/uc?export=view&id=1BDu6J_JEJC9Pk5vBZjEI-iryZkgk-bO_',
+                'Mateo': 'https://drive.google.com/uc?export=view&id=17YTalhUOzzkYZQRJ3AtyshztipiHurpP',
+                'Tirri': 'https://drive.google.com/uc?export=view&id=1mLT4lkDRGi1iwBoAOmks0t1e_XssQxq2',
+                'Toti': 'https://drive.google.com/uc?export=view&id=1PJHm9bnrNlIxTOQFWLYPgYg3A-X6BCZm'
+            };
+            
             const html = sorted.map((culposo, index) => {
                 const rank = index + 1;
                 const percentage = parseFloat(culposo.Porcentaje).toFixed(0);
                 const isTop3 = rank <= 3;
+                const fotoUrl = fotos[culposo.Nombre] || '';
                 
                 return `
                     <div class="ranking-item ${isTop3 ? 'top3' : ''}">
                         <div class="rank-number">${rank}</div>
-                        <div class="rank-avatar">🧔</div>
+                        <div class="rank-avatar" style="${fotoUrl ? `background-image: url('${fotoUrl}'); background-size: cover; background-position: center;` : ''}">
+                            ${!fotoUrl ? '🧔' : ''}
+                        </div>
                         <div class="rank-info">
                             <div class="rank-name">
                                 ${culposo.Nombre}
@@ -523,7 +543,27 @@
             const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
             const isPerfecto = percentage == 100;
             
+            // Mapeo de fotos
+            const fotos = {
+                'Toto': 'https://drive.google.com/uc?export=view&id=1hJDOht-o22lHaKkkdOavSwNSADA0UNxj',
+                'Caamaño': 'https://drive.google.com/uc?export=view&id=1Xp6rrXlYhzKFYY2HQTf9lzELtIMPMeBk',
+                'Rama': 'https://drive.google.com/uc?export=view&id=1WgcnbrspaN-E9aXHPqimD7FXhsMlnxIx',
+                'Zabala': 'https://drive.google.com/uc?export=view&id=1bgjHPGx65wg3CvJqmBIEQKMZ_OR6eqNp',
+                'Santi': 'https://drive.google.com/uc?export=view&id=1BDu6J_JEJC9Pk5vBZjEI-iryZkgk-bO_',
+                'Mateo': 'https://drive.google.com/uc?export=view&id=17YTalhUOzzkYZQRJ3AtyshztipiHurpP',
+                'Tirri': 'https://drive.google.com/uc?export=view&id=1mLT4lkDRGi1iwBoAOmks0t1e_XssQxq2',
+                'Toti': 'https://drive.google.com/uc?export=view&id=1PJHm9bnrNlIxTOQFWLYPgYg3A-X6BCZm'
+            };
+            
+            const fotoUrl = fotos[usuario.Nombre] || '';
+            
             const html = `
+                ${fotoUrl ? `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="${fotoUrl}" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #FFD700; object-fit: cover;">
+                    </div>
+                ` : ''}
+                
                 <div class="card" style="border-left-color: ${isPerfecto ? '#FFD700' : '#8B4D8F'};">
                     <div class="card-title" style="font-size: 24px;">
                         ${usuario.Nombre}
