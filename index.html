@@ -621,38 +621,28 @@
             const culposoOro = premiosUsuario.filter(p => p.Terna && p.Terna.includes('CULPOSO DE ORO'));
             const otrosPremios = premiosUsuario.filter(p => p.Terna && !p.Terna.includes('CULPOSO DE ORO'));
             
-            // Generar HTML de premios
+            // Generar HTML de premios - TODO EN UN SOLO CUADRO
             let premiosHTML = '';
             if (premiosUsuario.length > 0) {
+                const premiosListHTML = [
+                    ...culposoOro.map(p => 
+                        `<div style="margin: 12px 0; padding: 12px; background: rgba(255, 215, 0, 0.15); border-radius: 8px;">
+                            <span style="font-size: 18px; font-weight: bold; color: #FFD700;">
+                                🥇 CULPOSO DE ORO ${p.Año || ''}
+                            </span>
+                        </div>`
+                    ),
+                    ...otrosPremios.map(p => 
+                        `<div style="margin: 8px 0; color: rgba(255,255,255,0.9);">
+                            🥈 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'Premio'} del año ${p.Año || ''}</span>
+                        </div>`
+                    )
+                ].join('');
+                
                 premiosHTML = `
                     <div class="section-title" style="margin-top: 25px;">🏆 Palmarés</div>
-                    
-                    ${culposoOro.length > 0 ? `
-                        <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.1) 100%); border-left-color: #FFD700; border-left-width: 6px;">
-                            <div class="card-title" style="font-size: 20px; color: #FFD700;">
-                                👑 CULPOSO DE ORO
-                            </div>
-                            <div class="card-details" style="margin-top: 10px;">
-                                ${culposoOro.map(p => `• ${p.Año || 'Año desconocido'}`).join('<br>')}
-                            </div>
-                        </div>
-                    ` : ''}
-                    
-                    ${otrosPremios.length > 0 ? `
-                        <div class="card">
-                            <div class="card-title" style="font-size: 18px;">
-                                🏅 Otros Premios
-                            </div>
-                            <div class="card-details" style="margin-top: 10px; line-height: 1.8;">
-                                ${otrosPremios.map(p => `• ${p.Año || '?'}: ${p.Terna || 'Premio'}`).join('<br>')}
-                            </div>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="card" style="text-align: center; background: rgba(139, 77, 143, 0.1);">
-                        <div class="card-title" style="font-size: 16px;">
-                            Total: ${culposoOro.length} 👑 Oro, ${otrosPremios.length} 🏅 Premios
-                        </div>
+                    <div class="card" style="padding: 20px;">
+                        ${premiosListHTML}
                     </div>
                 `;
             }
