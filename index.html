@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LA CULPA - App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
+            padding: 40px 20px 30px;
+            text-align: center;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #FFD700;
+            font-size: 14px;
+            font-weight: bold;
+            color: #FFD700;
+            text-align: center;
+            line-height: 1.3;
+        }
+        
+        .title {
+            color: #FFD700;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(30, 30, 63, 0.5);
+            padding: 10px;
+            border-radius: 15px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: transparent;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+            border-radius: 10px;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
+            color: #FFD700;
+            border-color: #FFD700;
+        }
+        
+        .content {
+            display: none;
+        }
+        
+        .content.active {
+            display: block;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .section-title {
+            color: #FFD700;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 25px 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .card-date {
+            color: #FFD700;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .card-title {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .card-details {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .ranking-item {
+            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+        }
+        
+        .ranking-item.top3 {
+            border-color: #FFD700;
+        }
+        
+        .rank-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD700;
+            min-width: 30px;
+        }
+        
+        .rank-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .rank-info {
+            flex: 1;
+        }
+        
+        .rank-name {
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+        
+        .rank-stats {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+        }
+        
+        .rank-percentage {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #FFD700;
+            color: #1a1a2e;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #FFD700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+
+        .login-card {
+            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+            background: rgba(30, 30, 63, 0.5);
+            color: white;
+            font-size: 16px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
+            color: #FFD700;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-button:hover {
+            opacity: 0.9;
+        }
+
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <!-- Login Screen -->
+        <div id="loginScreen" class="login-screen">
+            <div class="header">
+                <div class="logo">JUNTADAS<br>CULPOSAS<br>⭐</div>
+                <div class="title">LA CULPA</div>
+                <div class="subtitle">Ranking de Asistencias</div>
+            </div>
+            <div class="login-card">
+                <h2 style="color: #FFD700; margin-bottom: 20px;">Bienvenido, Culposo</h2>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Ingresá tu email para ver tus stats</p>
+                <input type="email" id="emailInput" class="login-input" placeholder="tu@email.com">
+                <button onclick="login()" class="login-button">ENTRAR</button>
+                <div id="errorMessage" class="error-message"></div>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="mainApp" style="display: none;">
+            <div class="header">
+                <div class="logo">JUNTADAS<br>CULPOSAS<br>⭐</div>
+                <div class="title">LA CULPA</div>
+                <div class="subtitle">Ranking de Asistencias</div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('home')">🏠 Home</div>
+                <div class="tab" onclick="showTab('ranking')">📊 Ranking</div>
+                <div class="tab" onclick="showTab('perfil')">👤 Perfil</div>
+            </div>
+            
+            <!-- HOME TAB -->
+            <div id="home" class="content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalJuntadas">-</div>
+                        <div class="stat-label">Juntadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCulposos">-</div>
+                        <div class="stat-label">Culposos</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">🔥 Últimas Juntadas</div>
+                <div id="ultimasJuntadas" class="loading">
+                    <div class="spinner"></div>
+                    Cargando juntadas...
+                </div>
+            </div>
+            
+            <!-- RANKING TAB -->
+            <div id="ranking" class="content">
+                <div class="section-title">🏆 Ranking de Culposos</div>
+                <div id="rankingList" class="loading">
+                    <div class="spinner"></div>
+                    Cargando ranking...
+                </div>
+            </div>
+            
+            <!-- PERFIL TAB -->
+            <div id="perfil" class="content">
+                <div class="section-title">👤 Mi Perfil</div>
+                <div id="perfilData" class="loading">
+                    <div class="spinner"></div>
+                    Cargando perfil...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN - ID DEL SHEET LA CULPAPP
+        const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
+        
+        let currentUser = null;
+        let juntadasData = [];
+        let culpososData = [];
+        
+        // Login
+        function login() {
+            const email = document.getElementById('emailInput').value.trim().toLowerCase();
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (!email || !email.includes('@')) {
+                errorMsg.textContent = 'Por favor ingresá un email válido';
+                return;
+            }
+            
+            // Guardamos el email
+            currentUser = email;
+            localStorage.setItem('culpaUserEmail', email);
+            
+            // Mostramos la app
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            
+            // Cargamos los datos
+            loadData();
+        }
+        
+        // Cargar datos del Sheet
+        async function loadData() {
+            try {
+                // URL pública del sheet como CSV
+                const juntadasURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Hoja%201`;
+                const culpososURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`;
+                
+                // Cargar juntadas
+                const juntadasResponse = await fetch(juntadasURL);
+                const juntadasCSV = await juntadasResponse.text();
+                juntadasData = parseCSV(juntadasCSV);
+                
+                // Cargar culposos
+                const culpososResponse = await fetch(culpososURL);
+                const culpososCSV = await culpososResponse.text();
+                culpososData = parseCSV(culpososCSV);
+                
+                // Renderizar datos
+                renderHome();
+                renderRanking();
+                renderPerfil();
+                
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                alert('Error conectando con Google Sheets. Revisá la configuración.');
+            }
+        }
+        
+        // Parsear CSV simple
+        function parseCSV(csv) {
+            const lines = csv.split('\n');
+            const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim());
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                data.push(row);
+            }
+            
+            return data;
+        }
+        
+        // Renderizar HOME
+        function renderHome() {
+            document.getElementById('totalJuntadas').textContent = juntadasData.length;
+            document.getElementById('totalCulposos').textContent = culpososData.length;
+            
+            // Últimas 3 juntadas
+            const ultimas = juntadasData.slice(-3).reverse();
+            const html = ultimas.map(j => `
+                <div class="card">
+                    <div class="card-date">${j.Fecha || ''}</div>
+                    <div class="card-title">${j.Descripción || j.Descripcion || 'Juntada'}</div>
+                    <div class="card-details">
+                        <span>🏠 ${j.Host || 'Sin host'}</span>
+                        <span>👥 ${j['N° Asist'] || j['N° asistentes'] || '0'} asistentes</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('ultimasJuntadas').innerHTML = html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>';
+        }
+        
+        // Renderizar RANKING
+        function renderRanking() {
+            const sorted = [...culpososData].sort((a, b) => parseFloat(b.Porcentaje) - parseFloat(a.Porcentaje));
+            
+            const html = sorted.map((culposo, index) => {
+                const rank = index + 1;
+                const percentage = parseFloat(culposo.Porcentaje).toFixed(0);
+                const isTop3 = rank <= 3;
+                
+                return `
+                    <div class="ranking-item ${isTop3 ? 'top3' : ''}">
+                        <div class="rank-number">${rank}</div>
+                        <div class="rank-avatar">🧔</div>
+                        <div class="rank-info">
+                            <div class="rank-name">
+                                ${culposo.Nombre}
+                                ${percentage == 100 ? '<span class="badge">👑 PERFECTO</span>' : ''}
+                            </div>
+                            <div class="rank-stats">${culposo.Asistencias} de ${culposo['Total Juntadas']} juntadas</div>
+                        </div>
+                        <div class="rank-percentage">${percentage}%</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('rankingList').innerHTML = html;
+        }
+        
+        // Renderizar PERFIL
+        function renderPerfil() {
+            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+            
+            if (!usuario) {
+                document.getElementById('perfilData').innerHTML = `
+                    <div class="card">
+                        <p style="color: rgba(255,255,255,0.7);">No se encontró tu perfil con el email: ${currentUser}</p>
+                        <p style="color: rgba(255,255,255,0.5); margin-top: 10px; font-size: 13px;">
+                            Asegurate que tu email esté en la hoja "CULPOSOS" del Google Sheet.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
+            const isPerfecto = percentage == 100;
+            
+            const html = `
+                <div class="card" style="border-left-color: ${isPerfecto ? '#FFD700' : '#8B4D8F'};">
+                    <div class="card-title" style="font-size: 24px;">
+                        ${usuario.Nombre}
+                        ${isPerfecto ? '<span class="badge">👑 PERFECTO</span>' : ''}
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">${usuario.Asistencias}/${usuario['Total Juntadas']}</div>
+                        <div class="stat-label">Asistencias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${percentage}%</div>
+                        <div class="stat-label">Porcentaje</div>
+                    </div>
+                </div>
+                
+                ${isPerfecto ? `
+                    <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700;">
+                        <div class="card-title">🏆 ¡CULPOSO PERFECTO!</div>
+                        <div class="card-details">No te perdiste ninguna juntada. Sos un crack.</div>
+                    </div>
+                ` : ''}
+                
+                <div class="section-title">📅 Mi Historial</div>
+                <div class="card">
+                    <div class="card-details">
+                        Historial detallado próximamente...
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('perfilData').innerHTML = html;
+        }
+        
+        // Cambiar tabs
+        function showTab(tabName) {
+            // Actualizar tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Actualizar contenido
+            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        // Verificar si ya está logueado
+        window.onload = function() {
+            const savedEmail = localStorage.getItem('culpaUserEmail');
+            if (savedEmail) {
+                document.getElementById('emailInput').value = savedEmail;
+                login();
+            }
+        };
+    </script>
+</body>
+</html>
