@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -415,7 +416,7 @@
     <script>
         // CONFIGURACIÓN - ID DEL SHEET LA CULPAPP
         const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
-       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPX74FZz77ImsOY-nvdswh-bo5UB8rb3_zU1y8G6UBG6o9jwaVY9hKxsMVzaF9OLvmxw/exec';
+       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQhwhydmCUpq6hn47yd4ebgoliQ1ibZaJ7bSvVq1rssInaTPv_gsHNnJ_DvKr0Wh-5gQ/exec';
         
         let currentUser = null;
         let juntadasData = [];
@@ -1007,18 +1008,11 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
         }
         
         // Abrir modal de confirmación
-        
-    const juntada = juntadasData[indexJuntada];
-    const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
-    
-    if (!usuario) return;
-    
-    // AGREGAR ESTA LÍNEA:
-    window.proximaJuntadaIndex = indexJuntada;
-    
-    // Contar confirmaciones
-    const confirmados = [];
-    // ... resto del código
+        function abrirModalConfirmar(indexJuntada) {
+            const juntada = juntadasData[indexJuntada];
+            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+            
+            if (!usuario) return;
             
             // Contar confirmaciones
             const confirmados = [];
@@ -1093,10 +1087,9 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
                 const response = await fetch(APPS_SCRIPT_URL, {
     method: 'POST',
     body: JSON.stringify({
-    email: currentUser,
-    fila: window.proximaJuntadaIndex + 2,
-    asistira: asistira
-})
+        email: currentUser,
+        asistira: asistira
+    })
 });
                 
                 const result = await response.json();
