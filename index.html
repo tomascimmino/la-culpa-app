@@ -417,7 +417,7 @@
     <script>
         // CONFIGURACIÓN - ID DEL SHEET LA CULPAPP
         const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzFUKon0f1NsR3sPoRIvTuZK9wFpKgloKysq6AD4ZbazzBGlZd3Y1uy-r-cFmKwiwlUYA/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxtE7v2i2VV5OckqWdN9C3DFNKMNYGaTu4BMYgTS1qtu0RUdh7q9uZvUworV5062GtIA/exec';
         
         let currentUser = null;
         let juntadasData = [];
@@ -633,21 +633,6 @@
                     </div>
                 `;
             }
-            
-            // Filtrar juntadas PASADAS (excluir futuras y la próxima)
-            const juntadasPasadas = juntadasData.filter((j, idx) => {
-                if (idx === proximaIndex) return false; // Excluir la próxima
-                
-                const fechaStr = j.Fecha;
-                if (!fechaStr) return true;
-                
-                const partes = fechaStr.split('/');
-                if (partes.length === 3) {
-                    const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
-                    return fecha < hoy; // Solo juntadas pasadas
-                }
-                return true;
-            });
             
             // Últimas 3 juntadas PASADAS
             const ultimas = juntadasPasadas.slice(-3).reverse();
