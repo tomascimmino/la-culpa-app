@@ -631,10 +631,12 @@
                 `;
             }
             
-            // Últimas 3 juntadas
-            const ultimas = juntadasData.slice(-3).reverse();
+            // Últimas 3 juntadas (excluyendo la primera que es la futura)
+            const ultimas = juntadasData.slice(1, 4); 
+            
             const html = ultimas.map((j, idx) => {
-                const realIndex = juntadasData.length - 1 - idx;
+                // El realIndex ahora es el índice original en el Excel
+                const realIndex = idx + 1; 
                 return `
                     <div class="card" onclick="verDetalleJuntada(${realIndex})" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                         <div class="card-date">${j.Fecha || ''}</div>
@@ -645,6 +647,11 @@
                         </div>
                     </div>
                 `;
+            }).join('');
+            
+            document.getElementById('ultimasJuntadas').innerHTML = (proximaHTML || '') + 
+                '<div class="section-title">🔥 Últimas Juntadas</div>' + 
+                (html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>');
             }).join('');
             
             document.getElementById('ultimasJuntadas').innerHTML = (proximaHTML || '') + (html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>');
