@@ -1007,13 +1007,7 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
         }
         
         // Abrir modal de confirmación
-        function abrirModalConfirmar(indexJuntada) {
-            const juntada = juntadasData[indexJuntada];
-            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
-            
-            if (!usuario) return;
-
-            function abrirModalConfirmar(indexJuntada) {
+        
     const juntada = juntadasData[indexJuntada];
     const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
     
