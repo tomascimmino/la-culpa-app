@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -416,7 +415,7 @@
     <script>
         // CONFIGURACIÓN - ID DEL SHEET LA CULPAPP
         const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
-       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQhwhydmCUpq6hn47yd4ebgoliQ1ibZaJ7bSvVq1rssInaTPv_gsHNnJ_DvKr0Wh-5gQ/exec';
+       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPX74FZz77ImsOY-nvdswh-bo5UB8rb3_zU1y8G6UBG6o9jwaVY9hKxsMVzaF9OLvmxw/exec';
         
         let currentUser = null;
         let juntadasData = [];
@@ -1014,6 +1013,9 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
             
             if (!usuario) return;
             
+            // CAMBIO 1: Guardar el índice para usarlo después
+            window.proximaJuntadaIndex = indexJuntada;
+            
             // Contar confirmaciones
             const confirmados = [];
             const noConfirmados = [];
@@ -1085,12 +1087,13 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
             
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-        email: currentUser,
-        asistira: asistira
-    })
-});
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: currentUser,
+                        fila: window.proximaJuntadaIndex + 2,
+                        asistira: asistira
+                    })
+                });
                 
                 const result = await response.json();
                 
