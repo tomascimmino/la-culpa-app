@@ -393,6 +393,16 @@
                 </div>
             </div>
             
+            <!-- MODAL CONFIRMAR ASISTENCIA -->
+            <div id="modalConfirmar" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 20px;">
+                <div style="max-width: 500px; margin: 0 auto; position: relative;">
+                    <button onclick="cerrarModalConfirmar()" style="position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 2001;">
+                        ✕ Cerrar
+                    </button>
+                    <div id="modalConfirmarContent"></div>
+                </div>
+            </div>
+            
             <!-- PERFIL TAB -->
             <div id="perfil" class="content">
                 <div class="section-title">👤 Mi Perfil</div>
@@ -407,6 +417,7 @@
     <script>
         // CONFIGURACIÓN - ID DEL SHEET LA CULPAPP
         const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxtE7v2i2VV5OckqWdN9C3DFNKMNYGaTu4BMYgTS1qtu0RUdh7q9uZvUworV5062GtIA/exec';
         
         let currentUser = null;
         let juntadasData = [];
@@ -551,6 +562,75 @@
             document.getElementById('totalCulposos').innerHTML = asistenciaHTML;
             document.querySelector('#totalCulposos').nextElementSibling.textContent = 'Tu Asistencia';
             
+            // Detectar próxima juntada (primera con fecha futura)
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            let proximaJuntada = null;
+            let proximaIndex = -1;
+            
+            for (let i = 0; i < juntadasData.length; i++) {
+                const fechaStr = juntadasData[i].Fecha;
+                if (!fechaStr) continue;
+                
+                // Parsear fecha DD/MM/YYYY
+                const partes = fechaStr.split('/');
+                if (partes.length === 3) {
+                    const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
+                    if (fecha >= hoy) {
+                        proximaJuntada = juntadasData[i];
+                        proximaIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            // Mostrar próxima juntada si existe
+            let proximaHTML = '';
+            if (proximaJuntada && usuario) {
+                const yaConfirmo = proximaJuntada[usuario.Nombre] === '✓' || proximaJuntada[usuario.Nombre] === '✗';
+                const confirmacion = proximaJuntada[usuario.Nombre];
+                
+                proximaHTML = `
+                    <div class="section-title" style="margin-top: 25px;">🎯 Próxima Juntada</div>
+                    <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700; border-left-width: 4px;">
+                        <div class="card-date">${proximaJuntada.Fecha}</div>
+                        <div class="card-title" style="font-size: 20px;">${proximaJuntada.Descripción || proximaJuntada.Descripcion}</div>
+                        <div class="card-details" style="margin: 10px 0;">
+                            <span>🏠 ${proximaJuntada.Host || 'Sin host'}</span>
+                        </div>
+                        ${yaConfirmo ? `
+                            <div style="text-align: center; padding: 15px; background: ${confirmacion === '✓' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(244, 67, 54, 0.2)'}; border-radius: 10px; margin-top: 15px;">
+                                <div style="font-size: 16px; font-weight: bold; color: ${confirmacion === '✓' ? '#4CAF50' : '#f44336'};">
+                                    ${confirmacion === '✓' ? '✅ Confirmaste asistencia' : '❌ Confirmaste que no irás'}
+                                </div>
+                                <button onclick="abrirModalConfirmar(${proximaIndex})" style="margin-top: 10px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 8px 15px; border-radius: 8px; font-size: 12px; cursor: pointer;">
+                                    Cambiar respuesta
+                                </button>
+                            </div>
+                        ` : `
+                            <button onclick="abrirModalConfirmar(${proximaIndex})" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; color: #1E1E3F; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                                📝 Confirmar asistencia
+                            </button>
+                        `}
+                    </div>
+                `;
+            } else if (usuario) {
+                // No hay próxima juntada
+                proximaHTML = `
+                    <div class="section-title" style="margin-top: 25px;">🎯 Próxima Juntada</div>
+                    <div class="card" style="background: rgba(139, 77, 143, 0.1); text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 10px;">📅</div>
+                        <div class="card-title" style="font-size: 16px; color: rgba(255,255,255,0.7);">
+                            Por el momento no hay próxima juntada programada
+                        </div>
+                        <div class="card-details" style="margin-top: 10px; color: rgba(255,255,255,0.5);">
+                            Cuando se programe una nueva juntada aparecerá acá
+                        </div>
+                    </div>
+                `;
+            }
+            
             // Últimas 3 juntadas
             const ultimas = juntadasData.slice(-3).reverse();
             const html = ultimas.map((j, idx) => {
@@ -567,7 +647,7 @@
                 `;
             }).join('');
             
-            document.getElementById('ultimasJuntadas').innerHTML = html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>';
+            document.getElementById('ultimasJuntadas').innerHTML = (proximaHTML || '') + (html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>');
         }
         
         // Renderizar RANKING
@@ -676,13 +756,13 @@
                     ...culposoOro.map(p => 
                         `<div style="margin: 12px 0; padding: 12px; background: rgba(255, 215, 0, 0.15); border-radius: 8px;">
                             <span style="font-size: 18px; font-weight: bold; color: #FFD700;">
-                                🏆 CULPOSO DE ORO ${p.Año || ''}
+                                🏆 CULPOSO DE ORO (${p.Año || ''})
                             </span>
                         </div>`
                     ),
                     ...otrosPremios.map(p => 
                         `<div style="margin: 8px 0; color: rgba(255,255,255,0.9);">
-                            🥇 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'Premio'} del año ${p.Año || ''}</span>
+                            🥇 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'PREMIO'} (${p.Año || ''})</span>
                         </div>`
                     )
                 ].join('');
@@ -907,6 +987,113 @@
             document.getElementById('juntadaDetalle').style.display = 'none';
         }
         
+        // Abrir modal de confirmación
+        function abrirModalConfirmar(indexJuntada) {
+            const juntada = juntadasData[indexJuntada];
+            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+            
+            if (!usuario) return;
+            
+            // Contar confirmaciones
+            const confirmados = [];
+            const noConfirmados = [];
+            
+            culpososData.forEach(c => {
+                const respuesta = juntada[c.Nombre];
+                if (respuesta === '✓') {
+                    confirmados.push(c.Nombre);
+                } else if (respuesta === '✗') {
+                    noConfirmados.push(c.Nombre);
+                }
+            });
+            
+            const html = `
+                <div style="background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 30px; border-radius: 20px; margin-top: 60px; border: 2px solid rgba(139, 77, 143, 0.5);">
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;">${juntada.Fecha}</div>
+                        <div style="color: white; font-size: 24px; font-weight: bold; margin-bottom: 10px;">${juntada.Descripción || juntada.Descripcion}</div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 14px;">🏠 ${juntada.Host || 'Sin host'}</div>
+                    </div>
+                    
+                    <div style="margin: 25px 0;">
+                        <div style="color: white; font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 15px;">¿Vas a asistir?</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <button onclick="confirmarAsistencia(true)" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                                ✅ ASISTIRÉ
+                            </button>
+                            <button onclick="confirmarAsistencia(false)" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                                ❌ NO ASISTIRÉ
+                            </button>
+                        </div>
+                    </div>
+                    
+                    ${confirmados.length > 0 || noConfirmados.length > 0 ? `
+                        <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.2);">
+                            ${confirmados.length > 0 ? `
+                                <div style="margin-bottom: 15px;">
+                                    <div style="color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 8px;">✅ Confirmaron (${confirmados.length}):</div>
+                                    <div style="color: rgba(255,255,255,0.8); font-size: 13px;">${confirmados.join(', ')}</div>
+                                </div>
+                            ` : ''}
+                            ${noConfirmados.length > 0 ? `
+                                <div>
+                                    <div style="color: #f44336; font-size: 14px; font-weight: bold; margin-bottom: 8px;">❌ No asisten (${noConfirmados.length}):</div>
+                                    <div style="color: rgba(255,255,255,0.8); font-size: 13px;">${noConfirmados.join(', ')}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    <div id="mensajeConfirmacion" style="margin-top: 15px; text-align: center; display: none;"></div>
+                </div>
+            `;
+            
+            document.getElementById('modalConfirmarContent').innerHTML = html;
+            document.getElementById('modalConfirmar').style.display = 'block';
+        }
+        
+        // Cerrar modal confirmar
+        function cerrarModalConfirmar() {
+            document.getElementById('modalConfirmar').style.display = 'none';
+        }
+        
+        // Confirmar asistencia (envía a Apps Script)
+        async function confirmarAsistencia(asistira) {
+            const mensajeDiv = document.getElementById('mensajeConfirmacion');
+            mensajeDiv.style.display = 'block';
+            mensajeDiv.innerHTML = '<div style="color: #FFD700;">⏳ Guardando...</div>';
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: currentUser,
+                        asistira: asistira
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    mensajeDiv.innerHTML = `<div style="color: #4CAF50; font-weight: bold;">✅ ${result.mensaje || 'Confirmación guardada'}</div>`;
+                    
+                    // Recargar datos y cerrar modal después de 1.5 seg
+                    setTimeout(() => {
+                        cerrarModalConfirmar();
+                        loadData();
+                    }, 1500);
+                } else {
+                    mensajeDiv.innerHTML = `<div style="color: #f44336;">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                mensajeDiv.innerHTML = `<div style="color: #f44336;">❌ Error de conexión</div>`;
+                console.error('Error:', error);
+            }
+        }
+        
         // Ver perfil de otro culposo
         function verPerfilCulposo(nombreCulposo) {
             // Cerrar modal de juntada si está abierto
@@ -952,13 +1139,13 @@
                     ...culposoOro.map(p => 
                         `<div style="margin: 12px 0; padding: 12px; background: rgba(255, 215, 0, 0.15); border-radius: 8px;">
                             <span style="font-size: 18px; font-weight: bold; color: #FFD700;">
-                                🏆 CULPOSO DE ORO ${p.Año || ''}
+                                🏆 CULPOSO DE ORO (${p.Año || ''})
                             </span>
                         </div>`
                     ),
                     ...otrosPremios.map(p => 
                         `<div style="margin: 8px 0; color: rgba(255,255,255,0.9);">
-                            🥇 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'Premio'} del año ${p.Año || ''}</span>
+                            🥇 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'PREMIO'} (${p.Año || ''})</span>
                         </div>`
                     )
                 ].join('');
