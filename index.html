@@ -544,7 +544,7 @@
         
         // Renderizar HOME
         function renderHome() {
-            document.getElementById('totalJuntadas').textContent = culpososData[0].Juntadas;
+            document.getElementById('totalJuntadas').textContent = culpososData[0]['Total Juntadas'];
             
             // Calcular asistencia del usuario logueado
             const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
