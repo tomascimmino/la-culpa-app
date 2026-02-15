@@ -1084,15 +1084,12 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
             
             try {
                 const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        email: currentUser,
-                        asistira: asistira
-                    })
-                });
+    method: 'POST',
+    body: JSON.stringify({
+        email: currentUser,
+        asistira: asistira
+    })
+});
                 
                 const result = await response.json();
                 
