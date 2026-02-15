@@ -849,11 +849,26 @@
             };
             
             // Obtener nombre del usuario logueado
-            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
-            const nombreUsuario = usuario ? usuario.Nombre : '';
-            
-            const html = juntadasData.slice().reverse().map((juntada, index) => {
-                const realIndex = juntadasData.length - 1 - index;
+           const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+const nombreUsuario = usuario ? usuario.Nombre : '';
+
+// Filtrar solo juntadas PASADAS
+const hoy = new Date();
+hoy.setHours(0, 0, 0, 0);
+
+const juntadasPasadas = juntadasData.filter(juntada => {
+    const fechaStr = juntada.Fecha;
+    if (!fechaStr) return true;
+    const partes = fechaStr.split('/');
+    if (partes.length === 3) {
+        const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
+        return fecha < hoy;
+    }
+    return true;
+});
+
+const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
+    const realIndex = juntadasData.indexOf(juntada);
                 
                 // Verificar si el usuario asistió
                 const asistio = juntada[nombreUsuario] === '✓' || juntada[nombreUsuario] === 'TRUE';
