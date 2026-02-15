@@ -5,67 +5,337 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LA CULPA - App</title>
     
+    <!-- Favicon y App Icons -->
     <link rel="icon" type="image/png" href="https://i.imgur.com/tq9wwwK.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/tq9wwwK.png">
     <meta name="theme-color" content="#8B4D8F">
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkxBIENVTFBBIiwKICAic2hvcnRfbmFtZSI6ICJMYSBDdWxwYSIsCiAgImRlc2NyaXB0aW9uIjogIlJhbmtpbmcgZGUgQXNpc3RlbmNpYXMiLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFFMUUzRiIsCiAgInRoZW1lX2NvbG9yIjogIiM4QjREOEYiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaW1ndXIuY29tL3RxOXd3d0sucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); min-height: 100vh; color: white; }
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%); padding: 40px 20px 30px; text-align: center; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .logo { width: 350px; height: 350px; margin: 0 auto 15px; background: url('https://i.imgur.com/tq9wwwK.png') center/contain no-repeat; border-radius: 20px; display: flex; align-items: center; justify-content: center; }
-        .title { color: #FFD700; font-size: 32px; font-weight: bold; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        .subtitle { color: rgba(255,255,255,0.9); font-size: 14px; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(30, 30, 63, 0.5); padding: 10px; border-radius: 15px; }
-        .tab { flex: 1; padding: 12px; text-align: center; background: transparent; border: 2px solid rgba(139, 77, 143, 0.3); border-radius: 10px; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.3s; font-size: 14px; }
-        .tab.active { background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%); color: #FFD700; border-color: #FFD700; }
-        .content { display: none; }
-        .content.active { display: block; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 20px; border-radius: 15px; text-align: center; border: 2px solid rgba(139, 77, 143, 0.3); }
-        .stat-number { font-size: 32px; font-weight: bold; color: #FFD700; margin-bottom: 5px; }
-        .stat-label { color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; }
-        .section-title { color: #FFD700; font-size: 18px; font-weight: bold; margin: 25px 0 15px; display: flex; align-items: center; gap: 10px; }
-        .card { background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 4px solid #FFD700; }
-        .card-date { color: #FFD700; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
-        .card-title { color: white; font-size: 16px; font-weight: bold; margin-bottom: 5px; }
-        .card-details { color: rgba(255,255,255,0.6); font-size: 13px; display: flex; gap: 15px; }
-        .ranking-item { background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; border: 2px solid rgba(139, 77, 143, 0.3); }
-        .ranking-item.top3 { border-color: #FFD700; }
-        .rank-number { font-size: 20px; font-weight: bold; color: #FFD700; min-width: 30px; }
-        .rank-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%); display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .rank-info { flex: 1; }
-        .rank-name { color: white; font-weight: bold; font-size: 15px; margin-bottom: 3px; }
-        .rank-stats { color: rgba(255,255,255,0.6); font-size: 12px; }
-        .rank-percentage { font-size: 18px; font-weight: bold; color: #FFD700; }
-        .badge { display: inline-block; background: #FFD700; color: #1a1a2e; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; margin-left: 5px; }
-        .loading { text-align: center; padding: 40px; color: rgba(255,255,255,0.6); }
-        .spinner { border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #FFD700; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; text-align: center; }
-        .login-card { background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 40px; border-radius: 20px; border: 2px solid rgba(139, 77, 143, 0.3); max-width: 400px; width: 100%; }
-        .login-input { width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 16px; }
-        .login-button { width: 100%; padding: 15px; margin-top: 20px; border-radius: 10px; border: none; background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%); color: #FFD700; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .error-message { color: #ff4444; margin-top: 10px; font-size: 14px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
+            padding: 40px 20px 30px;
+            text-align: center;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .logo {
+            width: 350px;
+            height: 350px;
+            margin: 0 auto 15px;
+            background: url('https://i.imgur.com/tq9wwwK.png') center/contain no-repeat;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .title {
+            color: #FFD700;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(30, 30, 63, 0.5);
+            padding: 10px;
+            border-radius: 15px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: transparent;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+            border-radius: 10px;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
+            color: #FFD700;
+            border-color: #FFD700;
+        }
+        
+        .content {
+            display: none;
+        }
+        
+        .content.active {
+            display: block;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .section-title {
+            color: #FFD700;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 25px 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .card-date {
+            color: #FFD700;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .card-title {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .card-details {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .ranking-item {
+            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+        }
+        
+        .ranking-item.top3 {
+            border-color: #FFD700;
+        }
+        
+        .rank-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD700;
+            min-width: 30px;
+        }
+        
+        .rank-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .rank-info {
+            flex: 1;
+        }
+        
+        .rank-name {
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+        
+        .rank-stats {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+        }
+        
+        .rank-percentage {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #FFD700;
+            color: #1a1a2e;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #FFD700;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+
+        .login-card {
+            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 2px solid rgba(139, 77, 143, 0.3);
+            background: rgba(30, 30, 63, 0.5);
+            color: white;
+            font-size: 16px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
+            color: #FFD700;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-button:hover {
+            opacity: 0.9;
+        }
+
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container" id="app">
+        <!-- Login Screen -->
         <div id="loginScreen" class="login-screen">
-            <div class="header"><div class="logo"></div><div class="title">LA CULPA</div><div class="subtitle">Ranking de Asistencias</div></div>
+            <div class="header">
+                <div class="logo"></div>
+                <div class="title">LA CULPA</div>
+                <div class="subtitle">Ranking de Asistencias</div>
+            </div>
             <div class="login-card">
                 <h2 style="color: #FFD700; margin-bottom: 20px;">Bienvenido, Culposo</h2>
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Ingresá tu email para ver tus stats</p>
                 <input type="email" id="emailInput" class="login-input" placeholder="tu@email.com">
                 <button onclick="login()" class="login-button">ENTRAR</button>
                 <div id="errorMessage" class="error-message"></div>
             </div>
         </div>
 
+        <!-- Main App -->
         <div id="mainApp" style="display: none;">
             <div class="header">
-                <button onclick="logout()" style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer;">🚪 Cerrar sesión</button>
-                <div class="logo"></div><div class="title">LA CULPA</div><div class="subtitle">Ranking de Asistencias</div>
+                <button onclick="logout()" style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer;">
+                    🚪 Cerrar sesión
+                </button>
+                <div class="logo"></div>
+                <div class="title">LA CULPA</div>
+                <div class="subtitle">Ranking de Asistencias</div>
             </div>
             
             <div class="tabs">
@@ -75,162 +345,909 @@
                 <div class="tab" onclick="showTab('perfil')">👤 Perfil</div>
             </div>
             
+            <!-- HOME TAB -->
             <div id="home" class="content active">
                 <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-number" id="totalJuntadas">-</div><div class="stat-label">Juntadas</div></div>
-                    <div class="stat-card"><div class="stat-number" id="totalCulposos">-</div><div class="stat-label">Tu Asistencia</div></div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalJuntadas">-</div>
+                        <div class="stat-label">Juntadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCulposos">-</div>
+                        <div class="stat-label">Culposos</div>
+                    </div>
                 </div>
-                <div class="section-title">🎯 Próxima Juntada</div>
-                <div id="proximaJuntadaCont"></div>
+                
                 <div class="section-title">🔥 Últimas Juntadas</div>
-                <div id="ultimasJuntadas" class="loading"><div class="spinner"></div>Cargando...</div>
+                <div id="ultimasJuntadas" class="loading">
+                    <div class="spinner"></div>
+                    Cargando juntadas...
+                </div>
             </div>
             
-            <div id="ranking" class="content"><div id="rankingList" class="loading"><div class="spinner"></div></div></div>
-            <div id="juntadas" class="content"><div id="juntadasList" class="loading"><div class="spinner"></div></div></div>
-            <div id="perfil" class="content"><div id="perfilData" class="loading"><div class="spinner"></div></div></div>
-
-            <div id="modalConfirmar" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; padding: 20px;">
-                <div id="modalConfirmarContent"></div>
+            <!-- RANKING TAB -->
+            <div id="ranking" class="content">
+                <div class="section-title">🏆 Ranking de Culposos</div>
+                <div id="rankingList" class="loading">
+                    <div class="spinner"></div>
+                    Cargando ranking...
+                </div>
+            </div>
+            
+            <!-- JUNTADAS TAB -->
+            <div id="juntadas" class="content">
+                <div class="section-title">📅 Todas las Juntadas</div>
+                <div id="juntadasList" class="loading">
+                    <div class="spinner"></div>
+                    Cargando juntadas...
+                </div>
+            </div>
+            
+            <!-- DETALLE JUNTADA (modal/overlay) -->
+            <div id="juntadaDetalle" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 20px;">
+                <div style="max-width: 500px; margin: 0 auto; position: relative;">
+                    <button onclick="cerrarDetalle()" style="position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 2001;">
+                        ✕ Cerrar
+                    </button>
+                    <div id="juntadaDetalleContent"></div>
+                </div>
+            </div>
+            
+            <!-- MODAL CONFIRMAR ASISTENCIA -->
+            <div id="modalConfirmar" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 20px;">
+                <div style="max-width: 500px; margin: 0 auto; position: relative;">
+                    <button onclick="cerrarModalConfirmar()" style="position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 2001;">
+                        ✕ Cerrar
+                    </button>
+                    <div id="modalConfirmarContent"></div>
+                </div>
+            </div>
+            
+            <!-- PERFIL TAB -->
+            <div id="perfil" class="content">
+                <div class="section-title">👤 Mi Perfil</div>
+                <div id="perfilData" class="loading">
+                    <div class="spinner"></div>
+                    Cargando perfil...
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // CONFIGURACIÓN - ID DEL SHEET LA CULPAPP
         const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxtE7v2i2VV5OckqWdN9C3DFNKMNYGaTu4BMYgTS1qtu0RUdh7q9uZvUworV5062GtIA/exec';
         
-        let currentUser = localStorage.getItem('culpaUserEmail');
+        let currentUser = null;
         let juntadasData = [];
         let culpososData = [];
-
-        window.onload = () => { if(currentUser) { loginAuto(); } };
-
+        let premiosData = [];
+        
+        // Login con validación
         async function login() {
             const email = document.getElementById('emailInput').value.trim().toLowerCase();
-            if (!email.includes('@')) return alert("Email no válido");
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (!email || !email.includes('@')) {
+                errorMsg.textContent = 'Por favor ingresá un email válido';
+                return;
+            }
+            
+            // Cargar datos de culposos para validar
+            try {
+                const culpososURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`;
+                const culpososResponse = await fetch(culpososURL);
+                const culpososCSV = await culpososResponse.text();
+                const culpososTemp = parseCSV(culpososCSV);
+                
+                // Verificar si el email está en la lista
+                const emailValido = culpososTemp.some(c => c.Email && c.Email.toLowerCase() === email);
+                
+                if (!emailValido) {
+                    errorMsg.textContent = '❌ Email no autorizado. Solo culposos pueden entrar.';
+                    return;
+                }
+                
+            } catch (error) {
+                console.error('Error validando email:', error);
+                errorMsg.textContent = 'Error conectando con el servidor. Intentá de nuevo.';
+                return;
+            }
+            
+            // Guardamos el email
             currentUser = email;
             localStorage.setItem('culpaUserEmail', email);
-            loginAuto();
-        }
-
-        function loginAuto() {
+            
+            // Mostramos la app
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
+            
+            // Cargamos los datos
             loadData();
         }
-
+        
+        // Logout
         function logout() {
             localStorage.removeItem('culpaUserEmail');
-            location.reload();
+            currentUser = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('emailInput').value = '';
+            document.getElementById('errorMessage').textContent = '';
         }
-
+        
+        // Cargar datos del Sheet
         async function loadData() {
             try {
-                const culURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`;
-                const junURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Asistencias`;
+                // URL pública del sheet como CSV
+                const juntadasURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Hoja%201`;
+                const culpososURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`;
+                const premiosURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PREMIOS`;
                 
-                const [resC, resJ] = await Promise.all([fetch(culURL), fetch(junURL)]);
-                const csvC = await resC.text();
-                const csvJ = await resJ.text();
+                // Cargar juntadas
+                const juntadasResponse = await fetch(juntadasURL);
+                const juntadasCSV = await juntadasResponse.text();
+                juntadasData = parseCSV(juntadasCSV);
                 
-                culpososData = parseCSV(csvC);
-                juntadasData = parseCSV(csvJ);
+                // Cargar culposos
+                const culpososResponse = await fetch(culpososURL);
+                const culpososCSV = await culpososResponse.text();
+                culpososData = parseCSV(culpososCSV);
                 
+                // Cargar premios
+                const premiosResponse = await fetch(premiosURL);
+                const premiosCSV = await premiosResponse.text();
+                premiosData = parseCSV(premiosCSV);
+                
+                // Renderizar datos
                 renderHome();
                 renderRanking();
+                renderJuntadas();
                 renderPerfil();
-            } catch (e) { alert("Error cargando datos de Google Sheets"); }
+                
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                alert('Error conectando con Google Sheets. Revisá la configuración.');
+            }
         }
-
+        
+        // Parsear CSV simple
         function parseCSV(csv) {
             const lines = csv.split('\n');
             const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
-            return lines.slice(1).filter(l => l.trim()).map(line => {
-                const values = line.split(',').map(v => v.replace(/"/g, '').trim());
-                let obj = {};
-                headers.forEach((h, i) => obj[h] = values[i]);
-                return obj;
-            });
-        }
-
-        function renderHome() {
-            const user = culpososData.find(c => c.Email?.toLowerCase() === currentUser);
-            document.getElementById('totalJuntadas').textContent = juntadasData.length;
-            document.getElementById('totalCulposos').textContent = user ? (parseFloat(user.Porcentaje)*100).toFixed(0) + "%" : "-%";
+            const data = [];
             
-            // Lógica de Próxima Juntada (Fijada a la columna C del Sheet)
-            const proxima = juntadasData[0]; // Tomamos la primera fila como la próxima
-            const cont = document.getElementById('proximaJuntadaCont');
-            cont.innerHTML = `
-                <div class="card" style="border-left-color: #FFD700; padding: 20px;">
-                    <div class="card-date">PRÓXIMO EVENTO</div>
-                    <div class="card-title" style="font-size: 20px;">Día de pile y patys</div>
-                    <button onclick="abrirModalConfirmar()" class="login-button" style="margin-top: 15px;">📝 CONFIRMAR ASISTENCIA</button>
-                </div>`;
-            
-            document.getElementById('ultimasJuntadas').innerHTML = juntadasData.slice(0, 3).map(j => `
-                <div class="card">
-                    <div class="card-date">${j.Fecha || 'Reciente'}</div>
-                    <div class="card-title">${j.Descripción || 'Juntada'}</div>
-                </div>`).join('');
-        }
-
-        function renderRanking() {
-            const sorted = [...culpososData].sort((a,b) => b.Porcentaje - a.Porcentaje);
-            document.getElementById('rankingList').innerHTML = sorted.map((c, i) => `
-                <div class="ranking-item ${i<3?'top3':''}">
-                    <div class="rank-number">${i+1}</div>
-                    <div class="rank-info">
-                        <div class="rank-name">${c.Nombre}</div>
-                        <div class="rank-stats">${c.Asistencias} asistencias</div>
-                    </div>
-                    <div class="rank-percentage">${(parseFloat(c.Porcentaje)*100).toFixed(0)}%</div>
-                </div>`).join('');
-        }
-
-        function renderPerfil() {
-            const user = culpososData.find(c => c.Email?.toLowerCase() === currentUser);
-            document.getElementById('perfilData').innerHTML = user ? `
-                <div class="card" style="text-align: center; padding: 30px;">
-                    <h2 style="color:#FFD700">${user.Nombre}</h2>
-                    <p>${user.Email}</p>
-                    <div style="font-size: 30px; margin-top:20px">${(parseFloat(user.Porcentaje)*100).toFixed(0)}%</div>
-                </div>` : "No encontrado";
-        }
-
-        function abrirModalConfirmar() {
-            const modal = document.getElementById('modalConfirmar');
-            document.getElementById('modalConfirmarContent').innerHTML = `
-                <div class="login-card" style="margin: 100px auto;">
-                    <h2 style="color:#FFD700">¿Confirmás?</h2>
-                    <button onclick="confirmar(true)" class="login-button" style="background:#4CAF50; color:white">SÍ, VOY</button>
-                    <button onclick="confirmar(false)" class="login-button" style="background:#f44336; color:white">NO PUEDO</button>
-                    <button onclick="cerrar()" class="login-button" style="background:gray">CANCELAR</button>
-                </div>`;
-            modal.style.display = 'block';
-        }
-
-        async function confirmar(asiste) {
-            try {
-                await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ email: currentUser, asiste: asiste })
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim());
+                
+                // Ignorar filas donde todos los valores están vacíos
+                const hasData = values.some(v => v && v.length > 0);
+                if (!hasData) continue;
+                
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
                 });
-                alert("¡Listo! Se guardó en el Excel.");
-                cerrar();
-            } catch (e) { alert("Error al conectar"); }
+                
+                // Para juntadas: solo agregar si tiene fecha o descripción
+                if (headers.includes('Fecha') && !row.Fecha && !row.Descripción && !row.Descripcion) {
+                    continue;
+                }
+                
+                data.push(row);
+            }
+            
+            return data;
         }
-
-        function cerrar() { document.getElementById('modalConfirmar').style.display = 'none'; }
         
-        function showTab(id) {
-            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            event.currentTarget.classList.add('active');
+        // Renderizar HOME
+        function renderHome() {
+            document.getElementById('totalJuntadas').textContent = juntadasData.length;
+            
+            // Calcular asistencia del usuario logueado
+            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+            let asistenciaHTML = '-';
+            if (usuario) {
+                const porcentaje = parseFloat(usuario.Porcentaje).toFixed(0);
+                let color = '#f44336'; // Rojo por defecto
+                if (porcentaje >= 90) color = '#4CAF50'; // Verde fuerte
+                else if (porcentaje >= 70) color = '#8BC34A'; // Verde claro
+                else if (porcentaje >= 40) color = '#FF9800'; // Naranja
+                
+                asistenciaHTML = `<span style="color: ${color}">${porcentaje}%</span>`;
+            }
+            
+            document.getElementById('totalCulposos').innerHTML = asistenciaHTML;
+            document.querySelector('#totalCulposos').nextElementSibling.textContent = 'Tu Asistencia';
+            
+            // Detectar próxima juntada (primera con fecha futura)
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            let proximaJuntada = null;
+            let proximaIndex = -1;
+            
+            for (let i = 0; i < juntadasData.length; i++) {
+                const fechaStr = juntadasData[i].Fecha;
+                if (!fechaStr) continue;
+                
+                // Parsear fecha DD/MM/YYYY
+                const partes = fechaStr.split('/');
+                if (partes.length === 3) {
+                    const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
+                    if (fecha >= hoy) {
+                        proximaJuntada = juntadasData[i];
+                        proximaIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            // Mostrar próxima juntada si existe
+            let proximaHTML = '';
+            if (proximaJuntada && usuario) {
+                const yaConfirmo = proximaJuntada[usuario.Nombre] === '✓' || proximaJuntada[usuario.Nombre] === '✗';
+                const confirmacion = proximaJuntada[usuario.Nombre];
+                
+                proximaHTML = `
+                    <div class="section-title" style="margin-top: 25px;">🎯 Próxima Juntada</div>
+                    <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700; border-left-width: 4px;">
+                        <div class="card-date">${proximaJuntada.Fecha}</div>
+                        <div class="card-title" style="font-size: 20px;">${proximaJuntada.Descripción || proximaJuntada.Descripcion}</div>
+                        <div class="card-details" style="margin: 10px 0;">
+                            <span>🏠 ${proximaJuntada.Host || 'Sin host'}</span>
+                        </div>
+                        ${yaConfirmo ? `
+                            <div style="text-align: center; padding: 15px; background: ${confirmacion === '✓' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(244, 67, 54, 0.2)'}; border-radius: 10px; margin-top: 15px;">
+                                <div style="font-size: 16px; font-weight: bold; color: ${confirmacion === '✓' ? '#4CAF50' : '#f44336'};">
+                                    ${confirmacion === '✓' ? '✅ Confirmaste asistencia' : '❌ Confirmaste que no irás'}
+                                </div>
+                                <button onclick="abrirModalConfirmar(${proximaIndex})" style="margin-top: 10px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 8px 15px; border-radius: 8px; font-size: 12px; cursor: pointer;">
+                                    Cambiar respuesta
+                                </button>
+                            </div>
+                        ` : `
+                            <button onclick="abrirModalConfirmar(${proximaIndex})" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; color: #1E1E3F; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                                📝 Confirmar asistencia
+                            </button>
+                        `}
+                    </div>
+                `;
+            } else if (usuario) {
+                // No hay próxima juntada
+                proximaHTML = `
+                    <div class="section-title" style="margin-top: 25px;">🎯 Próxima Juntada</div>
+                    <div class="card" style="background: rgba(139, 77, 143, 0.1); text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 10px;">📅</div>
+                        <div class="card-title" style="font-size: 16px; color: rgba(255,255,255,0.7);">
+                            Por el momento no hay próxima juntada programada
+                        </div>
+                        <div class="card-details" style="margin-top: 10px; color: rgba(255,255,255,0.5);">
+                            Cuando se programe una nueva juntada aparecerá acá
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Últimas 3 juntadas
+            const ultimas = juntadasData.slice(-3).reverse();
+            const html = ultimas.map((j, idx) => {
+                const realIndex = juntadasData.length - 1 - idx;
+                return `
+                    <div class="card" onclick="verDetalleJuntada(${realIndex})" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        <div class="card-date">${j.Fecha || ''}</div>
+                        <div class="card-title">${j.Descripción || j.Descripcion || 'Juntada'}</div>
+                        <div class="card-details">
+                            <span>🏠 ${j.Host || 'Sin host'}</span>
+                            <span>👥 ${j['N° Asist'] || j['N° asistentes'] || '0'} asistentes</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('ultimasJuntadas').innerHTML = (proximaHTML || '') + (html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>');
         }
+        
+        // Renderizar RANKING
+        function renderRanking() {
+            const sorted = [...culpososData].sort((a, b) => parseFloat(b.Porcentaje) - parseFloat(a.Porcentaje));
+            
+            // Mapeo de fotos - TODOS los culposos y novias
+            const fotos = {
+                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
+                'Caamaño': 'https://i.imgur.com/N056gxD.png',
+                'Rama': 'https://i.imgur.com/8hsqIL8.png',
+                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
+                'Santi': 'https://i.imgur.com/iXHdIVT.png',
+                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
+                'Tirri': 'https://i.imgur.com/biqacxq.png',
+                'Toti': 'https://i.imgur.com/dXMpfSk.png',
+                'Cata': 'https://i.imgur.com/jhme4wb.png',
+                'Lola': 'https://i.imgur.com/qTP4eT2.png',
+                'Sami': 'https://i.imgur.com/HP41gaP.png',
+                'Leila': 'https://i.imgur.com/wcf3be4.png',
+                'Juli': 'https://i.imgur.com/cn779x3.png',
+                'Manu': 'https://i.imgur.com/BzDK66B.png',
+                'Matu': 'https://i.imgur.com/gNabdVm.png'
+            };
+            
+            const html = sorted.map((culposo, index) => {
+                const rank = index + 1;
+                const percentage = parseFloat(culposo.Porcentaje).toFixed(0);
+                const isTop3 = rank <= 3;
+                const fotoUrl = fotos[culposo.Nombre] || '';
+                
+                return `
+                    <div class="ranking-item ${isTop3 ? 'top3' : ''}">
+                        <div class="rank-number">${rank}</div>
+                        <div class="rank-avatar" style="${fotoUrl ? `background-image: url('${fotoUrl}'); background-size: cover; background-position: center;` : ''}">
+                            ${!fotoUrl ? '🧔' : ''}
+                        </div>
+                        <div class="rank-info" onclick="verPerfilCulposo('${culposo.Nombre}')" style="cursor: pointer; flex: 1;">
+                            <div class="rank-name">
+                                ${culposo.Nombre}
+                                ${percentage == 100 ? '<span class="badge">👑 PERFECTO</span>' : ''}
+                            </div>
+                            <div class="rank-stats">${culposo.Asistencias} de ${culposo['Total Juntadas']} juntadas</div>
+                        </div>
+                        <div class="rank-percentage">${percentage}%</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('rankingList').innerHTML = html;
+        }
+        
+        // Renderizar PERFIL
+        function renderPerfil() {
+            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+            
+            if (!usuario) {
+                document.getElementById('perfilData').innerHTML = `
+                    <div class="card">
+                        <p style="color: rgba(255,255,255,0.7);">No se encontró tu perfil con el email: ${currentUser}</p>
+                        <p style="color: rgba(255,255,255,0.5); margin-top: 10px; font-size: 13px;">
+                            Asegurate que tu email esté en la hoja "CULPOSOS" del Google Sheet.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
+            const isPerfecto = percentage == 100;
+            
+            // Mapeo de fotos - TODOS
+            const fotos = {
+                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
+                'Caamaño': 'https://i.imgur.com/N056gxD.png',
+                'Rama': 'https://i.imgur.com/8hsqIL8.png',
+                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
+                'Santi': 'https://i.imgur.com/iXHdIVT.png',
+                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
+                'Tirri': 'https://i.imgur.com/biqacxq.png',
+                'Toti': 'https://i.imgur.com/dXMpfSk.png',
+                'Cata': 'https://i.imgur.com/jhme4wb.png',
+                'Lola': 'https://i.imgur.com/qTP4eT2.png',
+                'Sami': 'https://i.imgur.com/HP41gaP.png',
+                'Leila': 'https://i.imgur.com/wcf3be4.png',
+                'Juli': 'https://i.imgur.com/cn779x3.png',
+                'Manu': 'https://i.imgur.com/BzDK66B.png',
+                'Matu': 'https://i.imgur.com/gNabdVm.png'
+            };
+            
+            const fotoUrl = fotos[usuario.Nombre] || '';
+            
+            // Obtener premios del usuario
+            const premiosUsuario = premiosData.filter(p => 
+                p.Ganador && p.Ganador.trim() === usuario.Nombre && p.Tipo === 'Persona'
+            );
+            
+            // Separar Culposo de Oro de otros premios
+            const culposoOro = premiosUsuario.filter(p => p.Terna && p.Terna.includes('CULPOSO DE ORO'));
+            const otrosPremios = premiosUsuario.filter(p => p.Terna && !p.Terna.includes('CULPOSO DE ORO'));
+            
+            // Generar HTML de premios - TODO EN UN SOLO CUADRO
+            let premiosHTML = '';
+            if (premiosUsuario.length > 0) {
+                const premiosListHTML = [
+                    ...culposoOro.map(p => 
+                        `<div style="margin: 12px 0; padding: 12px; background: rgba(255, 215, 0, 0.15); border-radius: 8px;">
+                            <span style="font-size: 18px; font-weight: bold; color: #FFD700;">
+                                🏆 CULPOSO DE ORO (${p.Año || ''})
+                            </span>
+                        </div>`
+                    ),
+                    ...otrosPremios.map(p => 
+                        `<div style="margin: 8px 0; color: rgba(255,255,255,0.9);">
+                            🥇 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'PREMIO'} (${p.Año || ''})</span>
+                        </div>`
+                    )
+                ].join('');
+                
+                premiosHTML = `
+                    <div class="section-title" style="margin-top: 25px;">🏆 Palmarés</div>
+                    <div class="card" style="padding: 20px;">
+                        ${premiosListHTML}
+                    </div>
+                `;
+            }
+            
+            const html = `
+                ${fotoUrl ? `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="${fotoUrl}" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #FFD700; object-fit: cover;">
+                    </div>
+                ` : ''}
+                
+                <div class="card" style="border-left-color: ${isPerfecto ? '#FFD700' : '#8B4D8F'};">
+                    <div class="card-title" style="font-size: 24px;">
+                        ${usuario.Nombre}
+                        ${isPerfecto ? '<span class="badge">👑 PERFECTO</span>' : ''}
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">${usuario.Asistencias}/${usuario['Total Juntadas']}</div>
+                        <div class="stat-label">Asistencias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${percentage}%</div>
+                        <div class="stat-label">Porcentaje</div>
+                    </div>
+                </div>
+                
+                ${isPerfecto ? `
+                    <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700;">
+                        <div class="card-title">🏆 ¡CULPOSO PERFECTO!</div>
+                        <div class="card-details">No te perdiste ninguna juntada. Sos un crack.</div>
+                    </div>
+                ` : ''}
+                
+                ${premiosHTML}
+                
+                <div class="section-title">📅 Mi Participación</div>
+                <div class="card" onclick="showTab('juntadas')" style="cursor: pointer; text-align: center; background: linear-gradient(135deg, rgba(139, 77, 143, 0.2) 0%, rgba(139, 77, 143, 0.1) 100%);">
+                    <div class="card-title" style="color: #FFD700; font-size: 16px;">
+                        📊 Ver todas mis juntadas →
+                    </div>
+                    <div class="card-details" style="margin-top: 5px;">
+                        Revisá tu historial completo de asistencias
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('perfilData').innerHTML = html;
+        }
+        
+        // Renderizar JUNTADAS
+        function renderJuntadas() {
+            // Mapeo de nombres de columnas a nombres de culposos
+            const columnasCulposos = {
+                'Toto': 'Toto',
+                'Caamaño': 'Caamaño',
+                'Rama': 'Rama',
+                'Zabala': 'Zabala',
+                'Santi': 'Santi',
+                'Mateo': 'Mateo',
+                'Tirri': 'Tirri',
+                'Toti': 'Toti',
+                'Cata': 'Cata',
+                'Lola': 'Lola',
+                'Sami': 'Sami',
+                'Leila': 'Leila',
+                'Juli': 'Juli',
+                'Manu': 'Manu',
+                'Matu': 'Matu'
+            };
+            
+            // Obtener nombre del usuario logueado
+            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+            const nombreUsuario = usuario ? usuario.Nombre : '';
+            
+            const html = juntadasData.slice().reverse().map((juntada, index) => {
+                const realIndex = juntadasData.length - 1 - index;
+                
+                // Verificar si el usuario asistió
+                const asistio = juntada[nombreUsuario] === '✓' || juntada[nombreUsuario] === 'TRUE';
+                const fotoJuntada = juntada['Foto Juntada'] || juntada['Foto juntada'] || '';
+                
+                return `
+                    <div class="card" onclick="verDetalleJuntada(${realIndex})" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        ${fotoJuntada ? `
+                            <div style="width: 100%; height: 150px; background-image: url('${fotoJuntada}'); background-size: cover; background-position: center; border-radius: 10px; margin-bottom: 15px;"></div>
+                        ` : ''}
+                        <div class="card-date">${juntada.Fecha || 'Fecha'}</div>
+                        <div class="card-title">${juntada.Descripción || juntada.Descripcion || 'Juntada'}</div>
+                        <div class="card-details" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                            <div>
+                                <span>🏠 ${juntada.Host || 'Sin host'}</span>
+                                <span style="margin-left: 10px;">👥 ${juntada['N° Asist'] || juntada['N° Asistentes'] || juntada['N° asistentes'] || '0'}</span>
+                            </div>
+                            ${nombreUsuario ? `
+                                <span style="display: inline-block; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; white-space: nowrap; ${asistio ? 'background: rgba(76, 175, 80, 0.2); color: #4CAF50;' : 'background: rgba(244, 67, 54, 0.2); color: #f44336;'}">
+                                    ${asistio ? '✅ FUISTE' : '❌ NO FUISTE'}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Calcular estadísticas del usuario
+            let mensajeMotivacional = '';
+            if (nombreUsuario) {
+                const usuario = culpososData.find(c => c.Nombre === nombreUsuario);
+                if (usuario) {
+                    const totalJuntadas = parseInt(usuario['Total Juntadas']) || 0;
+                    const asistencias = parseInt(usuario.Asistencias) || 0;
+                    const porcentaje = totalJuntadas > 0 ? Math.round((asistencias / totalJuntadas) * 100) : 0;
+                    
+                    let mensaje = '';
+                    let emoji = '';
+                    let color = '';
+                    
+                    if (porcentaje < 40) {
+                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Estás MUY ausente loco, metele más onda.`;
+                        emoji = '😴';
+                        color = '#f44336';
+                    } else if (porcentaje < 70) {
+                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Venís bien, pero no te relajes.`;
+                        emoji = '💪';
+                        color = '#FF9800';
+                    } else if (porcentaje < 90) {
+                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Sos un culposo comprometido, seguí así.`;
+                        emoji = '🔥';
+                        color = '#4CAF50';
+                    } else {
+                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Sos un CULPOSO DE LEY, un verdadero legendario.`;
+                        emoji = '👑';
+                        color = '#FFD700';
+                    }
+                    
+                    mensajeMotivacional = `
+                        <div class="card" style="background: rgba(139, 77, 143, 0.2); border-left-color: ${color}; border-left-width: 4px; margin-top: 20px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 40px; margin-bottom: 10px;">${emoji}</div>
+                                <div style="color: ${color}; font-weight: bold; font-size: 16px;">${mensaje}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            document.getElementById('juntadasList').innerHTML = html + mensajeMotivacional;
+        }
+        
+        // Ver detalle de juntada
+        function verDetalleJuntada(index) {
+            const juntada = juntadasData[index];
+            
+            // Mapeo de fotos
+            const fotos = {
+                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
+                'Caamaño': 'https://i.imgur.com/N056gxD.png',
+                'Rama': 'https://i.imgur.com/8hsqIL8.png',
+                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
+                'Santi': 'https://i.imgur.com/iXHdIVT.png',
+                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
+                'Tirri': 'https://i.imgur.com/biqacxq.png',
+                'Toti': 'https://i.imgur.com/dXMpfSk.png',
+                'Cata': 'https://i.imgur.com/jhme4wb.png',
+                'Lola': 'https://i.imgur.com/qTP4eT2.png',
+                'Sami': 'https://i.imgur.com/HP41gaP.png',
+                'Leila': 'https://i.imgur.com/wcf3be4.png',
+                'Juli': 'https://i.imgur.com/cn779x3.png',
+                'Manu': 'https://i.imgur.com/BzDK66B.png',
+                'Matu': 'https://i.imgur.com/gNabdVm.png'
+            };
+            
+            // Obtener asistentes
+            const asistentes = [];
+            Object.keys(fotos).forEach(nombre => {
+                if (juntada[nombre] === '✓' || juntada[nombre] === 'TRUE') {
+                    asistentes.push({nombre, foto: fotos[nombre]});
+                }
+            });
+            
+            const html = `
+                <div style="background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 30px; border-radius: 20px; margin-top: 60px; border: 2px solid rgba(139, 77, 143, 0.5);">
+                    ${juntada['Foto Juntada'] || juntada['Foto'] ? `
+                        <div style="width: 100%; max-width: 400px; height: 250px; margin: 0 auto 25px; border-radius: 15px; background-image: url('${juntada['Foto Juntada'] || juntada['Foto']}'); background-size: cover; background-position: center; border: 3px solid #FFD700;"></div>
+                    ` : ''}
+                    
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;">${juntada.Fecha || 'Fecha'}</div>
+                        <div style="color: white; font-size: 24px; font-weight: bold; margin-bottom: 10px;">${juntada.Descripción || juntada.Descripcion || 'Juntada'}</div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 14px; margin-bottom: 5px;">🏠 Host: ${juntada.Host || 'Sin host'}</div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 14px; margin-bottom: 5px;">📁 Categoría: ${juntada.Categoría || juntada.Categoria || 'Sin categoría'}</div>
+                        <div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-top: 10px;">👥 ${asistentes.length} Asistentes</div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px; margin-top: 25px;">
+                        ${asistentes.map(a => `
+                            <div style="text-align: center; cursor: pointer;" onclick="verPerfilCulposo('${a.nombre}')">
+                                <div style="width: 70px; height: 70px; border-radius: 50%; background-image: url('${a.foto}'); background-size: cover; background-position: center; margin: 0 auto 8px; border: 3px solid #FFD700;"></div>
+                                <div style="color: white; font-size: 12px; font-weight: bold;">${a.nombre}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('juntadaDetalleContent').innerHTML = html;
+            document.getElementById('juntadaDetalle').style.display = 'block';
+        }
+        
+        // Cerrar detalle
+        function cerrarDetalle() {
+            document.getElementById('juntadaDetalle').style.display = 'none';
+        }
+        
+        // Abrir modal de confirmación
+        function abrirModalConfirmar(indexJuntada) {
+            const juntada = juntadasData[indexJuntada];
+            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+            
+            if (!usuario) return;
+            
+            // Contar confirmaciones
+            const confirmados = [];
+            const noConfirmados = [];
+            
+            culpososData.forEach(c => {
+                const respuesta = juntada[c.Nombre];
+                if (respuesta === '✓') {
+                    confirmados.push(c.Nombre);
+                } else if (respuesta === '✗') {
+                    noConfirmados.push(c.Nombre);
+                }
+            });
+            
+            const html = `
+                <div style="background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 30px; border-radius: 20px; margin-top: 60px; border: 2px solid rgba(139, 77, 143, 0.5);">
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;">${juntada.Fecha}</div>
+                        <div style="color: white; font-size: 24px; font-weight: bold; margin-bottom: 10px;">${juntada.Descripción || juntada.Descripcion}</div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 14px;">🏠 ${juntada.Host || 'Sin host'}</div>
+                    </div>
+                    
+                    <div style="margin: 25px 0;">
+                        <div style="color: white; font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 15px;">¿Vas a asistir?</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <button onclick="confirmarAsistencia(true)" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                                ✅ ASISTIRÉ
+                            </button>
+                            <button onclick="confirmarAsistencia(false)" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                                ❌ NO ASISTIRÉ
+                            </button>
+                        </div>
+                    </div>
+                    
+                    ${confirmados.length > 0 || noConfirmados.length > 0 ? `
+                        <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.2);">
+                            ${confirmados.length > 0 ? `
+                                <div style="margin-bottom: 15px;">
+                                    <div style="color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 8px;">✅ Confirmaron (${confirmados.length}):</div>
+                                    <div style="color: rgba(255,255,255,0.8); font-size: 13px;">${confirmados.join(', ')}</div>
+                                </div>
+                            ` : ''}
+                            ${noConfirmados.length > 0 ? `
+                                <div>
+                                    <div style="color: #f44336; font-size: 14px; font-weight: bold; margin-bottom: 8px;">❌ No asisten (${noConfirmados.length}):</div>
+                                    <div style="color: rgba(255,255,255,0.8); font-size: 13px;">${noConfirmados.join(', ')}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    <div id="mensajeConfirmacion" style="margin-top: 15px; text-align: center; display: none;"></div>
+                </div>
+            `;
+            
+            document.getElementById('modalConfirmarContent').innerHTML = html;
+            document.getElementById('modalConfirmar').style.display = 'block';
+        }
+        
+        // Cerrar modal confirmar
+        function cerrarModalConfirmar() {
+            document.getElementById('modalConfirmar').style.display = 'none';
+        }
+        
+        // Confirmar asistencia (envía a Apps Script)
+        async function confirmarAsistencia(asistira) {
+            const mensajeDiv = document.getElementById('mensajeConfirmacion');
+            mensajeDiv.style.display = 'block';
+            mensajeDiv.innerHTML = '<div style="color: #FFD700;">⏳ Guardando...</div>';
+            
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: currentUser,
+                        asistira: asistira
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    mensajeDiv.innerHTML = `<div style="color: #4CAF50; font-weight: bold;">✅ ${result.mensaje || 'Confirmación guardada'}</div>`;
+                    
+                    // Recargar datos y cerrar modal después de 1.5 seg
+                    setTimeout(() => {
+                        cerrarModalConfirmar();
+                        loadData();
+                    }, 1500);
+                } else {
+                    mensajeDiv.innerHTML = `<div style="color: #f44336;">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                mensajeDiv.innerHTML = `<div style="color: #f44336;">❌ Error de conexión</div>`;
+                console.error('Error:', error);
+            }
+        }
+        
+        // Ver perfil de otro culposo
+        function verPerfilCulposo(nombreCulposo) {
+            // Cerrar modal de juntada si está abierto
+            cerrarDetalle();
+            
+            // Cambiar a tab de perfil
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab')[3].classList.add('active'); // Tab de perfil
+            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+            document.getElementById('perfil').classList.add('active');
+            
+            // Renderizar perfil del culposo seleccionado
+            renderPerfilCulposo(nombreCulposo);
+        }
+        
+        // Renderizar perfil de un culposo específico
+        function renderPerfilCulposo(nombreCulposo) {
+            const usuario = culpososData.find(c => c.Nombre === nombreCulposo);
+            
+            if (!usuario) {
+                document.getElementById('perfilData').innerHTML = `
+                    <div class="card">
+                        <p style="color: rgba(255,255,255,0.7);">No se encontró el perfil de ${nombreCulposo}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
+            const isPerfecto = percentage == 100;
+            
+            // Obtener premios del usuario
+            const premiosUsuario = premiosData.filter(p => 
+                p.Ganador && p.Ganador.trim() === usuario.Nombre && p.Tipo === 'Persona'
+            );
+            
+            const culposoOro = premiosUsuario.filter(p => p.Terna && p.Terna.includes('CULPOSO DE ORO'));
+            const otrosPremios = premiosUsuario.filter(p => p.Terna && !p.Terna.includes('CULPOSO DE ORO'));
+            
+            let premiosHTML = '';
+            if (premiosUsuario.length > 0) {
+                const premiosListHTML = [
+                    ...culposoOro.map(p => 
+                        `<div style="margin: 12px 0; padding: 12px; background: rgba(255, 215, 0, 0.15); border-radius: 8px;">
+                            <span style="font-size: 18px; font-weight: bold; color: #FFD700;">
+                                🏆 CULPOSO DE ORO (${p.Año || ''})
+                            </span>
+                        </div>`
+                    ),
+                    ...otrosPremios.map(p => 
+                        `<div style="margin: 8px 0; color: rgba(255,255,255,0.9);">
+                            🥇 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'PREMIO'} (${p.Año || ''})</span>
+                        </div>`
+                    )
+                ].join('');
+                
+                premiosHTML = `
+                    <div class="section-title" style="margin-top: 25px;">🏆 Palmarés</div>
+                    <div class="card" style="padding: 20px;">
+                        ${premiosListHTML}
+                    </div>
+                `;
+            }
+            
+            // Mapeo de fotos
+            const fotos = {
+                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
+                'Caamaño': 'https://i.imgur.com/N056gxD.png',
+                'Rama': 'https://i.imgur.com/8hsqIL8.png',
+                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
+                'Santi': 'https://i.imgur.com/iXHdIVT.png',
+                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
+                'Tirri': 'https://i.imgur.com/biqacxq.png',
+                'Toti': 'https://i.imgur.com/dXMpfSk.png',
+                'Cata': 'https://i.imgur.com/jhme4wb.png',
+                'Lola': 'https://i.imgur.com/qTP4eT2.png',
+                'Sami': 'https://i.imgur.com/HP41gaP.png',
+                'Leila': 'https://i.imgur.com/wcf3be4.png',
+                'Juli': 'https://i.imgur.com/cn779x3.png',
+                'Manu': 'https://i.imgur.com/BzDK66B.png',
+                'Matu': 'https://i.imgur.com/gNabdVm.png'
+            };
+            
+            const fotoUrl = fotos[usuario.Nombre] || '';
+            
+            // Verificar si es el propio perfil
+            const usuarioLogueado = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+            const esMiPerfil = usuarioLogueado && usuarioLogueado.Nombre === nombreCulposo;
+            
+            const html = `
+                ${!esMiPerfil ? `
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <button onclick="renderPerfil()" style="background: rgba(139, 77, 143, 0.3); border: 2px solid #8B4D8F; color: #FFD700; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer;">
+                            ← Volver a mi perfil
+                        </button>
+                    </div>
+                ` : ''}
+                
+                ${fotoUrl ? `
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <img src="${fotoUrl}" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #FFD700; object-fit: cover;">
+                    </div>
+                ` : ''}
+                
+                <div class="card" style="border-left-color: ${isPerfecto ? '#FFD700' : '#8B4D8F'};">
+                    <div class="card-title" style="font-size: 24px;">
+                        ${usuario.Nombre}
+                        ${isPerfecto ? '<span class="badge">👑 PERFECTO</span>' : ''}
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">${usuario.Asistencias}/${usuario['Total Juntadas']}</div>
+                        <div class="stat-label">Asistencias</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${percentage}%</div>
+                        <div class="stat-label">Porcentaje</div>
+                    </div>
+                </div>
+                
+                ${isPerfecto ? `
+                    <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700;">
+                        <div class="card-title">🏆 ¡CULPOSO PERFECTO!</div>
+                        <div class="card-details">No se perdió ninguna juntada. Un verdadero crack.</div>
+                    </div>
+                ` : ''}
+                
+                ${premiosHTML}
+            `;
+            
+            document.getElementById('perfilData').innerHTML = html;
+        }
+        
+        // Cambiar tabs
+        function showTab(tabName) {
+            // Actualizar tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Actualizar contenido
+            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        // Verificar si ya está logueado
+        window.onload = function() {
+            const savedEmail = localStorage.getItem('culpaUserEmail');
+            if (savedEmail) {
+                document.getElementById('emailInput').value = savedEmail;
+                login();
+            }
+        };
     </script>
 </body>
 </html>
