@@ -340,8 +340,9 @@
             
             <div class="tabs">
                 <div class="tab active" onclick="showTab('home')">🏠 Home</div>
-                <div class="tab" onclick="showTab('ranking')">🏆 Ranking</div>
+                <div class="tab" onclick="showTab('ranking')">📊 Ranking</div>
                 <div class="tab" onclick="showTab('juntadas')">📅 Eventos</div>
+                <div class="tab" onclick="showTab('awards')">🏆 Awards</div>
                 <div class="tab" onclick="showTab('perfil')">👤 Perfil</div>
             </div>
             
@@ -401,7 +402,24 @@
                 </div>
             </div>
             
-            <!-- PERFIL TAB -->
+            <!-- AWARDS TAB -->
+            <div id="awards" class="content">
+                <div class="section-title">🏆 LA CULPA Awards</div>
+                
+                <!-- Filtro de años -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <select id="yearFilter" onchange="renderAwards()" style="background: rgba(139, 77, 143, 0.3); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                        <option value="all">Todos los años</option>
+                    </select>
+                </div>
+                
+                <div id="awardsList" class="loading">
+                    <div class="spinner"></div>
+                    Cargando premios...
+                </div>
+            </div>
+            
+                        <!-- PERFIL TAB -->
             <div id="perfil" class="content">
                 <div class="section-title">👤 Mi Perfil</div>
                 <div id="perfilData" class="loading">
@@ -502,6 +520,7 @@
                 renderHome();
                 renderRanking();
                 renderJuntadas();
+                renderAwards();
                 renderPerfil();
                 
             } catch (error) {
@@ -1259,7 +1278,123 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
             document.getElementById('perfilData').innerHTML = html;
         }
         
-        // Cambiar tabs
+        // Renderizar AWARDS
+        function renderAwards() {
+            const yearFilter = document.getElementById('yearFilter').value;
+            
+            // Mapeo de fotos
+            const fotos = {
+                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
+                'Caamaño': 'https://i.imgur.com/N056gxD.png',
+                'Rama': 'https://i.imgur.com/8hsqIL8.png',
+                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
+                'Santi': 'https://i.imgur.com/iXHdIVT.png',
+                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
+                'Tirri': 'https://i.imgur.com/biqacxq.png',
+                'Toti': 'https://i.imgur.com/dXMpfSk.png',
+                'Cata': 'https://i.imgur.com/jhme4wb.png',
+                'Lola': 'https://i.imgur.com/qTP4eT2.png',
+                'Sami': 'https://i.imgur.com/HP41gaP.png',
+                'Leila': 'https://i.imgur.com/wcf3be4.png',
+                'Juli': 'https://i.imgur.com/cn779x3.png',
+                'Manu': 'https://i.imgur.com/BzDK66B.png',
+                'Matu': 'https://i.imgur.com/gNabdVm.png'
+            };
+            
+            // Filtrar premios por año
+            let premiosFiltrados = premiosData;
+            if (yearFilter !== 'all') {
+                premiosFiltrados = premiosData.filter(p => p.Año == yearFilter);
+            }
+            
+            // Obtener años únicos y llenar el select si no está lleno
+            const años = [...new Set(premiosData.map(p => p.Año))].sort((a, b) => b - a);
+            const select = document.getElementById('yearFilter');
+            if (select.options.length === 1) {
+                años.forEach(año => {
+                    const option = document.createElement('option');
+                    option.value = año;
+                    option.textContent = año;
+                    if (años[0] == año) option.selected = true;
+                    select.appendChild(option);
+                });
+            }
+            
+            // Separar Culposo de Oro del resto
+            const culposoOro = premiosFiltrados.filter(p => 
+                p.Tipo === 'Persona' && p.Terna && p.Terna.includes('CULPOSO DE ORO')
+            );
+            const premiosPersona = premiosFiltrados.filter(p => 
+                p.Tipo === 'Persona' && p.Terna && !p.Terna.includes('CULPOSO DE ORO')
+            );
+            const premiosJuntada = premiosFiltrados.filter(p => 
+                p.Tipo === 'Juntada'
+            );
+            
+            let html = '';
+            
+            // CULPOSO DE ORO (destacado)
+            if (culposoOro.length > 0) {
+                culposoOro.forEach(premio => {
+                    const fotoUrl = fotos[premio.Ganador] || '';
+                    html += `
+                        <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.05) 100%); padding: 30px; border-radius: 20px; margin-bottom: 30px; border: 3px solid #FFD700; text-align: center;">
+                            ${fotoUrl ? `
+                                <img src="${fotoUrl}" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid #FFD700; object-fit: cover; margin-bottom: 15px;">
+                            ` : ''}
+                            <div style="font-size: 40px; margin-bottom: 10px;">🏆</div>
+                            <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 10px;">CULPOSO DE ORO ${premio.Año || ''}</div>
+                            <div style="color: white; font-size: 28px; font-weight: bold;">${premio.Ganador || 'Sin ganador'}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // PREMIOS DE PERSONAS
+            if (premiosPersona.length > 0) {
+                html += '<div class="section-title" style="margin-top: 25px;">🥇 Premios Individuales</div>';
+                premiosPersona.forEach(premio => {
+                    const fotoUrl = fotos[premio.Ganador] || '';
+                    html += `
+                        <div class="card" style="display: flex; align-items: center; gap: 15px;">
+                            ${fotoUrl ? `
+                                <img src="${fotoUrl}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #FFD700; object-fit: cover;">
+                            ` : '<div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">🏅</div>'}
+                            <div style="flex: 1;">
+                                <div style="color: #FFD700; font-size: 14px; font-weight: bold; text-transform: uppercase;">${premio.Terna || 'Premio'}</div>
+                                <div style="color: white; font-size: 16px; font-weight: bold; margin-top: 3px;">${premio.Ganador || 'Sin ganador'}</div>
+                                ${premio.Año ? `<div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 3px;">${premio.Año}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // PREMIOS DE JUNTADAS
+            if (premiosJuntada.length > 0) {
+                html += '<div class="section-title" style="margin-top: 25px;">🎉 Mejores Juntadas</div>';
+                premiosJuntada.forEach(premio => {
+                    html += `
+                        <div class="card">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="font-size: 24px;">🏆</div>
+                                <div style="color: #FFD700; font-size: 14px; font-weight: bold; text-transform: uppercase; flex: 1;">${premio.Terna || 'Premio'}</div>
+                                ${premio.Año ? `<div style="color: rgba(255,255,255,0.6); font-size: 12px;">${premio.Año}</div>` : ''}
+                            </div>
+                            <div style="color: white; font-size: 16px; font-weight: bold;">${premio.Ganador || 'Sin ganador'}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (html === '') {
+                html = '<p style="color: rgba(255,255,255,0.6); text-align: center; padding: 40px;">No hay premios registrados para este año</p>';
+            }
+            
+            document.getElementById('awardsList').innerHTML = html;
+        }
+        
+                // Cambiar tabs
         function showTab(tabName) {
             // Actualizar tabs
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
