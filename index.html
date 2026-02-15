@@ -6,12 +6,12 @@
     <title>LA CULPA - App</title>
     
     <!-- Favicon y App Icons -->
-    <link rel="icon" type="image/png" href="https://i.imgur.com/w3mY5lZ.png">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/w3mY5lZ.png">
+    <link rel="icon" type="image/png" href="https://i.imgur.com/tq9wwwK.png">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/tq9wwwK.png">
     <meta name="theme-color" content="#8B4D8F">
     
     <!-- PWA Manifest -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkxBIENVTFBBIiwKICAic2hvcnRfbmFtZSI6ICJMYSBDdWxwYSIsCiAgImRlc2NyaXB0aW9uIjogIlJhbmtpbmcgZGUgQXNpc3RlbmNpYXMiLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFFMUUzRiIsCiAgInRoZW1lX2NvbG9yIjogIiM4QjREOEYiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaW1ndXIuY29tL3czbVk1bFoucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkxBIENVTFBBIiwKICAic2hvcnRfbmFtZSI6ICJMYSBDdWxwYSIsCiAgImRlc2NyaXB0aW9uIjogIlJhbmtpbmcgZGUgQXNpc3RlbmNpYXMiLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFFMUUzRiIsCiAgInRoZW1lX2NvbG9yIjogIiM4QjREOEYiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaW1ndXIuY29tL3RxOXd3d0sucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
     
     <style>
         * {
@@ -46,7 +46,7 @@
             width: 350px;
             height: 350px;
             margin: 0 auto 15px;
-            background: url('https://i.imgur.com/wpGfqwD.png') center/contain no-repeat;
+            background: url('https://i.imgur.com/tq9wwwK.png') center/contain no-repeat;
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -538,16 +538,19 @@
             
             // Últimas 3 juntadas
             const ultimas = juntadasData.slice(-3).reverse();
-            const html = ultimas.map(j => `
-                <div class="card">
-                    <div class="card-date">${j.Fecha || ''}</div>
-                    <div class="card-title">${j.Descripción || j.Descripcion || 'Juntada'}</div>
-                    <div class="card-details">
-                        <span>🏠 ${j.Host || 'Sin host'}</span>
-                        <span>👥 ${j['N° Asist'] || j['N° asistentes'] || '0'} asistentes</span>
+            const html = ultimas.map((j, idx) => {
+                const realIndex = juntadasData.length - 1 - idx;
+                return `
+                    <div class="card" onclick="verDetalleJuntada(${realIndex})" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        <div class="card-date">${j.Fecha || ''}</div>
+                        <div class="card-title">${j.Descripción || j.Descripcion || 'Juntada'}</div>
+                        <div class="card-details">
+                            <span>🏠 ${j.Host || 'Sin host'}</span>
+                            <span>👥 ${j['N° Asist'] || j['N° asistentes'] || '0'} asistentes</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             
             document.getElementById('ultimasJuntadas').innerHTML = html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>';
         }
@@ -658,13 +661,13 @@
                     ...culposoOro.map(p => 
                         `<div style="margin: 12px 0; padding: 12px; background: rgba(255, 215, 0, 0.15); border-radius: 8px;">
                             <span style="font-size: 18px; font-weight: bold; color: #FFD700;">
-                                🥇 CULPOSO DE ORO ${p.Año || ''}
+                                🏆 CULPOSO DE ORO ${p.Año || ''}
                             </span>
                         </div>`
                     ),
                     ...otrosPremios.map(p => 
                         `<div style="margin: 8px 0; color: rgba(255,255,255,0.9);">
-                            🥈 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'Premio'} del año ${p.Año || ''}</span>
+                            🥇 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'Premio'} del año ${p.Año || ''}</span>
                         </div>`
                     )
                 ].join('');
@@ -752,31 +755,73 @@
                 
                 // Verificar si el usuario asistió
                 const asistio = juntada[nombreUsuario] === '✓' || juntada[nombreUsuario] === 'TRUE';
+                const fotoJuntada = juntada['Foto Juntada'] || juntada['Foto juntada'] || '';
                 
                 return `
                     <div class="card" onclick="verDetalleJuntada(${realIndex})" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 10px;">
-                            <div style="flex: 1;">
-                                <div class="card-date">${juntada.Fecha || 'Fecha'}</div>
-                                <div class="card-title">${juntada.Descripción || juntada.Descripcion || 'Juntada'}</div>
-                                <div class="card-details">
-                                    <span>🏠 ${juntada.Host || 'Sin host'}</span>
-                                    <span>👥 ${juntada['N° Asist'] || juntada['N° Asistentes'] || juntada['N° asistentes'] || '0'}</span>
-                                </div>
+                        ${fotoJuntada ? `
+                            <div style="width: 100%; height: 150px; background-image: url('${fotoJuntada}'); background-size: cover; background-position: center; border-radius: 10px; margin-bottom: 15px;"></div>
+                        ` : ''}
+                        <div class="card-date">${juntada.Fecha || 'Fecha'}</div>
+                        <div class="card-title">${juntada.Descripción || juntada.Descripcion || 'Juntada'}</div>
+                        <div class="card-details" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                            <div>
+                                <span>🏠 ${juntada.Host || 'Sin host'}</span>
+                                <span style="margin-left: 10px;">👥 ${juntada['N° Asist'] || juntada['N° Asistentes'] || juntada['N° asistentes'] || '0'}</span>
                             </div>
                             ${nombreUsuario ? `
-                                <div style="min-width: 80px; text-align: center;">
-                                    <span style="display: inline-block; padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: bold; ${asistio ? 'background: rgba(76, 175, 80, 0.2); color: #4CAF50;' : 'background: rgba(244, 67, 54, 0.2); color: #f44336;'}">
-                                        ${asistio ? '✅ FUISTE' : '❌ NO FUISTE'}
-                                    </span>
-                                </div>
+                                <span style="display: inline-block; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; white-space: nowrap; ${asistio ? 'background: rgba(76, 175, 80, 0.2); color: #4CAF50;' : 'background: rgba(244, 67, 54, 0.2); color: #f44336;'}">
+                                    ${asistio ? '✅ FUISTE' : '❌ NO FUISTE'}
+                                </span>
                             ` : ''}
                         </div>
                     </div>
                 `;
             }).join('');
             
-            document.getElementById('juntadasList').innerHTML = html;
+            // Calcular estadísticas del usuario
+            let mensajeMotivacional = '';
+            if (nombreUsuario) {
+                const usuario = culpososData.find(c => c.Nombre === nombreUsuario);
+                if (usuario) {
+                    const totalJuntadas = parseInt(usuario['Total Juntadas']) || 0;
+                    const asistencias = parseInt(usuario.Asistencias) || 0;
+                    const porcentaje = totalJuntadas > 0 ? Math.round((asistencias / totalJuntadas) * 100) : 0;
+                    
+                    let mensaje = '';
+                    let emoji = '';
+                    let color = '';
+                    
+                    if (porcentaje < 40) {
+                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Estás MUY ausente loco, metele más onda.`;
+                        emoji = '😴';
+                        color = '#f44336';
+                    } else if (porcentaje < 70) {
+                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Venís bien, pero no te relajes.`;
+                        emoji = '💪';
+                        color = '#FF9800';
+                    } else if (porcentaje < 90) {
+                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Sos un culposo comprometido, seguí así.`;
+                        emoji = '🔥';
+                        color = '#4CAF50';
+                    } else {
+                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Sos un CULPOSO DE LEY, un verdadero legendario.`;
+                        emoji = '👑';
+                        color = '#FFD700';
+                    }
+                    
+                    mensajeMotivacional = `
+                        <div class="card" style="background: rgba(139, 77, 143, 0.2); border-left-color: ${color}; border-left-width: 4px; margin-top: 20px;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 40px; margin-bottom: 10px;">${emoji}</div>
+                                <div style="color: ${color}; font-weight: bold; font-size: 16px;">${mensaje}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            document.getElementById('juntadasList').innerHTML = html + mensajeMotivacional;
         }
         
         // Ver detalle de juntada
@@ -812,6 +857,10 @@
             
             const html = `
                 <div style="background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 30px; border-radius: 20px; margin-top: 60px; border: 2px solid rgba(139, 77, 143, 0.5);">
+                    ${juntada['Foto Juntada'] || juntada['Foto'] ? `
+                        <div style="width: 100%; max-width: 400px; height: 250px; margin: 0 auto 25px; border-radius: 15px; background-image: url('${juntada['Foto Juntada'] || juntada['Foto']}'); background-size: cover; background-position: center; border: 3px solid #FFD700;"></div>
+                    ` : ''}
+                    
                     <div style="text-align: center; margin-bottom: 25px;">
                         <div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;">${juntada.Fecha || 'Fecha'}</div>
                         <div style="color: white; font-size: 24px; font-weight: bold; margin-bottom: 10px;">${juntada.Descripción || juntada.Descripcion || 'Juntada'}</div>
