@@ -357,7 +357,9 @@
                         <div class="stat-label">Culposos</div>
                     </div>
                 </div>
-                    <div id="ultimasJuntadas" class="loading">
+                
+                <div class="section-title">🔥 Últimas Juntadas</div>
+                <div id="ultimasJuntadas" class="loading">
                     <div class="spinner"></div>
                     Cargando juntadas...
                 </div>
@@ -415,7 +417,7 @@
     <script>
         // CONFIGURACIÓN - ID DEL SHEET LA CULPAPP
         const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxtE7v2i2VV5OckqWdN9C3DFNKMNYGaTu4BMYgTS1qtu0RUdh7q9uZvUworV5062GtIA/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzFUKon0f1NsR3sPoRIvTuZK9wFpKgloKysq6AD4ZbazzBGlZd3Y1uy-r-cFmKwiwlUYA/exec';
         
         let currentUser = null;
         let juntadasData = [];
@@ -632,6 +634,21 @@
                 `;
             }
             
+            // Filtrar juntadas PASADAS (excluir futuras y la próxima)
+            const juntadasPasadas = juntadasData.filter((j, idx) => {
+                if (idx === proximaIndex) return false; // Excluir la próxima
+                
+                const fechaStr = j.Fecha;
+                if (!fechaStr) return true;
+                
+                const partes = fechaStr.split('/');
+                if (partes.length === 3) {
+                    const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
+                    return fecha < hoy; // Solo juntadas pasadas
+                }
+                return true;
+            });
+            
             // Últimas 3 juntadas PASADAS
             const ultimas = juntadasPasadas.slice(-3).reverse();
             const html = ultimas.map((j) => {
@@ -649,9 +666,9 @@
             
             const ultimasHTML = html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>';
             
-           document.getElementById('ultimasJuntadas').innerHTML = proximaHTML + 
-    (juntadasPasadas.length > 0 ? `<div class="section-title" style="margin-top: 25px;">🔥 Últimas Juntadas</div>` : '') + 
-    ultimasHTML;
+            document.getElementById('ultimasJuntadas').innerHTML = proximaHTML + (ultimas.length > 0 ? `
+                <div class="section-title" style="margin-top: 25px;">🔥 Últimas Juntadas</div>
+            ` : '') + ultimasHTML;
         }
         
         // Renderizar RANKING
@@ -852,8 +869,24 @@
             const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
             const nombreUsuario = usuario ? usuario.Nombre : '';
             
-            const html = juntadasData.slice().reverse().map((juntada, index) => {
-                const realIndex = juntadasData.length - 1 - index;
+            // Filtrar solo juntadas PASADAS
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            const juntadasPasadas = juntadasData.filter(juntada => {
+                const fechaStr = juntada.Fecha;
+                if (!fechaStr) return true;
+                
+                const partes = fechaStr.split('/');
+                if (partes.length === 3) {
+                    const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
+                    return fecha < hoy; // Solo pasadas
+                }
+                return true;
+            });
+            
+            const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
+                const realIndex = juntadasData.indexOf(juntada);
                 
                 // Verificar si el usuario asistió
                 const asistio = juntada[nombreUsuario] === '✓' || juntada[nombreUsuario] === 'TRUE';
