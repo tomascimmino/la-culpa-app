@@ -343,6 +343,7 @@
                 <div class="tab" onclick="showTab('ranking')">📊 Ranking</div>
                 <div class="tab" onclick="showTab('juntadas')">📅 Eventos</div>
                 <div class="tab" onclick="showTab('awards')">🏆 Awards</div>
+                <div class="tab" onclick="showTab('calculadora')">💰 Calculadora</div>
                 <div class="tab" onclick="showTab('perfil')">👤 Perfil</div>
             </div>
             
@@ -419,6 +420,23 @@
                     <div class="spinner"></div>
                     Cargando premios...
                 </div>
+            </div>
+            
+                        <!-- CALCULADORA TAB -->
+            <div id="calculadora" class="content">
+                <div class="section-title">💰 Calculadora de Gastos</div>
+                
+                <div id="gastosContainer"></div>
+                
+                <button onclick="agregarGasto()" style="width: 100%; margin: 20px 0; background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%); border: none; color: #FFD700; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                    ➕ Agregar Gasto
+                </button>
+                
+                <button onclick="calcularDivision()" style="width: 100%; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; color: #1E1E3F; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                    🧮 Calcular División
+                </button>
+                
+                <div id="resultadoCalculo" style="margin-top: 20px;"></div>
             </div>
             
                         <!-- PERFIL TAB -->
@@ -1447,6 +1465,235 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
             }
             
             document.getElementById('awardsList').innerHTML = html;
+        }
+        
+                // CALCULADORA DE GASTOS
+        let gastosArray = [];
+        
+        function agregarGasto() {
+            const id = Date.now();
+            gastosArray.push({
+                id: id,
+                quien: '',
+                concepto: '',
+                monto: 0,
+                consumidores: []
+            });
+            renderGastos();
+        }
+        
+        function eliminarGasto(id) {
+            gastosArray = gastosArray.filter(g => g.id !== id);
+            renderGastos();
+        }
+        
+        function renderGastos() {
+            const container = document.getElementById('gastosContainer');
+            
+            if (gastosArray.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
+                        <div style="font-size: 48px; margin-bottom: 15px;">💸</div>
+                        <div>No hay gastos agregados</div>
+                        <div style="font-size: 13px; margin-top: 8px;">Presioná "Agregar Gasto" para empezar</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const todosLosNombres = ['Toto', 'Caamaño', 'Rama', 'Zabala', 'Santi', 'Mateo', 'Tirri', 'Toti', 'Cata', 'Lola', 'Sami', 'Leila', 'Juli', 'Manu', 'Matu'];
+            
+            let html = '';
+            gastosArray.forEach((gasto, index) => {
+                html += `
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <div style="color: #FFD700; font-weight: bold;">Gasto ${index + 1}</div>
+                            <button onclick="eliminarGasto(${gasto.id})" style="background: rgba(244, 67, 54, 0.2); border: 2px solid #f44336; color: #f44336; padding: 5px 10px; border-radius: 5px; font-size: 12px; cursor: pointer;">
+                                ✕ Eliminar
+                            </button>
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <label style="color: rgba(255,255,255,0.8); font-size: 13px; display: block; margin-bottom: 5px;">¿Quién pagó?</label>
+                            <select onchange="gastosArray[${index}].quien = this.value" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 14px;">
+                                <option value="">Seleccionar...</option>
+                                ${todosLosNombres.map(n => `<option value="${n}" ${gasto.quien === n ? 'selected' : ''}>${n}</option>`).join('')}
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <label style="color: rgba(255,255,255,0.8); font-size: 13px; display: block; margin-bottom: 5px;">Concepto</label>
+                            <input type="text" value="${gasto.concepto}" oninput="gastosArray[${index}].concepto = this.value" placeholder="Ej: Carne, Pan, Carbón..." style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 14px;">
+                        </div>
+                        
+                        <div style="margin-bottom: 10px;">
+                            <label style="color: rgba(255,255,255,0.8); font-size: 13px; display: block; margin-bottom: 5px;">Monto ($)</label>
+                            <input type="number" value="${gasto.monto || ''}" oninput="gastosArray[${index}].monto = parseFloat(this.value) || 0" placeholder="0" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 14px;">
+                        </div>
+                        
+                        <div>
+                            <label style="color: rgba(255,255,255,0.8); font-size: 13px; display: block; margin-bottom: 8px;">¿Quiénes consumen/usan?</label>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                                ${todosLosNombres.map(nombre => `
+                                    <label style="display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.9); font-size: 13px; cursor: pointer;">
+                                        <input type="checkbox" ${gasto.consumidores.includes(nombre) ? 'checked' : ''} onchange="
+                                            if (this.checked) {
+                                                if (!gastosArray[${index}].consumidores.includes('${nombre}')) {
+                                                    gastosArray[${index}].consumidores.push('${nombre}');
+                                                }
+                                            } else {
+                                                gastosArray[${index}].consumidores = gastosArray[${index}].consumidores.filter(n => n !== '${nombre}');
+                                            }
+                                        " style="cursor: pointer;">
+                                        ${nombre}
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function calcularDivision() {
+            const resultado = document.getElementById('resultadoCalculo');
+            
+            // Validar
+            if (gastosArray.length === 0) {
+                resultado.innerHTML = '<div class="card" style="background: rgba(244, 67, 54, 0.2); border-left-color: #f44336;"><div style="color: #f44336;">⚠️ No hay gastos para calcular</div></div>';
+                return;
+            }
+            
+            for (let g of gastosArray) {
+                if (!g.quien || !g.concepto || g.monto <= 0 || g.consumidores.length === 0) {
+                    resultado.innerHTML = '<div class="card" style="background: rgba(244, 67, 54, 0.2); border-left-color: #f44336;"><div style="color: #f44336;">⚠️ Completá todos los campos de cada gasto</div></div>';
+                    return;
+                }
+            }
+            
+            // Calcular balance de cada persona
+            const balances = {};
+            const todosLosNombres = ['Toto', 'Caamaño', 'Rama', 'Zabala', 'Santi', 'Mateo', 'Tirri', 'Toti', 'Cata', 'Lola', 'Sami', 'Leila', 'Juli', 'Manu', 'Matu'];
+            todosLosNombres.forEach(n => balances[n] = 0);
+            
+            // Por cada gasto
+            gastosArray.forEach(gasto => {
+                const costoPorPersona = gasto.monto / gasto.consumidores.length;
+                
+                // Los que consumen deben pagar
+                gasto.consumidores.forEach(consumidor => {
+                    balances[consumidor] -= costoPorPersona;
+                });
+                
+                // El que pagó debe recibir
+                balances[gasto.quien] += gasto.monto;
+            });
+            
+            // Separar quién debe y quién recibe
+            const deudores = [];
+            const acreedores = [];
+            
+            Object.entries(balances).forEach(([nombre, balance]) => {
+                if (Math.abs(balance) < 1) return; // Ignorar centavos
+                
+                if (balance < 0) {
+                    deudores.push({ nombre, monto: Math.abs(balance) });
+                } else if (balance > 0) {
+                    acreedores.push({ nombre, monto: balance });
+                }
+            });
+            
+            // Generar transferencias óptimas
+            const transferencias = [];
+            const deudoresCopy = [...deudores];
+            const acreedoresCopy = [...acreedores];
+            
+            while (deudoresCopy.length > 0 && acreedoresCopy.length > 0) {
+                const deudor = deudoresCopy[0];
+                const acreedor = acreedoresCopy[0];
+                
+                const monto = Math.min(deudor.monto, acreedor.monto);
+                
+                transferencias.push({
+                    de: deudor.nombre,
+                    a: acreedor.nombre,
+                    monto: monto
+                });
+                
+                deudor.monto -= monto;
+                acreedor.monto -= monto;
+                
+                if (deudor.monto < 1) deudoresCopy.shift();
+                if (acreedor.monto < 1) acreedoresCopy.shift();
+            }
+            
+            // Mostrar resultado
+            const totalGastado = gastosArray.reduce((sum, g) => sum + g.monto, 0);
+            
+            let html = `
+                <div class="card" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%); border-left-color: #4CAF50;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 5px;">TOTAL GASTADO</div>
+                        <div style="font-size: 32px; font-weight: bold; color: #4CAF50;">$${totalGastado.toLocaleString('es-AR')}</div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;">
+                        <div style="color: #FFD700; font-weight: bold; margin-bottom: 15px; text-align: center;">💸 TRANSFERENCIAS A REALIZAR</div>
+                        ${transferencias.map(t => `
+                            <div style="background: rgba(139, 77, 143, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="color: white; font-size: 14px;">
+                                    <span style="font-weight: bold;">${t.de}</span> → <span style="font-weight: bold; color: #4CAF50;">${t.a}</span>
+                                </div>
+                                <div style="color: #FFD700; font-weight: bold; font-size: 16px;">$${Math.round(t.monto).toLocaleString('es-AR')}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <button onclick="compartirResultado()" style="width: 100%; margin-top: 15px; background: rgba(37, 211, 102, 0.2); border: 2px solid #25D366; color: #25D366; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                        📱 Compartir por WhatsApp
+                    </button>
+                </div>
+            `;
+            
+            resultado.innerHTML = html;
+        }
+        
+        function compartirResultado() {
+            const totalGastado = gastosArray.reduce((sum, g) => sum + g.monto, 0);
+            
+            let texto = `💰 *DIVISIÓN DE GASTOS - LA CULPA*\n\n`;
+            texto += `Total gastado: $${totalGastado.toLocaleString('es-AR')}\n\n`;
+            
+            gastosArray.forEach((g, i) => {
+                texto += `${i + 1}. ${g.concepto}: $${g.monto.toLocaleString('es-AR')} (${g.quien})\n`;
+            });
+            
+            texto += `\n📱 *TRANSFERENCIAS:*\n`;
+            
+            // Recalcular transferencias
+            const balances = {};
+            const todosLosNombres = ['Toto', 'Caamaño', 'Rama', 'Zabala', 'Santi', 'Mateo', 'Tirri', 'Toti', 'Cata', 'Lola', 'Sami', 'Leila', 'Juli', 'Manu', 'Matu'];
+            todosLosNombres.forEach(n => balances[n] = 0);
+            
+            gastosArray.forEach(gasto => {
+                const costoPorPersona = gasto.monto / gasto.consumidores.length;
+                gasto.consumidores.forEach(c => balances[c] -= costoPorPersona);
+                balances[gasto.quien] += gasto.monto;
+            });
+            
+            Object.entries(balances).forEach(([nombre, balance]) => {
+                if (balance < -1) {
+                    texto += `${nombre} debe: $${Math.round(Math.abs(balance)).toLocaleString('es-AR')}\n`;
+                } else if (balance > 1) {
+                    texto += `${nombre} recibe: $${Math.round(balance).toLocaleString('es-AR')}\n`;
+                }
+            });
+            
+            const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+            window.open(url, '_blank');
         }
         
                 // Cambiar tabs
