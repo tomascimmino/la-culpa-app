@@ -1081,9 +1081,9 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
                 botonesHTML = `
                     <div style="text-align: center; padding: 20px; background: ${esNegativo ? 'rgba(244, 67, 54, 0.2)' : 'rgba(76, 175, 80, 0.2)'}; border-radius: 10px;">
                         <div style="font-size: 18px; font-weight: bold; color: ${esNegativo ? '#f44336' : '#4CAF50'}; margin-bottom: ${esNegativo ? '5px' : '10px'};">
-                            ${esNegativo ? 'Ya confirmaste' : '✅ Ya confirmaste'}
+                            ${esNegativo ? 'No vas. Los trolos se abstuvieron. Saludos!' : '✅ Ya confirmaste tu presencia.'}
                         </div>
-                        ${esNegativo ? '<div style="font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 10px;">Los trolos se abstuvieron. Saludos!.</div>' : ''}
+                        ${esNegativo ? '' : ''}
                         <button onclick="mostrarEdicion()" style="margin-top: 10px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
                             Editar
                         </button>
@@ -1160,10 +1160,10 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
                     <div style="color: white; font-size: 14px; font-weight: bold; margin-bottom: 10px;">Cambiar respuesta:</div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <button onclick="confirmarAsistencia(true)" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border: none; color: white; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                            ✅ SÍ IRÉ
+                            ✅ VOY
                         </button>
                         <button onclick="confirmarAsistencia(false)" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; color: white; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                            ❌ NO IRÉ
+                            ❌ NO VOY
                         </button>
                     </div>
                 </div>
