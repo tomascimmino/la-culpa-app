@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,7 +16,7 @@
     <style>
         * {
             margin: 0;
-            padding: 0;macros/s/AKfycbyPX74FZz77ImsOY-nvdswh-bo5UB8rb3_zU1y8G6UBG6o9jwaVY9hKxsMVzaF9OLvmxw/exec
+            padding: 0;
             box-sizing: border-box;
         }
         
@@ -341,8 +340,9 @@
             
             <div class="tabs">
                 <div class="tab active" onclick="showTab('home')">🏠 Home</div>
-                <div class="tab" onclick="showTab('ranking')">🏆 Ranking</div>
+                <div class="tab" onclick="showTab('ranking')">📊 Ranking</div>
                 <div class="tab" onclick="showTab('juntadas')">📅 Eventos</div>
+                <div class="tab" onclick="showTab('awards')">🏆 Awards</div>
                 <div class="tab" onclick="showTab('perfil')">👤 Perfil</div>
             </div>
             
@@ -402,7 +402,26 @@
                 </div>
             </div>
             
-            <!-- PERFIL TAB -->
+            <!-- AWARDS TAB -->
+            <div id="awards" class="content">
+                <div class="section-title">🏆 LA CULPA Awards</div>
+                
+                <!-- Filtro de años -->
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <select id="yearFilter" onchange="renderAwards()" style="background: rgba(139, 77, 143, 0.3); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                        <option value="2025" selected>2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                    </select>
+                </div>
+                
+                <div id="awardsList" class="loading">
+                    <div class="spinner"></div>
+                    Cargando premios...
+                </div>
+            </div>
+            
+                        <!-- PERFIL TAB -->
             <div id="perfil" class="content">
                 <div class="section-title">👤 Mi Perfil</div>
                 <div id="perfilData" class="loading">
@@ -416,7 +435,7 @@
     <script>
         // CONFIGURACIÓN - ID DEL SHEET LA CULPAPP
         const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
-       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPX74FZz77ImsOY-nvdswh-bo5UB8rb3_zU1y8G6UBG6o9jwaVY9hKxsMVzaF9OLvmxw/exec';
+       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQhwhydmCUpq6hn47yd4ebgoliQ1ibZaJ7bSvVq1rssInaTPv_gsHNnJ_DvKr0Wh-5gQ/exec';
         
         let currentUser = null;
         let juntadasData = [];
@@ -503,6 +522,7 @@
                 renderHome();
                 renderRanking();
                 renderJuntadas();
+                renderAwards();
                 renderPerfil();
                 
             } catch (error) {
@@ -1024,21 +1044,64 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
             
             if (!usuario) return;
             
-            // CAMBIO 1: Guardar el índice para usarlo después
+            // Guardar el índice para usarlo después
             window.proximaJuntadaIndex = indexJuntada;
+            
+            // Definir quiénes son culposos vs novias
+            const culposos = ['Toto', 'Caamaño', 'Rama', 'Zabala', 'Santi', 'Mateo', 'Tirri', 'Toti'];
             
             // Contar confirmaciones
             const confirmados = [];
             const noConfirmados = [];
+            let culpososConfirmados = 0;
             
             culpososData.forEach(c => {
                 const respuesta = juntada[c.Nombre];
                 if (respuesta === '✓') {
                     confirmados.push(c.Nombre);
+                    if (culposos.includes(c.Nombre)) culpososConfirmados++;
                 } else if (respuesta === '✗') {
                     noConfirmados.push(c.Nombre);
                 }
             });
+            
+            const total = culpososData.length;
+            const hayQuorum = culpososConfirmados >= 4;
+            
+            // Verificar si el usuario ya confirmó
+            const yaConfirmo = juntada[usuario.Nombre] === '✓' || juntada[usuario.Nombre] === '✗';
+            const confirmacion = juntada[usuario.Nombre];
+            
+            let botonesHTML = '';
+            if (yaConfirmo) {
+                // Ya confirmó - mostrar mensaje y botón editar
+                const esNegativo = confirmacion === '✗';
+                botonesHTML = `
+                    <div style="text-align: center; padding: 20px; background: ${esNegativo ? 'rgba(244, 67, 54, 0.2)' : 'rgba(76, 175, 80, 0.2)'}; border-radius: 10px;">
+                        <div style="font-size: 18px; font-weight: bold; color: ${esNegativo ? '#f44336' : '#4CAF50'}; margin-bottom: ${esNegativo ? '5px' : '10px'};">
+                            ${esNegativo ? 'Ya confirmaste' : '✅ Ya confirmaste'}
+                        </div>
+                        ${esNegativo ? '<div style="font-size: 13px; color: rgba(255,255,255,0.7); margin-bottom: 10px;">Los trolos se abstuvieron. Saludos!.</div>' : ''}
+                        <button onclick="mostrarEdicionConfirmacion()" style="margin-top: 10px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                            Editar
+                        </button>
+                    </div>
+                `;
+            } else {
+                // No confirmó - mostrar botones
+                botonesHTML = `
+                    <div style="color: white; font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 15px;">¿Vas a asistir?</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <button onclick="confirmarAsistencia(true)" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                            ✅ ASISTIRÉ
+                        </button>
+                        <button onclick="confirmarAsistencia(false)" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                            ❌ NO ASISTIRÉ
+                        </button>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; color: rgba(255,255,255,0.5); font-size: 11px; font-style: italic;">(trolos abstenerse)</div>
+                `;
+            }
             
             const html = `
                 <div style="background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 30px; border-radius: 20px; margin-top: 60px; border: 2px solid rgba(139, 77, 143, 0.5);">
@@ -1048,16 +1111,17 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
                         <div style="color: rgba(255,255,255,0.7); font-size: 14px;">🏠 ${juntada.Host || 'Sin host'}</div>
                     </div>
                     
-                    <div style="margin: 25px 0;">
-                        <div style="color: white; font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 15px;">¿Vas a asistir?</div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                            <button onclick="confirmarAsistencia(true)" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                                ✅ ASISTIRÉ
-                            </button>
-                            <button onclick="confirmarAsistencia(false)" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                                ❌ NO ASISTIRÉ
-                            </button>
+                    <!-- QUORUM -->
+                    <div style="background: ${hayQuorum ? 'rgba(76, 175, 80, 0.15)' : 'rgba(139, 77, 143, 0.15)'}; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 2px solid ${hayQuorum ? '#4CAF50' : 'rgba(139, 77, 143, 0.5)'};">
+                        <div style="text-align: center;">
+                            <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 5px;">CONFIRMACIONES</div>
+                            <div style="font-size: 28px; font-weight: bold; color: ${hayQuorum ? '#4CAF50' : '#FFD700'};">${confirmados.length}/${total}</div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 5px;">Culposos: ${culpososConfirmados}/8 ${hayQuorum ? '✅ HAY QUORUM' : '⏳ Sin quorum'}</div>
                         </div>
+                    </div>
+                    
+                    <div style="margin: 25px 0;">
+                        ${botonesHTML}
                     </div>
                     
                     ${confirmados.length > 0 || noConfirmados.length > 0 ? `
@@ -1083,6 +1147,25 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
             
             document.getElementById('modalConfirmarContent').innerHTML = html;
             document.getElementById('modalConfirmar').style.display = 'block';
+        }
+        
+        // Mostrar botones de edición
+        function mostrarEdicionConfirmacion() {
+            const mensajeDiv = document.getElementById('mensajeConfirmacion');
+            mensajeDiv.style.display = 'block';
+            mensajeDiv.innerHTML = `
+                <div style="background: rgba(139, 77, 143, 0.2); padding: 15px; border-radius: 10px;">
+                    <div style="color: white; font-size: 14px; font-weight: bold; margin-bottom: 10px;">Cambiar respuesta:</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button onclick="confirmarAsistencia(true)" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border: none; color: white; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                            ✅ SÍ IRÉ
+                        </button>
+                        <button onclick="confirmarAsistencia(false)" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; color: white; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                            ❌ NO IRÉ
+                        </button>
+                    </div>
+                </div>
+            `;
         }
         
         // Cerrar modal confirmar
@@ -1258,6 +1341,104 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
             `;
             
             document.getElementById('perfilData').innerHTML = html;
+        }
+        
+        // Renderizar AWARDS
+        function renderAwards() {
+            const yearFilter = document.getElementById('yearFilter').value;
+            
+            // Mapeo de fotos
+            const fotos = {
+                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
+                'Caamaño': 'https://i.imgur.com/N056gxD.png',
+                'Rama': 'https://i.imgur.com/8hsqIL8.png',
+                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
+                'Santi': 'https://i.imgur.com/iXHdIVT.png',
+                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
+                'Tirri': 'https://i.imgur.com/biqacxq.png',
+                'Toti': 'https://i.imgur.com/dXMpfSk.png',
+                'Cata': 'https://i.imgur.com/jhme4wb.png',
+                'Lola': 'https://i.imgur.com/qTP4eT2.png',
+                'Sami': 'https://i.imgur.com/HP41gaP.png',
+                'Leila': 'https://i.imgur.com/wcf3be4.png',
+                'Juli': 'https://i.imgur.com/cn779x3.png',
+                'Manu': 'https://i.imgur.com/BzDK66B.png',
+                'Matu': 'https://i.imgur.com/gNabdVm.png'
+            };
+            
+            // Filtrar premios por año
+            const premiosFiltrados = premiosData.filter(p => p.Año == yearFilter);
+            
+            // Separar Culposo de Oro del resto
+            const culposoOro = premiosFiltrados.filter(p => 
+                p.Tipo === 'Persona' && p.Terna && p.Terna.includes('CULPOSO DE ORO')
+            );
+            const premiosPersona = premiosFiltrados.filter(p => 
+                p.Tipo === 'Persona' && p.Terna && !p.Terna.includes('CULPOSO DE ORO')
+            );
+            const premiosJuntada = premiosFiltrados.filter(p => 
+                p.Tipo === 'Juntada'
+            );
+            
+            let html = '';
+            
+            // CULPOSO DE ORO (destacado)
+            if (culposoOro.length > 0) {
+                culposoOro.forEach(premio => {
+                    const fotoUrl = fotos[premio.Ganador] || '';
+                    html += `
+                        <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.05) 100%); padding: 30px; border-radius: 20px; margin-bottom: 30px; border: 3px solid #FFD700; text-align: center;">
+                            ${fotoUrl ? `
+                                <img src="${fotoUrl}" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid #FFD700; object-fit: cover; margin-bottom: 15px;">
+                            ` : ''}
+                            <div style="font-size: 40px; margin-bottom: 10px;">🏆</div>
+                            <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 10px;">CULPOSO DE ORO ${premio.Año || ''}</div>
+                            <div style="color: white; font-size: 28px; font-weight: bold;">${premio.Ganador || 'Sin ganador'}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // PREMIOS DE PERSONAS
+            if (premiosPersona.length > 0) {
+                html += '<div class="section-title" style="margin-top: 25px;">🥇 Premios Individuales</div>';
+                premiosPersona.forEach(premio => {
+                    const fotoUrl = fotos[premio.Ganador] || '';
+                    html += `
+                        <div class="card" style="display: flex; align-items: center; gap: 15px;">
+                            ${fotoUrl ? `
+                                <img src="${fotoUrl}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #FFD700; object-fit: cover;">
+                            ` : '<div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">🏅</div>'}
+                            <div style="flex: 1;">
+                                <div style="color: #FFD700; font-size: 14px; font-weight: bold; text-transform: uppercase;">${premio.Terna || 'Premio'}</div>
+                                <div style="color: white; font-size: 16px; font-weight: bold; margin-top: 3px;">${premio.Ganador || 'Sin ganador'}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // PREMIOS DE JUNTADAS
+            if (premiosJuntada.length > 0) {
+                html += '<div class="section-title" style="margin-top: 25px;">🎉 Mejores Juntadas</div>';
+                premiosJuntada.forEach(premio => {
+                    html += `
+                        <div class="card">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="font-size: 24px;">🏆</div>
+                                <div style="color: #FFD700; font-size: 14px; font-weight: bold; text-transform: uppercase; flex: 1;">${premio.Terna || 'Premio'}</div>
+                            </div>
+                            <div style="color: white; font-size: 16px; font-weight: bold;">${premio.Ganador || 'Sin ganador'}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (html === '') {
+                html = '<p style="color: rgba(255,255,255,0.6); text-align: center; padding: 40px;">No hay premios registrados para este año</p>';
+            }
+            
+            document.getElementById('awardsList').innerHTML = html;
         }
         
         // Cambiar tabs
