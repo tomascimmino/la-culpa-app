@@ -351,12 +351,12 @@
             </div>
             
             <div class="tabs">
-                <div class="tab active" onclick="showTab('home')">🏠 Home</div>
-                <div class="tab" onclick="showTab('ranking')">📊 Ranking</div>
-                <div class="tab" onclick="showTab('juntadas')">📅 Eventos</div>
-                <div class="tab" onclick="showTab('awards')">🏆 Awards</div>
-                <div class="tab" onclick="showTab('calculadora')">💰Compras</div>
-                <div class="tab" onclick="showTab('perfil')">👤 Perfil</div>
+                <div class="tab active" onclick="showTab('home')">🏠<br>Home</div>
+                <div class="tab" onclick="showTab('ranking')">📊<br>Ranking</div>
+                <div class="tab" onclick="showTab('juntadas')">📅<br>Eventos</div>
+                <div class="tab" onclick="showTab('awards')">🏆<br>Awards</div>
+                <div class="tab" onclick="showTab('calculadora')">💰<br>Calc</div>
+                <div class="tab" onclick="showTab('perfil')">👤<br>Perfil</div>
             </div>
             
             <!-- HOME TAB -->
@@ -653,7 +653,7 @@
                 const confirmacion = proximaJuntada[usuario.Nombre];
                 
                 proximaHTML = `
-                    <div class="section-title" style="margin-top: 25px;">🎯 Próxima Juntada</div>
+                    <div class="section-title" style="margin-top: 10px;">🎯 Próxima Juntada</div>
                     <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700; border-left-width: 4px;">
                         <div class="card-date">${proximaJuntada.Fecha}</div>
                         <div class="card-title" style="font-size: 20px;">${proximaJuntada.Descripción || proximaJuntada.Descripcion}</div>
@@ -679,7 +679,7 @@
             } else if (usuario) {
                 // No hay próxima juntada
                 proximaHTML = `
-                    <div class="section-title" style="margin-top: 25px;">🎯 Próxima Juntada</div>
+                    <div class="section-title" style="margin-top: 10px;">🎯 Próxima Juntada</div>
                     <div class="card" style="background: rgba(139, 77, 143, 0.1); text-align: center;">
                         <div style="font-size: 40px; margin-bottom: 10px;">📅</div>
                         <div class="card-title" style="font-size: 16px; color: rgba(255,255,255,0.7);">
@@ -696,8 +696,12 @@
             const ultimas = juntadasPasadas.slice(-3).reverse();
             const html = ultimas.map((j) => {
                 const realIndex = juntadasData.indexOf(j);
+                const fotoJuntada = j['Foto Juntada'] || j['Foto juntada'] || '';
                 return `
                     <div class="card" onclick="verDetalleJuntada(${realIndex})" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                        ${fotoJuntada ? `
+                            <div style="width: 100%; height: 120px; background-image: url('${fotoJuntada}'); background-size: cover; background-position: center; border-radius: 10px; margin-bottom: 12px;"></div>
+                        ` : ''}
                         <div class="card-date">${j.Fecha || ''}</div>
                         <div class="card-title">${j.Descripción || j.Descripcion || 'Juntada'}</div>
                         <div class="card-details">
@@ -711,7 +715,7 @@
             const ultimasHTML = html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>';
             
            document.getElementById('ultimasJuntadas').innerHTML = proximaHTML + 
-    (juntadasPasadas.length > 0 ? `<div class="section-title" style="margin-top: 25px;">🔥 Últimas Juntadas</div>` : '') + 
+    (juntadasPasadas.length > 0 ? `<div class="section-title" style="margin-top: 25px;">🔥 Juntadas en 2026</div>` : '') + 
     ultimasHTML;
         }
         
@@ -782,6 +786,13 @@
             }
             
             const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
+            
+            // Colores según asistencia
+            let colorAsistencia = '#f44336'; // Rojo
+            if (percentage >= 100) colorAsistencia = '#4CAF50'; // Verde fuerte
+            else if (percentage >= 90) colorAsistencia = '#8BC34A'; // Verde claro
+            else if (percentage >= 60) colorAsistencia = '#FFD700'; // Amarillo
+            else if (percentage >= 35) colorAsistencia = '#FF9800'; // Naranja
             const isPerfecto = percentage == 100;
             
             // Mapeo de fotos - TODOS
@@ -856,11 +867,11 @@
                 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-number">${usuario.Asistencias}/${usuario['Total Juntadas']}</div>
+                        <div class="stat-number" style="color: ${colorAsistencia};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div>
                         <div class="stat-label">Asistencias</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number">${percentage}%</div>
+                        <div class="stat-number" style="color: ${colorAsistencia};">${percentage}%</div>
                         <div class="stat-label">Porcentaje</div>
                     </div>
                 </div>
