@@ -1157,7 +1157,7 @@
                     <div style="color:#FFD700;font-weight:bold;margin-bottom:15px;text-align:center;"> TRANSFERENCIAS A REALIZAR</div>
                     ${trans.map(t=>`<div style="background:rgba(139,77,143,0.2);padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><div style="color:white;font-size:14px;"><span style="font-weight:bold;">${t.de}</span> → <span style="font-weight:bold;color:#4CAF50;">${t.a}</span></div><div style="color:#FFD700;font-weight:bold;font-size:16px;">$${Math.round(t.monto).toLocaleString('es-AR')}</div></div>`).join('')}
                 </div>
-                ${(()=>{ const acreedores=[...new Set(trans.map(t=>t.a))]; const aliases=acreedores.map(n=>{const a=getAlias(n);return a?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);"><span style="color:rgba(255,255,255,0.8);font-weight:bold;">${n}</span><span style="color:#FFD700;">💳 ${a}</span></div>`:'';}).filter(Boolean).join(''); return aliases?`<div style="margin-top:15px;padding:12px;background:rgba(255,215,0,0.08);border-radius:8px;border:1px solid rgba(255,215,0,0.3);"><div style="color:#FFD700;font-size:12px;font-weight:bold;text-transform:uppercase;margin-bottom:8px;">Alias para transferir</div>${aliases}</div>`:''; })()}
+                ${(()=>{ const acreedores=[...new Set(trans.map(t=>t.a))]; const aliases=acreedores.map(n=>{const a=getAlias(n);return a?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);"><span style="color:rgba(255,255,255,0.8);font-weight:bold;">${n}</span><span style="color:#FFD700;"> ${a}</span></div>`:'';}).filter(Boolean).join(''); return aliases?`<div style="margin-top:15px;padding:12px;background:rgba(255,215,0,0.08);border-radius:8px;border:1px solid rgba(255,215,0,0.3);"><div style="color:#FFD700;font-size:12px;font-weight:bold;text-transform:uppercase;margin-bottom:8px;">Alias para transferir</div>${aliases}</div>`:''; })()}
                 <button onclick="compartirResultado()" style="width:100%;margin-top:15px;background:rgba(37,211,102,0.2);border:2px solid #25D366;color:#25D366;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">📱 Compartir por WhatsApp</button>
             </div>`;
     }
@@ -1183,8 +1183,8 @@
         transWA.forEach(t=>{ txt+=`${t.de} → ${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}\n`; });
         // Aliases de quienes reciben, una vez al final
         const acreedoresWA=[...new Set(transWA.map(t=>t.a))];
-        const aliasesWA=acreedoresWA.map(n=>{const a=getAlias(n);return a?`${n}: 💳 ${a}`:null;}).filter(Boolean);
-        if(aliasesWA.length){ txt+=`\n💳 *ALIAS:*\n`+aliasesWA.join('\n'); }
+        const aliasesWA=acreedoresWA.map(n=>{const a=getAlias(n);return a?`${n}: ${a}`:null;}).filter(Boolean);
+        if(aliasesWA.length){ txt+=`\n *ALIAS:*\n`+aliasesWA.join('\n'); }
 
         window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
     }
