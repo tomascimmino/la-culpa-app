@@ -496,7 +496,7 @@
             const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
             return `
                 <div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    ${foto ? `<div style="width:100%;height:120px;background-image:url('${foto}');background-size:cover;background-position:center;border-radius:10px;margin-bottom:12px;"></div>` : ''}
+                    ${foto ? `<div style="width:100%;border-radius:10px;margin-bottom:12px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:180px;object-fit:cover;display:block;"></div>` : ''}
                     <div class="card-date">${j.Fecha||''}</div>
                     <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
                     <div class="card-details">
@@ -525,7 +525,7 @@
                         ${!foto?'🧔':''}
                     </div>
                     <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
-                        <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge">👑 PERFECTO</span>':''}${(()=>{const r=calcularRacha(c.Nombre);return r>=10?'<span class="badge" style="background:#FF6600;color:white;">🔥 '+r+' seguidas</span>':''})()}</div>
+                        <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge">👑 PERFECTO</span>':''}${(()=>{const r=calcularRacha(c.Nombre);if(r>=10)return'<span class="badge" style="background:#FF6600;color:white;">🔥 '+r+' en racha</span>';if(r>=5)return'<span class="badge" style="background:#CC9900;color:white;">⚡ '+r+' en racha</span>';return'';})()}</div>
                         <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
                     </div>
                     <div class="rank-percentage" style="color:${(()=>{const p=parseFloat(pct);if(p>=90)return'#4CAF50';if(p>=75)return'#8BC34A';if(p>=60)return'#FFD700';if(p>=45)return'#FF9800';return'#f44336';})()}">${pct}%</div>
@@ -552,7 +552,7 @@
             const foto = j['Foto Juntada']||j['Foto juntada']||'';
             return `
                 <div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    ${foto?`<div style="width:100%;height:150px;background-image:url('${foto}');background-size:cover;background-position:center;border-radius:10px;margin-bottom:15px;"></div>`:''}
+                    ${foto?`<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>`:''}
                     <div class="card-date">${j.Fecha||'Fecha'}</div>
                     <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
                     <div class="card-details" style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
@@ -971,8 +971,9 @@
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${pct}%</div><div class="stat-label">Porcentaje</div></div>
             </div>
             ${isPerfecto?`<div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.1) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;"><div class="card-title">🏆 ¡CULPOSO PERFECTO!</div><div class="card-details">${esMiPerfil?'No te perdiste ninguna juntada. Sos un crack.':'No se perdió ninguna juntada. Un verdadero crack.'}</div></div>`:''}
-            ${(()=>{ const r=calcularRacha(usuario.Nombre); if(r<10) return ''; return `<div class="card" style="background:linear-gradient(135deg,rgba(255,100,0,0.15) 0%,rgba(255,60,0,0.05) 100%);border-left-color:#FF6600;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">🔥</div><div><div class="card-title" style="color:#FF6600;">¡${r} EN RACHA!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} juntadas seguidas sin faltar. Una máquina.</div></div></div></div>`; })()}
+            ${(()=>{ const r=calcularRacha(usuario.Nombre); if(r>=10) return `<div class="card" style="background:linear-gradient(135deg,rgba(255,100,0,0.15) 0%,rgba(255,60,0,0.05) 100%);border-left-color:#FF6600;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">🔥</div><div><div class="card-title" style="color:#FF6600;">¡${r} EN RACHA!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} juntadas seguidas sin faltar. Una máquina.</div></div></div></div>`; if(r>=5) return `<div class="card" style="background:linear-gradient(135deg,rgba(204,153,0,0.15) 0%,rgba(204,153,0,0.05) 100%);border-left-color:#CC9900;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">⚡</div><div><div class="card-title" style="color:#CC9900;">¡${r} en racha!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} seguidas. Va tomando ritmo.</div></div></div></div>`; return ''; })()}
             ${renderHostPanel(usuario.Nombre)}
+            ${renderHostDelMesPanel(usuario.Nombre)}
             ${premiosHTML}
             ${esMiPerfil?`<div class="section-title">📅 Mi Participación</div><div class="card" onclick="showTab('juntadas',document.querySelectorAll('.tab')[2])" style="cursor:pointer;text-align:center;background:linear-gradient(135deg,rgba(139,77,143,0.2) 0%,rgba(139,77,143,0.1) 100%);"><div class="card-title" style="color:#FFD700;font-size:16px;">📊 Ver todas mis juntadas →</div><div class="card-details" style="margin-top:5px;">Revisá tu historial completo de asistencias</div></div>`:''}`;
     }
@@ -994,7 +995,7 @@
             const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
             return `
                 <div onclick="verDetalleJuntada(${ri})" style="cursor:pointer;background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);border-radius:12px;overflow:hidden;border:2px solid rgba(139,77,143,0.3);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
-                    ${foto ? `<div style="width:100%;height:80px;background-image:url('${foto}');background-size:cover;background-position:center;"></div>` : `<div style="width:100%;height:80px;background:linear-gradient(135deg,rgba(139,77,143,0.3) 0%,rgba(107,56,112,0.3) 100%);display:flex;align-items:center;justify-content:center;font-size:28px;">🏠</div>`}
+                    ${foto ? `<div style="width:100%;overflow:hidden;border-radius:8px 8px 0 0;"><img src="${foto}" style="width:100%;height:90px;object-fit:cover;display:block;"></div>` : `<div style="width:100%;height:80px;background:linear-gradient(135deg,rgba(139,77,143,0.3) 0%,rgba(107,56,112,0.3) 100%);display:flex;align-items:center;justify-content:center;font-size:28px;">🏠</div>`}
                     <div style="padding:10px;">
                         <div style="color:#FFD700;font-size:10px;font-weight:bold;">${j.Fecha||''}</div>
                         <div style="color:white;font-size:12px;font-weight:bold;margin-top:3px;line-height:1.3;">${j.Descripción||j.Descripcion||'Juntada'}</div>
@@ -1062,6 +1063,54 @@
     function getAlias(nombre) {
         const c = culpososData.find(x => x.Nombre === nombre);
         return c && c.Alias ? c.Alias : '';
+    }
+
+    // Host del mes: quien más hosteó en el mes/año dado
+    function hostDelMes(mes, anio) {
+        const conteo = {};
+        juntadasData.forEach(j => {
+            if (!j.Fecha || !j.Host || j.Host === 'Sin host') return;
+            const f = parseFecha(j.Fecha);
+            if (!f || f.getMonth()+1 !== mes || f.getFullYear() !== anio) return;
+            if (!tieneQuorum(j)) return;
+            const h = j.Host;
+            conteo[h] = (conteo[h]||0) + 1;
+        });
+        if (!Object.keys(conteo).length) return null;
+        const top = Object.entries(conteo).sort((a,b)=>b[1]-a[1])[0];
+        return { host: top[0], cantidad: top[1] };
+    }
+
+    // Meses en español
+    const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+    // ── HOST DEL MES PANEL (para perfil) ─────────────────────────────
+    function renderHostDelMesPanel(nombre) {
+        // Buscar en qué meses este culposo fue host del mes
+        const logros = [];
+        const anios = [2024, 2025, 2026];
+        anios.forEach(anio => {
+            for (let m = 1; m <= 12; m++) {
+                const res = hostDelMes(m, anio);
+                if (!res) continue;
+                // Verificar si este culposo es el host ganador
+                if (esHostDe(res.host, nombre)) {
+                    logros.push({ mes: MESES_ES[m-1], anio, host: res.host, cantidad: res.cantidad });
+                }
+            }
+        });
+        if (!logros.length) return '';
+        const items = logros.map(l => 
+            `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+                <span style="color:rgba(255,255,255,0.85);font-size:14px;">📅 ${l.mes} ${l.anio}</span>
+                <span style="color:#FFD700;font-weight:bold;font-size:13px;">${l.cantidad} juntada${l.cantidad>1?'s':''}</span>
+            </div>`
+        ).join('');
+        return `
+            <div class="section-title" style="margin-top:20px;">🏅 Host del Mes</div>
+            <div class="card" style="padding:15px 20px;">
+                ${items}
+            </div>`;
     }
 
     // Calcular racha actual (juntadas consecutivas sin faltar, desde la más reciente hacia atrás)
