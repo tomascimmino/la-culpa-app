@@ -265,8 +265,14 @@
     const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrz7UH8fYW5DbP2wD3QtbNC3nigwv_0ZF6HTPgmpZAnouFvR5m1UE1INZAndRbcyKXRA/exec';
 
-    const CULPOSOS_HOSTS = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+    const CULPOSOS_HOSTS = ['Zabala - Sami','Caamaño - Manu','Rama','Tirri - Toto','Santi','Toti - Lei','Mateo - Juli','Sin host'];
     const CATEGORIAS = ['Comida','Salida','Cumpleaños','Entrenamiento','Otro'];
+
+    // Quorum: la juntada cuenta solo si tuvo 4+ culposos (col N° Culposos)
+    function tieneQuorum(j) {
+        const n = parseInt(j['N° Culposos'] || j['N Culposos'] || '0');
+        return n >= 4;
+    }
 
     const FOTOS = {
         'Toto':'https://i.imgur.com/Y8NOVgH.png','Caamaño':'https://i.imgur.com/N056gxD.png',
@@ -375,7 +381,7 @@
             const f = parseFecha(j.Fecha);
             if (!f) return;
             if (f >= hoy && !proximaJuntada) { proximaJuntada = j; proximaIndex = i; }
-            else if (f < hoy) juntadasPasadas.push(j);
+            else if (f < hoy && tieneQuorum(j)) juntadasPasadas.push(j); // solo cuentan con quorum
         });
 
         document.getElementById('totalJuntadas').textContent = juntadasPasadas.length;
@@ -496,9 +502,9 @@
         const hoy = new Date(); hoy.setHours(0,0,0,0);
 
         const pasadas = juntadasData.filter(j => {
-            if (!j.Fecha) return true;
+            if (!j.Fecha) return false;
             const f = parseFecha(j.Fecha);
-            return f ? f < hoy : true;
+            return f && f < hoy && tieneQuorum(j); // solo juntadas con quorum
         });
 
         const html = pasadas.slice().reverse().map(j => {
@@ -542,8 +548,8 @@
         const usuario = getUsuarioActual();
         const asistentes = Object.keys(FOTOS).filter(n => esConfirmadoPositivo(j[n]));
 
-        // Mostrar botones editar/eliminar solo si soy el host o admin
-        const esHost = usuario && j.Host && j.Host.includes(usuario.Nombre);
+        // Puede editar/borrar si es el host (el nombre del culposo aparece dentro del host)
+        const esHost = usuario && j.Host && j.Host.toLowerCase().includes(usuario.Nombre.toLowerCase());
         const botonesAdmin = esHost ? `
             <div style="display:flex;gap:10px;margin-top:20px;">
                 <button onclick="abrirModalEditarJuntada(${index})" style="flex:1;background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar</button>
