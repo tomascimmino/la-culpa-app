@@ -1184,7 +1184,7 @@
         // Aliases de quienes reciben, una vez al final
         const acreedoresWA=[...new Set(transWA.map(t=>t.a))];
         const aliasesWA=acreedoresWA.map(n=>{const a=getAlias(n);return a?`${n}: ${a}`:null;}).filter(Boolean);
-        if(aliasesWA.length){ txt+=`\n *ALIAS:*\n`+aliasesWA.join('\n'); }
+        if(aliasesWA.length){ txt+=`\n 💳 *ALIAS:*\n`+aliasesWA.join('\n'); }
 
         window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
     }
