@@ -77,7 +77,7 @@
         
         .tab {
             flex: 1;
-            padding: 12px;
+            padding: 10px 6px;
             text-align: center;
             background: transparent;
             border: 2px solid rgba(139, 77, 143, 0.3);
@@ -85,7 +85,19 @@
             color: rgba(255,255,255,0.6);
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 14px;
+            font-size: 12px;
+            min-width: 0;
+        }
+        
+        @media (max-width: 500px) {
+            .tabs {
+                gap: 5px !important;
+                padding: 8px !important;
+            }
+            .tab {
+                padding: 8px 4px !important;
+                font-size: 11px !important;
+            }
         }
         
         .tab.active {
@@ -376,7 +388,7 @@
             
             <!-- JUNTADAS TAB -->
             <div id="juntadas" class="content">
-                <div class="section-title">📅 Todas las Juntadas</div>
+                <div class="section-title">📅 Juntadas en 2026</div>
                 <div id="juntadasList" class="loading">
                     <div class="spinner"></div>
                     Cargando juntadas...
@@ -735,7 +747,7 @@
                 return `
                     <div class="ranking-item ${isTop3 ? 'top3' : ''}">
                         <div class="rank-number">${rank}</div>
-                        <div class="rank-avatar" style="${fotoUrl ? `background-image: url('${fotoUrl}'); background-size: cover; background-position: center;` : ''}">
+                        <div class="rank-avatar" onclick="verPerfilCulposo('${culposo.Nombre}')" style="cursor: pointer; ${fotoUrl ? `background-image: url('${fotoUrl}'); background-size: cover; background-position: center;` : ''}">
                             ${!fotoUrl ? '🧔' : ''}
                         </div>
                         <div class="rank-info" onclick="verPerfilCulposo('${culposo.Nombre}')" style="cursor: pointer; flex: 1;">
@@ -1347,11 +1359,11 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
                 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-number">${usuario.Asistencias}/${usuario['Total Juntadas']}</div>
+                        <div class="stat-number" style="color: ${colorAsistencia};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div>
                         <div class="stat-label">Asistencias</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number">${percentage}%</div>
+                        <div class="stat-number" style="color: ${colorAsistencia};">${percentage}%</div>
                         <div class="stat-label">Porcentaje</div>
                     </div>
                 </div>
@@ -1671,9 +1683,9 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
                 texto += `${i + 1}. ${g.concepto}: $${g.monto.toLocaleString('es-AR')} (${g.quien})\n`;
             });
             
-            texto += `\n📱 *TRANSFERENCIAS:*\n`;
+            texto += `\n💸 *TRANSFERENCIAS:*\n`;
             
-            // Recalcular transferencias
+            // Calcular balances
             const balances = {};
             const todosLosNombres = ['Toto', 'Caamaño', 'Rama', 'Zabala', 'Santi', 'Mateo', 'Tirri', 'Toti', 'Cata', 'Lola', 'Sami', 'Leila', 'Juli', 'Manu', 'Matu'];
             todosLosNombres.forEach(n => balances[n] = 0);
@@ -1684,12 +1696,41 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
                 balances[gasto.quien] += gasto.monto;
             });
             
+            // Calcular transferencias óptimas
+            const deudores = [];
+            const acreedores = [];
+            
             Object.entries(balances).forEach(([nombre, balance]) => {
-                if (balance < -1) {
-                    texto += `${nombre} debe: $${Math.round(Math.abs(balance)).toLocaleString('es-AR')}\n`;
-                } else if (balance > 1) {
-                    texto += `${nombre} recibe: $${Math.round(balance).toLocaleString('es-AR')}\n`;
-                }
+                if (Math.abs(balance) < 1) return;
+                if (balance < 0) deudores.push({ nombre, monto: Math.abs(balance) });
+                else if (balance > 0) acreedores.push({ nombre, monto: balance });
+            });
+            
+            const transferencias = [];
+            const deudoresCopy = [...deudores];
+            const acreedoresCopy = [...acreedores];
+            
+            while (deudoresCopy.length > 0 && acreedoresCopy.length > 0) {
+                const deudor = deudoresCopy[0];
+                const acreedor = acreedoresCopy[0];
+                const monto = Math.min(deudor.monto, acreedor.monto);
+                
+                transferencias.push({
+                    de: deudor.nombre,
+                    a: acreedor.nombre,
+                    monto: monto
+                });
+                
+                deudor.monto -= monto;
+                acreedor.monto -= monto;
+                
+                if (deudor.monto < 1) deudoresCopy.shift();
+                if (acreedor.monto < 1) acreedoresCopy.shift();
+            }
+            
+            // Generar texto con transferencias
+            transferencias.forEach(t => {
+                texto += `${t.de} → ${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}\n`;
             });
             
             const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
