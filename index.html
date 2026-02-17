@@ -285,6 +285,9 @@
         'Matu':'https://i.imgur.com/gNabdVm.png'
     };
 
+    // ── ADMIN (puede editar/borrar juntadas pasadas) ─────────
+    const ADMIN_EMAIL = 'tomascimmino@gmail.com'; // 
+
     let currentUser = null;
     let juntadasData = [];
     let culpososData = [];
@@ -548,9 +551,16 @@
         const usuario = getUsuarioActual();
         const asistentes = Object.keys(FOTOS).filter(n => esConfirmadoPositivo(j[n]));
 
-        // Puede editar/borrar si es el host (el nombre del culposo aparece dentro del host)
-        const esHost = usuario && j.Host && j.Host.toLowerCase().includes(usuario.Nombre.toLowerCase());
-        const botonesAdmin = esHost ? `
+        // Puede editar/borrar:
+        // - Juntada futura: si sos el host
+        // - Juntada pasada: solo el admin
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+        const fechaJ = j.Fecha ? parseFecha(j.Fecha) : null;
+        const esFutura = fechaJ && fechaJ >= hoy;
+        const esAdmin = currentUser === ADMIN_EMAIL;
+        const esHostJuntada = usuario && j.Host && j.Host.toLowerCase().includes(usuario.Nombre.toLowerCase());
+        const puedeEditar = esFutura ? esHostJuntada : esAdmin;
+        const botonesAdmin = puedeEditar ? `
             <div style="display:flex;gap:10px;margin-top:20px;">
                 <button onclick="abrirModalEditarJuntada(${index})" style="flex:1;background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar</button>
                 <button onclick="confirmarEliminar(${index})" style="flex:1;background:rgba(244,67,54,0.15);border:2px solid #f44336;color:#f44336;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
@@ -815,14 +825,8 @@
 
     // ── PROPONER JUNTADA ──────────────────────────────────────
     function abrirModalProponerJuntada() {
-        // Hosts dinámicos desde culpososData, filtrando solo los 8 originales
-        const hostsDisponibles = culpososData
-            .filter(c => CULPOSOS_HOSTS.includes(c.Nombre))
-            .map(c => c.Nombre);
-        // Fallback si culpososData no cargó aún
-        const hosts = hostsDisponibles.length > 0 ? hostsDisponibles : CULPOSOS_HOSTS;
-
-        const hostOptions = hosts.map(n => `<option value="${n}">${n}</option>`).join('');
+        // Usar CULPOSOS_HOSTS directamente (nombres compuestos como "Zabala - Sami")
+        const hostOptions = CULPOSOS_HOSTS.map(n => `<option value="${n}">${n}</option>`).join('');
         const catOptions = CATEGORIAS.map(c => `<option value="${c}">${c}</option>`).join('');
 
         document.getElementById('modalProponerContent').innerHTML = `
