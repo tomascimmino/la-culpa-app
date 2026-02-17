@@ -219,10 +219,10 @@
         <div id="awards" class="content">
             <div class="section-title">🏆 LA CULPA Awards</div>
             <div style="text-align:center;margin-bottom:20px;">
-                <select id="yearFilter" onchange="renderAwards()" style="background:rgba(139,77,143,0.3);border:2px solid #FFD700;color:black;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
-                    <option value="2025" style="color:black;" selected>2025</option>
-                    <option value="2024" style="color:black;">2024</option>
-                    <option value="2023" style="color:black;">2023</option>
+                <select id="yearFilter" onchange="renderAwards()" style="background:linear-gradient(135deg,#8B4D8F 0%,#6B3870 100%);border:2px solid #FFD700;color:#FFD700;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
+                    <option value="2025" style="background:#1e1e3f;color:#FFD700;" selected>2025</option>
+                    <option value="2024" style="background:#1e1e3f;color:#FFD700;">2024</option>
+                    <option value="2023" style="background:#1e1e3f;color:#FFD700;">2023</option>
                 </select>
             </div>
             <div id="awardsList" class="loading"><div class="spinner"></div>Cargando premios...</div>
@@ -266,6 +266,32 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrz7UH8fYW5DbP2wD3QtbNC3nigwv_0ZF6HTPgmpZAnouFvR5m1UE1INZAndRbcyKXRA/exec';
 
     const CULPOSOS_HOSTS = ['Zabala - Sami','Caamaño - Manu','Rama','Tirri - Toto','Santi','Toti - Lei','Mateo - Juli','Sin host'];
+
+    // Mapa: si el nombre del culposo no aparece literal en el host, acá está su alias
+    const ALIAS_HOST = {
+        'Leila': 'Lei',   // "Toti - Lei"
+        'Juli':  'Juli',  // "Mateo - Juli" — coincide directo
+        'Tirri': 'Tirri', // "Tirri - Toto" — coincide directo
+        'Toto':  'Toto',  // "Tirri - Toto" — coincide directo
+        'Mateo': 'Mateo', // "Mateo - Juli" — coincide directo
+        'Toti':  'Toti',  // "Toti - Lei"   — coincide directo
+        'Zabala':'Zabala',// "Zabala - Sami" — coincide directo
+        'Sami':  'Sami',  // "Zabala - Sami" — coincide directo
+        'Caamaño':'Caamaño',
+        'Manu':  'Manu'
+    };
+
+    // Devuelve true si 'nombre' es uno de los hosts de la juntada
+    function esHostDe(hostStr, nombre) {
+        if (!hostStr || !nombre) return false;
+        const h = hostStr.toLowerCase();
+        // Chequeo directo
+        if (h.includes(nombre.toLowerCase())) return true;
+        // Chequeo por alias especial (ej: Leila → Lei)
+        const ak = ALIAS_HOST[nombre];
+        if (ak && h.includes(ak.toLowerCase())) return true;
+        return false;
+    }
     const CATEGORIAS = ['Comida','Salida','Cumpleaños','Entrenamiento','Otro'];
 
     // Quorum: la juntada cuenta solo si tuvo 4+ culposos (col N° Culposos)
@@ -433,7 +459,7 @@
                 }
 
                 // Botones editar/borrar para host o admin en juntada futura
-                const esHostProxima = proximaJuntada.Host && proximaJuntada.Host.toLowerCase().includes(usuario.Nombre.toLowerCase());
+                const esHostProxima = esHostDe(proximaJuntada.Host, usuario.Nombre);
                 const puedeEditarProxima = esHostProxima || currentUser === ADMIN_EMAIL;
                 const botonesProxima = puedeEditarProxima ? `
                     <div style="display:flex;gap:10px;margin-top:12px;">
@@ -499,10 +525,10 @@
                         ${!foto?'🧔':''}
                     </div>
                     <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
-                        <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge">👑 PERFECTO</span>':''}</div>
+                        <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge">👑 PERFECTO</span>':''}${(()=>{const r=calcularRacha(c.Nombre);return r>=10?'<span class="badge" style="background:#FF6600;color:white;">🔥 '+r+' seguidas</span>':''})()}</div>
                         <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
                     </div>
-                    <div class="rank-percentage">${pct}%</div>
+                    <div class="rank-percentage" style="color:${(()=>{const p=parseFloat(pct);if(p>=90)return'#4CAF50';if(p>=75)return'#8BC34A';if(p>=60)return'#FFD700';if(p>=45)return'#FF9800';return'#f44336';})()}">${pct}%</div>
                 </div>`;
         }).join('');
         document.getElementById('rankingList').innerHTML = html;
@@ -568,7 +594,7 @@
         const fechaJ = j.Fecha ? parseFecha(j.Fecha) : null;
         const esFutura = fechaJ && fechaJ >= hoy;
         const esAdmin = currentUser === ADMIN_EMAIL;
-        const esHostJuntada = usuario && j.Host && j.Host.toLowerCase().includes(usuario.Nombre.toLowerCase());
+        const esHostJuntada = usuario && esHostDe(j.Host, usuario.Nombre);
         const puedeEditar = esFutura ? esHostJuntada : esAdmin;
         const botonesAdmin = puedeEditar ? `
             <div style="display:flex;gap:10px;margin-top:20px;">
@@ -945,6 +971,7 @@
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${pct}%</div><div class="stat-label">Porcentaje</div></div>
             </div>
             ${isPerfecto?`<div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.1) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;"><div class="card-title">🏆 ¡CULPOSO PERFECTO!</div><div class="card-details">${esMiPerfil?'No te perdiste ninguna juntada. Sos un crack.':'No se perdió ninguna juntada. Un verdadero crack.'}</div></div>`:''}
+            ${(()=>{ const r=calcularRacha(usuario.Nombre); if(r<10) return ''; return `<div class="card" style="background:linear-gradient(135deg,rgba(255,100,0,0.15) 0%,rgba(255,60,0,0.05) 100%);border-left-color:#FF6600;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">🔥</div><div><div class="card-title" style="color:#FF6600;">¡${r} EN RACHA!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} juntadas seguidas sin faltar. Una máquina.</div></div></div></div>`; })()}
             ${renderHostPanel(usuario.Nombre)}
             ${premiosHTML}
             ${esMiPerfil?`<div class="section-title">📅 Mi Participación</div><div class="card" onclick="showTab('juntadas',document.querySelectorAll('.tab')[2])" style="cursor:pointer;text-align:center;background:linear-gradient(135deg,rgba(139,77,143,0.2) 0%,rgba(139,77,143,0.1) 100%);"><div class="card-title" style="color:#FFD700;font-size:16px;">📊 Ver todas mis juntadas →</div><div class="card-details" style="margin-top:5px;">Revisá tu historial completo de asistencias</div></div>`:''}`;
@@ -954,7 +981,7 @@
         const hoy = new Date(); hoy.setHours(0,0,0,0);
         // Juntadas pasadas con quorum donde fue host (nombre aparece en Host)
         const hosteadas = juntadasData.filter(j => {
-            if (!j.Host || !j.Host.toLowerCase().includes(nombre.toLowerCase())) return false;
+            if (!j.Host || !esHostDe(j.Host, nombre)) return false;
             if (!j.Fecha) return false;
             const f = parseFecha(j.Fecha);
             return f && f < hoy && tieneQuorum(j);
@@ -1003,15 +1030,15 @@
 
         oro.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`
             <div style="background:linear-gradient(135deg,rgba(255,215,0,0.2) 0%,rgba(255,215,0,0.05) 100%);padding:30px;border-radius:20px;margin-bottom:30px;border:3px solid #FFD700;text-align:center;">
-                ${f?`<img src="${f}" style="width:100px;height:100px;border-radius:50%;border:4px solid #FFD700;object-fit:cover;margin-bottom:15px;">`:''}
+                ${f?`<img src="${f}" onclick="verPerfilCulposo('${p.Ganador}')" style="width:100px;height:100px;border-radius:50%;border:4px solid #FFD700;object-fit:cover;margin-bottom:15px;cursor:pointer;">`:''}
                 <div style="font-size:40px;margin-bottom:10px;">🏆</div>
                 <div style="color:#FFD700;font-size:24px;font-weight:bold;margin-bottom:10px;">CULPOSO DE ORO ${year}</div>
-                <div style="color:white;font-size:28px;font-weight:bold;">${p.Ganador||'Sin ganador'}</div>
+                <div onclick="verPerfilCulposo('${p.Ganador}')" style="color:white;font-size:28px;font-weight:bold;cursor:pointer;">${p.Ganador||'Sin ganador'}</div>
             </div>`; });
 
         if(individuales.length>0){ html+='<div class="section-title" style="margin-top:25px;">🥇 Premios Individuales</div>';
             individuales.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`
-                <div class="card" style="display:flex;align-items:center;gap:15px;">
+                <div class="card" onclick="verPerfilCulposo('${p.Ganador}')" style="display:flex;align-items:center;gap:15px;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                     ${f?`<img src="${f}" style="width:60px;height:60px;border-radius:50%;border:3px solid #FFD700;object-fit:cover;">`:'<div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8B4D8F 0%,#6B3870 100%);display:flex;align-items:center;justify-content:center;font-size:24px;">🏅</div>'}
                     <div><div style="color:#FFD700;font-size:14px;font-weight:bold;text-transform:uppercase;">${p.Terna||'Premio'}</div><div style="color:white;font-size:16px;font-weight:bold;margin-top:3px;">${p.Ganador||'Sin ganador'}</div></div>
                 </div>`; }); }
@@ -1035,6 +1062,20 @@
     function getAlias(nombre) {
         const c = culpososData.find(x => x.Nombre === nombre);
         return c && c.Alias ? c.Alias : '';
+    }
+
+    // Calcular racha actual (juntadas consecutivas sin faltar, desde la más reciente hacia atrás)
+    function calcularRacha(nombre) {
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+        const pasadas = juntadasData
+            .filter(j => { if(!j.Fecha) return false; const f=parseFecha(j.Fecha); return f && f<hoy && tieneQuorum(j); })
+            .sort((a,b) => { const fa=parseFecha(a.Fecha),fb=parseFecha(b.Fecha); return fb-fa; }); // más reciente primero
+        let racha = 0;
+        for (const j of pasadas) {
+            if (esConfirmadoPositivo(j[nombre])) racha++;
+            else break;
+        }
+        return racha;
     }
 
     function agregarGasto() {
