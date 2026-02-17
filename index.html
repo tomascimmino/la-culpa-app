@@ -997,12 +997,23 @@
     let gastosArray=[];
     const TODOS_NOMBRES=['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti','Cata','Lola','Sami','Leila','Juli','Manu','Matu'];
 
+    // Construir mapa nombre -> alias desde culpososData
+    function getAlias(nombre) {
+        const c = culpososData.find(x => x.Nombre === nombre);
+        return c && c.Alias ? c.Alias : '';
+    }
+
     function agregarGasto() {
         gastosArray.push({id:Date.now(),quien:'',concepto:'',monto:0,consumidores:[]});
         renderGastos();
     }
 
     function eliminarGasto(id) { gastosArray=gastosArray.filter(g=>g.id!==id); renderGastos(); }
+
+    function marcarTodos(idx) {
+        gastosArray[idx].consumidores = [...TODOS_NOMBRES];
+        renderGastos();
+    }
 
     function renderGastos() {
         const c=document.getElementById('gastosContainer');
@@ -1029,7 +1040,10 @@
                     <input type="number" value="${g.monto||''}" oninput="gastosArray[${idx}].monto=parseFloat(this.value)||0" placeholder="0" style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
                 </div>
                 <div>
-                    <label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:8px;">¿Quiénes consumen/usan?</label>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                        <label style="color:rgba(255,255,255,0.8);font-size:13px;">¿Quiénes consumen/usan?</label>
+                        <button onclick="marcarTodos(${idx})" style="background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer;">☑️ Todos</button>
+                    </div>
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
                         ${TODOS_NOMBRES.map(n=>`
                             <label style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.9);font-size:13px;cursor:pointer;">
@@ -1083,7 +1097,12 @@
         const deu=[],acr=[];
         Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
         const dc=[...deu],ac=[...acr];
-        while(dc.length&&ac.length){ const d=dc[0],a=ac[0],m=Math.min(d.m,a.m); txt+=`${d.n} → ${a.n}: $${Math.round(m).toLocaleString('es-AR')}\n`; d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); }
+        while(dc.length&&ac.length){ 
+            const d=dc[0],a=ac[0],m=Math.min(d.m,a.m);
+            const aliasAcreedor = getAlias(a.n);
+            txt+=`${d.n} → ${a.n}: $${Math.round(m).toLocaleString('es-AR')}${aliasAcreedor?' 💳 '+aliasAcreedor:''}\n`;
+            d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); 
+        }
 
         window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
     }
