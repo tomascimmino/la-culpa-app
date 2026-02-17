@@ -1,39 +1,22 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LA CULPA - App</title>
-    
-    <!-- Favicon y App Icons -->
     <link rel="icon" type="image/png" href="https://i.imgur.com/tq9wwwK.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/tq9wwwK.png">
     <meta name="theme-color" content="#8B4D8F">
-    
-    <!-- PWA Manifest -->
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkxBIENVTFBBIiwKICAic2hvcnRfbmFtZSI6ICJMYSBDdWxwYSIsCiAgImRlc2NyaXB0aW9uIjogIlJhbmtpbmcgZGUgQXNpc3RlbmNpYXMiLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFFMUUzRiIsCiAgInRoZW1lX2NvbG9yIjogIiM4QjREOEYiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaW1ndXIuY29tL3RxOXd3d0sucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
-    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
             color: white;
         }
-        
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
         .header {
             background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
             padding: 40px 20px 30px;
@@ -42,1854 +25,1062 @@
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        
         .logo {
-            width: 350px;
-            height: 350px;
+            width: 350px; height: 350px;
             margin: 0 auto 15px;
             background: url('https://i.imgur.com/tq9wwwK.png') center/contain no-repeat;
             border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        
-        .title {
-            color: #FFD700;
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        
-        .subtitle {
-            color: rgba(255,255,255,0.9);
-            font-size: 14px;
-        }
-        
+        .title { color: #FFD700; font-size: 32px; font-weight: bold; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .subtitle { color: rgba(255,255,255,0.9); font-size: 14px; }
         .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: rgba(30, 30, 63, 0.5);
-            padding: 10px;
-            border-radius: 15px;
+            display: flex; gap: 10px; margin-bottom: 20px;
+            background: rgba(30,30,63,0.5); padding: 10px; border-radius: 15px;
         }
-        
         .tab {
-            flex: 1;
-            padding: 10px 6px;
-            text-align: center;
-            background: transparent;
-            border: 2px solid rgba(139, 77, 143, 0.3);
-            border-radius: 10px;
-            color: rgba(255,255,255,0.6);
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 12px;
-            min-width: 0;
+            flex: 1; padding: 10px 6px; text-align: center;
+            background: transparent; border: 2px solid rgba(139,77,143,0.3);
+            border-radius: 10px; color: rgba(255,255,255,0.6);
+            cursor: pointer; transition: all 0.3s; font-size: 12px; min-width: 0;
         }
-        
         @media (max-width: 500px) {
-            .tabs {
-                gap: 5px !important;
-                padding: 8px !important;
-            }
-            .tab {
-                padding: 8px 4px !important;
-                font-size: 11px !important;
-            }
+            .tabs { gap: 5px !important; padding: 8px !important; }
+            .tab { padding: 8px 4px !important; font-size: 11px !important; }
         }
-        
         .tab.active {
             background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
-            color: #FFD700;
-            border-color: #FFD700;
+            color: #FFD700; border-color: #FFD700;
         }
-        
-        .content {
-            display: none;
-        }
-        
-        .content.active {
-            display: block;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        
+        .content { display: none; }
+        .content.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-card {
             background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            border: 2px solid rgba(139, 77, 143, 0.3);
+            padding: 20px; border-radius: 15px; text-align: center;
+            border: 2px solid rgba(139,77,143,0.3);
         }
-        
-        .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #FFD700;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            color: rgba(255,255,255,0.7);
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-        
+        .stat-number { font-size: 32px; font-weight: bold; color: #FFD700; margin-bottom: 5px; }
+        .stat-label { color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; }
         .section-title {
-            color: #FFD700;
-            font-size: 18px;
-            font-weight: bold;
-            margin: 25px 0 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            color: #FFD700; font-size: 18px; font-weight: bold;
+            margin: 25px 0 15px; display: flex; align-items: center; gap: 10px;
         }
-        
         .card {
             background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 15px;
+            padding: 15px; border-radius: 15px; margin-bottom: 15px;
             border-left: 4px solid #FFD700;
         }
-        
-        .card-date {
-            color: #FFD700;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .card-title {
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .card-details {
-            color: rgba(255,255,255,0.6);
-            font-size: 13px;
-            display: flex;
-            gap: 15px;
-        }
-        
+        .card-date { color: #FFD700; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .card-title { color: white; font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        .card-details { color: rgba(255,255,255,0.6); font-size: 13px; display: flex; gap: 15px; }
         .ranking-item {
             background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border: 2px solid rgba(139, 77, 143, 0.3);
+            padding: 15px; border-radius: 12px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 15px;
+            border: 2px solid rgba(139,77,143,0.3);
         }
-        
-        .ranking-item.top3 {
-            border-color: #FFD700;
-        }
-        
-        .rank-number {
-            font-size: 20px;
-            font-weight: bold;
-            color: #FFD700;
-            min-width: 30px;
-        }
-        
+        .ranking-item.top3 { border-color: #FFD700; }
+        .rank-number { font-size: 20px; font-weight: bold; color: #FFD700; min-width: 30px; }
         .rank-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
+            width: 45px; height: 45px; border-radius: 50%;
             background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
         }
-        
-        .rank-info {
-            flex: 1;
-        }
-        
-        .rank-name {
-            color: white;
-            font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 3px;
-        }
-        
-        .rank-stats {
-            color: rgba(255,255,255,0.6);
-            font-size: 12px;
-        }
-        
-        .rank-percentage {
-            font-size: 18px;
-            font-weight: bold;
-            color: #FFD700;
-        }
-        
+        .rank-info { flex: 1; }
+        .rank-name { color: white; font-weight: bold; font-size: 15px; margin-bottom: 3px; }
+        .rank-stats { color: rgba(255,255,255,0.6); font-size: 12px; }
+        .rank-percentage { font-size: 18px; font-weight: bold; color: #FFD700; }
         .badge {
-            display: inline-block;
-            background: #FFD700;
-            color: #1a1a2e;
-            padding: 3px 8px;
-            border-radius: 10px;
-            font-size: 11px;
-            font-weight: bold;
-            margin-left: 5px;
+            display: inline-block; background: #FFD700; color: #1a1a2e;
+            padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; margin-left: 5px;
         }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: rgba(255,255,255,0.6);
-        }
-        
+        .loading { text-align: center; padding: 40px; color: rgba(255,255,255,0.6); }
         .spinner {
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top: 3px solid #FFD700;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+            border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #FFD700;
+            border-radius: 50%; width: 40px; height: 40px;
+            animation: spin 1s linear infinite; margin: 20px auto;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .login-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 80vh;
-            text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 80vh; text-align: center;
         }
-
         .login-card {
             background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
-            padding: 40px;
-            border-radius: 20px;
-            border: 2px solid rgba(139, 77, 143, 0.3);
-            max-width: 400px;
-            width: 100%;
+            padding: 40px; border-radius: 20px;
+            border: 2px solid rgba(139,77,143,0.3); max-width: 400px; width: 100%;
         }
-
         .login-input {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: 2px solid rgba(139, 77, 143, 0.3);
-            background: rgba(30, 30, 63, 0.5);
-            color: white;
-            font-size: 16px;
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px;
+            border: 2px solid rgba(139,77,143,0.3);
+            background: rgba(30,30,63,0.5); color: white; font-size: 16px;
         }
-
         .login-button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 20px;
-            border-radius: 10px;
-            border: none;
+            width: 100%; padding: 15px; margin-top: 20px; border-radius: 10px; border: none;
             background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
-            color: #FFD700;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
+            color: #FFD700; font-size: 16px; font-weight: bold; cursor: pointer;
         }
-
-        .login-button:hover {
-            opacity: 0.9;
+        .login-button:hover { opacity: 0.9; }
+        .error-message { color: #ff4444; margin-top: 10px; font-size: 14px; }
+        .form-select {
+            width: 100%; padding: 12px; border-radius: 8px;
+            border: 2px solid rgba(139,77,143,0.3);
+            background: rgba(30,30,63,0.5); color: white; font-size: 14px;
         }
-
-        .error-message {
-            color: #ff4444;
-            margin-top: 10px;
-            font-size: 14px;
-        }
+        .form-select option { background: #1e1e3f; color: white; }
     </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <!-- Login Screen -->
-        <div id="loginScreen" class="login-screen">
-            <div class="header">
-                <div class="logo"></div>
-                <div class="title">LA CULPA</div>
-                <div class="subtitle">Ranking de Asistencias</div>
-            </div>
-            <div class="login-card">
-                <h2 style="color: #FFD700; margin-bottom: 20px;">Bienvenido, Culposo</h2>
-                <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">Ingresá tu email para ver tus stats</p>
-                <input type="email" id="emailInput" class="login-input" placeholder="tu@email.com">
-                <button onclick="login()" class="login-button">ENTRAR</button>
-                <div id="errorMessage" class="error-message"></div>
-            </div>
-        </div>
+<div class="container" id="app">
 
-        <!-- Main App -->
-        <div id="mainApp" style="display: none;">
-            <div class="header">
-                <button onclick="logout()" style="position: fixed; top: 20px; right: 20px; z-index: 1000; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer;">
-                    🚪 Cerrar sesión
-                </button>
-                <div class="logo"></div>
-                <div class="title">LA CULPA</div>
-                <div class="subtitle">Ranking de Asistencias</div>
-            </div>
-            
-            <div class="tabs">
-                <div class="tab active" onclick="showTab('home')">🏠<br>Home</div>
-                <div class="tab" onclick="showTab('ranking')">📊<br>Ranking</div>
-                <div class="tab" onclick="showTab('juntadas')">📅<br>Eventos</div>
-                <div class="tab" onclick="showTab('awards')">🏆<br>Awards</div>
-                <div class="tab" onclick="showTab('calculadora')">💰<br>Calc</div>
-                <div class="tab" onclick="showTab('perfil')">👤<br>Perfil</div>
-            </div>
-            
-            <!-- HOME TAB -->
-            <div id="home" class="content active">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalJuntadas">-</div>
-                        <div class="stat-label">Juntadas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="totalCulposos">-</div>
-                        <div class="stat-label">Culposos</div>
-                    </div>
-                </div>
-                
-                <button onclick="abrirModalProponerJuntada()" style="width: 100%; margin: 15px 0 10px 0; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; color: #1E1E3F; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                    ➕ Proponer Juntada
-                </button>
-                    <div id="ultimasJuntadas" class="loading">
-                    <div class="spinner"></div>
-                    Cargando juntadas...
-                </div>
-            </div>
-            
-            <!-- RANKING TAB -->
-            <div id="ranking" class="content">
-                <div class="section-title">🏆 Ranking de Culposos</div>
-                <div id="rankingList" class="loading">
-                    <div class="spinner"></div>
-                    Cargando ranking...
-                </div>
-            </div>
-            
-            <!-- JUNTADAS TAB -->
-            <div id="juntadas" class="content">
-                <div class="section-title">📅 Juntadas en 2026</div>
-                <div id="juntadasList" class="loading">
-                    <div class="spinner"></div>
-                    Cargando juntadas...
-                </div>
-            </div>
-            
-            <!-- DETALLE JUNTADA (modal/overlay) -->
-            <div id="juntadaDetalle" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 20px;">
-                <div style="max-width: 500px; margin: 0 auto; position: relative;">
-                    <button onclick="cerrarDetalle()" style="position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 2001;">
-                        ✕ Cerrar
-                    </button>
-                    <div id="juntadaDetalleContent"></div>
-                </div>
-            </div>
-            
-            <!-- MODAL CONFIRMAR ASISTENCIA -->
-            <div id="modalConfirmar" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 20px;">
-                <div style="max-width: 500px; margin: 0 auto; position: relative;">
-                    <button onclick="cerrarModalConfirmar()" style="position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 2001;">
-                        ✕ Cerrar
-                    </button>
-                    <div id="modalConfirmarContent"></div>
-                </div>
-            </div>
-            
-            <!-- AWARDS TAB -->
-            <div id="awards" class="content">
-                <div class="section-title">🏆 LA CULPA Awards</div>
-                
-                <!-- Filtro de años con letra NEGRA -->
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <select id="yearFilter" onchange="renderAwards()" style="background: rgba(139, 77, 143, 0.3); border: 2px solid #FFD700; color: black; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                        <option value="2025" style="color: black;" selected>2025</option>
-                        <option value="2024" style="color: black;">2024</option>
-                        <option value="2023" style="color: black;">2023</option>
-                    </select>
-                </div>
-                
-                <div id="awardsList" class="loading">
-                    <div class="spinner"></div>
-                    Cargando premios...
-                </div>
-            </div>
-            
-                        <!-- CALCULADORA TAB -->
-            <div id="calculadora" class="content">
-                <div class="section-title">💰 Calculadora de Gastos</div>
-                
-                <div id="gastosContainer"></div>
-                
-                <button onclick="agregarGasto()" style="width: 100%; margin: 20px 0; background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%); border: none; color: #FFD700; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                    ➕ Agregar Gasto
-                </button>
-                
-                <button onclick="calcularDivision()" style="width: 100%; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; color: #1E1E3F; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                    🧮 Calcular División
-                </button>
-                
-                <div id="resultadoCalculo" style="margin-top: 20px;"></div>
-            </div>
-            
-                        <!-- MODAL PROPONER JUNTADA -->
-            <div id="modalProponerJuntada" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 20px;">
-                <div style="max-width: 500px; margin: 0 auto; position: relative;">
-                    <button onclick="cerrarModalProponerJuntada()" style="position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; z-index: 2001;">
-                        ✕ Cerrar
-                    </button>
-                    <div id="modalProponerContent"></div>
-                </div>
-            </div>
-            
-                        <!-- PERFIL TAB -->
-            <div id="perfil" class="content">
-                <div class="section-title">👤 Mi Perfil</div>
-                <div id="perfilData" class="loading">
-                    <div class="spinner"></div>
-                    Cargando perfil...
-                </div>
-            </div>
+    <!-- LOGIN -->
+    <div id="loginScreen" class="login-screen">
+        <div class="header">
+            <div class="logo"></div>
+            <div class="title">LA CULPA</div>
+            <div class="subtitle">Ranking de Asistencias</div>
+        </div>
+        <div class="login-card">
+            <h2 style="color:#FFD700;margin-bottom:20px;">Bienvenido, Culposo</h2>
+            <p style="color:rgba(255,255,255,0.7);margin-bottom:20px;">Ingresá tu email para ver tus stats</p>
+            <input type="email" id="emailInput" class="login-input" placeholder="tu@email.com">
+            <button onclick="login()" class="login-button">ENTRAR</button>
+            <div id="errorMessage" class="error-message"></div>
         </div>
     </div>
 
-    <script>
-        // CONFIGURACIÓN - ID DEL SHEET LA CULPAPP
-        const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
-       const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrz7UH8fYW5DbP2wD3QtbNC3nigwv_0ZF6HTPgmpZAnouFvR5m1UE1INZAndRbcyKXRA/exec';
-        
-        let currentUser = null;
-        let juntadasData = [];
-        let culpososData = [];
-        let premiosData = [];
-        
-        // Login con validación
-        async function login() {
-            const email = document.getElementById('emailInput').value.trim().toLowerCase();
-            const errorMsg = document.getElementById('errorMessage');
-            
-            if (!email || !email.includes('@')) {
-                errorMsg.textContent = 'Por favor ingresá un email válido';
-                return;
-            }
-            
-            // Cargar datos de culposos para validar
-            try {
-                const culpososURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`;
-                const culpososResponse = await fetch(culpososURL);
-                const culpososCSV = await culpososResponse.text();
-                const culpososTemp = parseCSV(culpososCSV);
-                
-                // Verificar si el email está en la lista
-                const emailValido = culpososTemp.some(c => c.Email && c.Email.toLowerCase() === email);
-                
-                if (!emailValido) {
-                    errorMsg.textContent = '❌ Email no autorizado. Solo culposos pueden entrar.';
-                    return;
-                }
-                
-            } catch (error) {
-                console.error('Error validando email:', error);
-                errorMsg.textContent = 'Error conectando con el servidor. Intentá de nuevo.';
-                return;
-            }
-            
-            // Guardamos el email
-            currentUser = email;
-            localStorage.setItem('culpaUserEmail', email);
-            
-            // Mostramos la app
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            
-            // Cargamos los datos
-            loadData();
-        }
-        
-        // Logout
-        function logout() {
-            localStorage.removeItem('culpaUserEmail');
-            currentUser = null;
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('emailInput').value = '';
-            document.getElementById('errorMessage').textContent = '';
-        }
-        
-        // Cargar datos del Sheet
-        async function loadData() {
-            try {
-                // URL pública del sheet como CSV
-                const juntadasURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Hoja%201`;
-                const culpososURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`;
-                const premiosURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PREMIOS`;
-                
-                // Cargar juntadas
-                const juntadasResponse = await fetch(juntadasURL);
-                const juntadasCSV = await juntadasResponse.text();
-                juntadasData = parseCSV(juntadasCSV);
-                
-                // Cargar culposos
-                const culpososResponse = await fetch(culpososURL);
-                const culpososCSV = await culpososResponse.text();
-                culpososData = parseCSV(culpososCSV);
-                
-                // Cargar premios
-                const premiosResponse = await fetch(premiosURL);
-                const premiosCSV = await premiosResponse.text();
-                premiosData = parseCSV(premiosCSV);
-                
-                // Renderizar datos
-                renderHome();
-                renderRanking();
-                renderJuntadas();
-                renderAwards();
-                renderPerfil();
-                
-            } catch (error) {
-                console.error('Error cargando datos:', error);
-                alert('Error conectando con Google Sheets. Revisá la configuración.');
-            }
-        }
-        
-        // Parsear CSV simple
-        function parseCSV(csv) {
-            const lines = csv.split('\n');
-            const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
-            const data = [];
-            
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim());
-                
-                // Ignorar filas donde todos los valores están vacíos
-                const hasData = values.some(v => v && v.length > 0);
-                if (!hasData) continue;
-                
-                const row = {};
-                headers.forEach((header, index) => {
-                    row[header] = values[index] || '';
-                });
-                
-                // Para juntadas: solo agregar si tiene fecha o descripción
-                if (headers.includes('Fecha') && !row.Fecha && !row.Descripción && !row.Descripcion) {
-                    continue;
-                }
-                
-                data.push(row);
-            }
-            
-            return data;
-        }
-        
-        // Renderizar HOME
-        function renderHome() {
-            // Detectar próxima juntada (primera con fecha futura)
-            const hoy = new Date();
-            hoy.setHours(0, 0, 0, 0);
-            
-            let proximaJuntada = null;
-            let proximaIndex = -1;
-            let juntadasPasadas = [];
-            
-            for (let i = 0; i < juntadasData.length; i++) {
-                const fechaStr = juntadasData[i].Fecha;
-                if (!fechaStr) continue;
-                
-                // Parsear fecha DD/MM/YYYY
-                const partes = fechaStr.split('/');
-                if (partes.length === 3) {
-                    const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
-                    if (fecha >= hoy && !proximaJuntada) {
-                        proximaJuntada = juntadasData[i];
-                        proximaIndex = i;
-                    } else if (fecha < hoy) {
-                        juntadasPasadas.push(juntadasData[i]);
-                    }
-                }
-            }
-            
-            // Mostrar total de juntadas PASADAS (no futuras)
-            document.getElementById('totalJuntadas').textContent = juntadasPasadas.length;
-            
-            // Calcular asistencia del usuario logueado SOLO con juntadas pasadas
-            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
-            let asistenciaHTML = '-';
-            if (usuario) {
-                // Calcular porcentaje real (solo juntadas pasadas)
-                const nombreUsuario = usuario.Nombre;
-                let asistenciasPasadas = 0;
-                juntadasPasadas.forEach(j => {
-                    if (j[nombreUsuario] === '✓' || j[nombreUsuario] === 'TRUE') {
-                        asistenciasPasadas++;
-                    }
-                });
-                const porcentaje = juntadasPasadas.length > 0 ? Math.round((asistenciasPasadas / juntadasPasadas.length) * 100) : 0;
-                
-                let color = '#f44336'; // Rojo por defecto
-                if (porcentaje >= 90) color = '#4CAF50'; // Verde fuerte
-                else if (porcentaje >= 70) color = '#8BC34A'; // Verde claro
-                else if (porcentaje >= 40) color = '#FF9800'; // Naranja
-                
-                asistenciaHTML = `<span style="color: ${color}">${porcentaje}%</span>`;
-            }
-            
-            document.getElementById('totalCulposos').innerHTML = asistenciaHTML;
-            document.querySelector('#totalCulposos').nextElementSibling.textContent = 'Tu Asistencia';
-            
-            // Mostrar próxima juntada si existe
-            let proximaHTML = '';
-            if (proximaJuntada && usuario) {
-                const yaConfirmo = proximaJuntada[usuario.Nombre] === '✓' || proximaJuntada[usuario.Nombre] === '✗';
-                const confirmacion = proximaJuntada[usuario.Nombre];
-                
-                // Solo mostrar si tiene descripción válida
-                const descripcionValida = proximaJuntada.Descripción || proximaJuntada.Descripcion || '';
-                if (!descripcionValida || descripcionValida === 'undefined') {
-                    proximaJuntada = null;
-                    proximaIndex = -1;
-                }
-                
-                if (proximaJuntada) {
-                    proximaHTML = `
-                        <div class="section-title" style="margin-top: 10px;">🎯 Próxima Juntada</div>
-                        <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700; border-left-width: 4px;">
-                            <div class="card-date">${proximaJuntada.Fecha}</div>
-                            <div class="card-title" style="font-size: 20px;">${descripcionValida}</div>
-                        <div class="card-details" style="margin: 10px 0;">
-                            <span>🏠 ${proximaJuntada.Host || 'Sin host'}</span>
-                        </div>
-                        ${yaConfirmo ? `
-                            <div style="text-align: center; padding: 15px; background: ${confirmacion === '✓' ? 'rgba(76, 175, 80, 0.2)' : 'rgba(244, 67, 54, 0.2)'}; border-radius: 10px; margin-top: 15px;">
-                                <div style="font-size: 16px; font-weight: bold; color: ${confirmacion === '✓' ? '#4CAF50' : '#f44336'};">
-                                    ${confirmacion === '✓' ? '✅ Confirmaste asistencia' : '❌ Confirmaste que no irás'}
-                                </div>
-                                <button onclick="abrirModalConfirmar(${proximaIndex})" style="margin-top: 10px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 8px 15px; border-radius: 8px; font-size: 12px; cursor: pointer;">
-                                    Cambiar respuesta
-                                </button>
-                            </div>
-                        ` : `
-                            <button onclick="abrirModalConfirmar(${proximaIndex})" style="width: 100%; margin-top: 15px; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; color: #1E1E3F; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                                📝 Confirmar asistencia
-                            </button>
-                        `}
-                    </div>
-                `;
-                }
-            } else if (usuario) {
-                // No hay próxima juntada
-                proximaHTML = `
-                    <div class="section-title" style="margin-top: 10px;">🎯 Próxima Juntada</div>
-                    <div class="card" style="background: rgba(139, 77, 143, 0.1); text-align: center;">
-                        <div style="font-size: 40px; margin-bottom: 10px;">📅</div>
-                        <div class="card-title" style="font-size: 16px; color: rgba(255,255,255,0.7);">
-                            Por el momento no hay próxima juntada programada
-                        </div>
-                        <div class="card-details" style="margin-top: 10px; color: rgba(255,255,255,0.5);">
-                            Cuando se programe una nueva juntada aparecerá acá
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Últimas 3 juntadas PASADAS
-            const ultimas = juntadasPasadas.slice(-3).reverse();
-            const html = ultimas.map((j) => {
-                const realIndex = juntadasData.indexOf(j);
-                const fotoJuntada = j['Foto Juntada'] || j['Foto juntada'] || '';
-                return `
-                    <div class="card" onclick="verDetalleJuntada(${realIndex})" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                        ${fotoJuntada ? `
-                            <div style="width: 100%; height: 120px; background-image: url('${fotoJuntada}'); background-size: cover; background-position: center; border-radius: 10px; margin-bottom: 12px;"></div>
-                        ` : ''}
-                        <div class="card-date">${j.Fecha || ''}</div>
-                        <div class="card-title">${j.Descripción || j.Descripcion || 'Juntada'}</div>
-                        <div class="card-details">
-                            <span>🏠 ${j.Host || 'Sin host'}</span>
-                            <span>👥 ${j['N° Asist'] || j['N° asistentes'] || '0'} asistentes</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            const ultimasHTML = html || '<p style="color: rgba(255,255,255,0.6);">No hay juntadas registradas</p>';
-            
-           document.getElementById('ultimasJuntadas').innerHTML = proximaHTML + 
-    (juntadasPasadas.length > 0 ? `<div class="section-title" style="margin-top: 25px;">🔥 Juntadas en 2026</div>` : '') + 
-    ultimasHTML;
-        }
-        
-        // Renderizar RANKING
-        function renderRanking() {
-            const sorted = [...culpososData].sort((a, b) => parseFloat(b.Porcentaje) - parseFloat(a.Porcentaje));
-            
-            // Mapeo de fotos - TODOS los culposos y novias
-            const fotos = {
-                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
-                'Caamaño': 'https://i.imgur.com/N056gxD.png',
-                'Rama': 'https://i.imgur.com/8hsqIL8.png',
-                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
-                'Santi': 'https://i.imgur.com/iXHdIVT.png',
-                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
-                'Tirri': 'https://i.imgur.com/biqacxq.png',
-                'Toti': 'https://i.imgur.com/dXMpfSk.png',
-                'Cata': 'https://i.imgur.com/jhme4wb.png',
-                'Lola': 'https://i.imgur.com/qTP4eT2.png',
-                'Sami': 'https://i.imgur.com/HP41gaP.png',
-                'Leila': 'https://i.imgur.com/wcf3be4.png',
-                'Juli': 'https://i.imgur.com/cn779x3.png',
-                'Manu': 'https://i.imgur.com/BzDK66B.png',
-                'Matu': 'https://i.imgur.com/gNabdVm.png'
-            };
-            
-            const html = sorted.map((culposo, index) => {
-                const rank = index + 1;
-                const percentage = parseFloat(culposo.Porcentaje).toFixed(0);
-                const isTop3 = rank <= 3;
-                const fotoUrl = fotos[culposo.Nombre] || '';
-                
-                return `
-                    <div class="ranking-item ${isTop3 ? 'top3' : ''}">
-                        <div class="rank-number">${rank}</div>
-                        <div class="rank-avatar" onclick="verPerfilCulposo('${culposo.Nombre}')" style="cursor: pointer; ${fotoUrl ? `background-image: url('${fotoUrl}'); background-size: cover; background-position: center;` : ''}">
-                            ${!fotoUrl ? '🧔' : ''}
-                        </div>
-                        <div class="rank-info" onclick="verPerfilCulposo('${culposo.Nombre}')" style="cursor: pointer; flex: 1;">
-                            <div class="rank-name">
-                                ${culposo.Nombre}
-                                ${percentage == 100 ? '<span class="badge">👑 PERFECTO</span>' : ''}
-                            </div>
-                            <div class="rank-stats">${culposo.Asistencias} de ${culposo['Total Juntadas']} juntadas</div>
-                        </div>
-                        <div class="rank-percentage">${percentage}%</div>
-                    </div>
-                `;
-            }).join('');
-            
-            document.getElementById('rankingList').innerHTML = html;
-        }
-        
-        // Renderizar PERFIL
-        function renderPerfil() {
-            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
-            
-            if (!usuario) {
-                document.getElementById('perfilData').innerHTML = `
-                    <div class="card">
-                        <p style="color: rgba(255,255,255,0.7);">No se encontró tu perfil con el email: ${currentUser}</p>
-                        <p style="color: rgba(255,255,255,0.5); margin-top: 10px; font-size: 13px;">
-                            Asegurate que tu email esté en la hoja "CULPOSOS" del Google Sheet.
-                        </p>
-                    </div>
-                `;
-                return;
-            }
-            
-            const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
-            
-            // Colores según asistencia
-            let colorAsistencia = '#f44336'; // Rojo
-            if (percentage >= 100) colorAsistencia = '#4CAF50'; // Verde fuerte
-            else if (percentage >= 90) colorAsistencia = '#8BC34A'; // Verde claro
-            else if (percentage >= 60) colorAsistencia = '#FFD700'; // Amarillo
-            else if (percentage >= 35) colorAsistencia = '#FF9800'; // Naranja
-            const isPerfecto = percentage == 100;
-            
-            // Mapeo de fotos - TODOS
-            const fotos = {
-                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
-                'Caamaño': 'https://i.imgur.com/N056gxD.png',
-                'Rama': 'https://i.imgur.com/8hsqIL8.png',
-                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
-                'Santi': 'https://i.imgur.com/iXHdIVT.png',
-                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
-                'Tirri': 'https://i.imgur.com/biqacxq.png',
-                'Toti': 'https://i.imgur.com/dXMpfSk.png',
-                'Cata': 'https://i.imgur.com/jhme4wb.png',
-                'Lola': 'https://i.imgur.com/qTP4eT2.png',
-                'Sami': 'https://i.imgur.com/HP41gaP.png',
-                'Leila': 'https://i.imgur.com/wcf3be4.png',
-                'Juli': 'https://i.imgur.com/cn779x3.png',
-                'Manu': 'https://i.imgur.com/BzDK66B.png',
-                'Matu': 'https://i.imgur.com/gNabdVm.png'
-            };
-            
-            const fotoUrl = fotos[usuario.Nombre] || '';
-            
-            // Obtener premios del usuario
-            const premiosUsuario = premiosData.filter(p => 
-                p.Ganador && p.Ganador.trim() === usuario.Nombre && p.Tipo === 'Persona'
-            );
-            
-            // Separar Culposo de Oro de otros premios
-            const culposoOro = premiosUsuario.filter(p => p.Terna && p.Terna.includes('CULPOSO DE ORO'));
-            const otrosPremios = premiosUsuario.filter(p => p.Terna && !p.Terna.includes('CULPOSO DE ORO'));
-            
-            // Generar HTML de premios - TODO EN UN SOLO CUADRO
-            let premiosHTML = '';
-            if (premiosUsuario.length > 0) {
-                const premiosListHTML = [
-                    ...culposoOro.map(p => 
-                        `<div style="margin: 12px 0; padding: 12px; background: rgba(255, 215, 0, 0.15); border-radius: 8px;">
-                            <span style="font-size: 18px; font-weight: bold; color: #FFD700;">
-                                🏆 CULPOSO DE ORO (${p.Año || ''})
-                            </span>
-                        </div>`
-                    ),
-                    ...otrosPremios.map(p => 
-                        `<div style="margin: 8px 0; color: rgba(255,255,255,0.9);">
-                            🥇 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'PREMIO'} (${p.Año || ''})</span>
-                        </div>`
-                    )
-                ].join('');
-                
-                premiosHTML = `
-                    <div class="section-title" style="margin-top: 25px;">🏆 Palmarés</div>
-                    <div class="card" style="padding: 20px;">
-                        ${premiosListHTML}
-                    </div>
-                `;
-            }
-            
-            const html = `
-                ${fotoUrl ? `
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <img src="${fotoUrl}" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #FFD700; object-fit: cover;">
-                    </div>
-                ` : ''}
-                
-                <div class="card" style="border-left-color: ${isPerfecto ? '#FFD700' : '#8B4D8F'};">
-                    <div class="card-title" style="font-size: 24px;">
-                        ${usuario.Nombre}
-                        ${isPerfecto ? '<span class="badge">👑 PERFECTO</span>' : ''}
-                    </div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: ${colorAsistencia};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div>
-                        <div class="stat-label">Asistencias</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: ${colorAsistencia};">${percentage}%</div>
-                        <div class="stat-label">Porcentaje</div>
-                    </div>
-                </div>
-                
-                ${isPerfecto ? `
-                    <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700;">
-                        <div class="card-title">🏆 ¡CULPOSO PERFECTO!</div>
-                        <div class="card-details">No te perdiste ninguna juntada. Sos un crack.</div>
-                    </div>
-                ` : ''}
-                
-                ${premiosHTML}
-                
-                <div class="section-title">📅 Mi Participación</div>
-                <div class="card" onclick="showTab('juntadas')" style="cursor: pointer; text-align: center; background: linear-gradient(135deg, rgba(139, 77, 143, 0.2) 0%, rgba(139, 77, 143, 0.1) 100%);">
-                    <div class="card-title" style="color: #FFD700; font-size: 16px;">
-                        📊 Ver todas mis juntadas →
-                    </div>
-                    <div class="card-details" style="margin-top: 5px;">
-                        Revisá tu historial completo de asistencias
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('perfilData').innerHTML = html;
-        }
-        
-        // Renderizar JUNTADAS
-        function renderJuntadas() {
-            // Mapeo de nombres de columnas a nombres de culposos
-            const columnasCulposos = {
-                'Toto': 'Toto',
-                'Caamaño': 'Caamaño',
-                'Rama': 'Rama',
-                'Zabala': 'Zabala',
-                'Santi': 'Santi',
-                'Mateo': 'Mateo',
-                'Tirri': 'Tirri',
-                'Toti': 'Toti',
-                'Cata': 'Cata',
-                'Lola': 'Lola',
-                'Sami': 'Sami',
-                'Leila': 'Leila',
-                'Juli': 'Juli',
-                'Manu': 'Manu',
-                'Matu': 'Matu'
-            };
-            
-            // Obtener nombre del usuario logueado
-           const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
-const nombreUsuario = usuario ? usuario.Nombre : '';
+    <!-- MAIN APP -->
+    <div id="mainApp" style="display:none;">
+        <div class="header">
+            <button onclick="logout()" style="position:fixed;top:20px;right:20px;z-index:1000;background:rgba(255,255,255,0.2);border:2px solid #FFD700;color:#FFD700;padding:8px 15px;border-radius:10px;font-size:12px;font-weight:bold;cursor:pointer;">
+                🚪 Cerrar sesión
+            </button>
+            <div class="logo"></div>
+            <div class="title">LA CULPA</div>
+            <div class="subtitle">Ranking de Asistencias</div>
+        </div>
 
-// Filtrar solo juntadas PASADAS
-const hoy = new Date();
-hoy.setHours(0, 0, 0, 0);
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('home',this)">🏠<br>Home</div>
+            <div class="tab" onclick="showTab('ranking',this)">📊<br>Ranking</div>
+            <div class="tab" onclick="showTab('juntadas',this)">📅<br>Eventos</div>
+            <div class="tab" onclick="showTab('awards',this)">🏆<br>Awards</div>
+            <div class="tab" onclick="showTab('calculadora',this)">💰<br>Calc</div>
+            <div class="tab" onclick="showTab('perfil',this)">👤<br>Perfil</div>
+        </div>
 
-const juntadasPasadas = juntadasData.filter(juntada => {
-    const fechaStr = juntada.Fecha;
-    if (!fechaStr) return true;
-    const partes = fechaStr.split('/');
-    if (partes.length === 3) {
-        const fecha = new Date(partes[2], partes[1] - 1, partes[0]);
-        return fecha < hoy;
+        <!-- HOME -->
+        <div id="home" class="content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalJuntadas">-</div>
+                    <div class="stat-label">Juntadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalCulposos">-</div>
+                    <div class="stat-label">Tu Asistencia</div>
+                </div>
+            </div>
+            <button onclick="abrirModalProponerJuntada()" style="width:100%;margin:15px 0 10px;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
+                ➕ Proponer Juntada
+            </button>
+            <div id="ultimasJuntadas" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
+        </div>
+
+        <!-- RANKING -->
+        <div id="ranking" class="content">
+            <div class="section-title">🏆 Ranking de Culposos</div>
+            <div id="rankingList" class="loading"><div class="spinner"></div>Cargando ranking...</div>
+        </div>
+
+        <!-- JUNTADAS -->
+        <div id="juntadas" class="content">
+            <div class="section-title">📅 Juntadas en 2026</div>
+            <div id="juntadasList" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
+        </div>
+
+        <!-- DETALLE JUNTADA -->
+        <div id="juntadaDetalle" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:2000;overflow-y:auto;padding:20px;">
+            <div style="max-width:500px;margin:0 auto;position:relative;">
+                <button onclick="cerrarDetalle()" style="position:fixed;top:20px;right:20px;background:rgba(255,255,255,0.2);border:2px solid #FFD700;color:#FFD700;padding:10px 20px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;z-index:2001;">✕ Cerrar</button>
+                <div id="juntadaDetalleContent"></div>
+            </div>
+        </div>
+
+        <!-- MODAL CONFIRMAR ASISTENCIA -->
+        <div id="modalConfirmar" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:2000;overflow-y:auto;padding:20px;">
+            <div style="max-width:500px;margin:0 auto;position:relative;">
+                <button onclick="cerrarModalConfirmar()" style="position:fixed;top:20px;right:20px;background:rgba(255,255,255,0.2);border:2px solid #FFD700;color:#FFD700;padding:10px 20px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;z-index:2001;">✕ Cerrar</button>
+                <div id="modalConfirmarContent"></div>
+            </div>
+        </div>
+
+        <!-- AWARDS -->
+        <div id="awards" class="content">
+            <div class="section-title">🏆 LA CULPA Awards</div>
+            <div style="text-align:center;margin-bottom:20px;">
+                <select id="yearFilter" onchange="renderAwards()" style="background:rgba(139,77,143,0.3);border:2px solid #FFD700;color:black;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
+                    <option value="2025" style="color:black;" selected>2025</option>
+                    <option value="2024" style="color:black;">2024</option>
+                    <option value="2023" style="color:black;">2023</option>
+                </select>
+            </div>
+            <div id="awardsList" class="loading"><div class="spinner"></div>Cargando premios...</div>
+        </div>
+
+        <!-- CALCULADORA -->
+        <div id="calculadora" class="content">
+            <div class="section-title">💰 Calculadora de Gastos</div>
+            <div id="gastosContainer"></div>
+            <button onclick="agregarGasto()" style="width:100%;margin:20px 0;background:linear-gradient(135deg,#8B4D8F 0%,#6B3870 100%);border:none;color:#FFD700;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">➕ Agregar Gasto</button>
+            <button onclick="calcularDivision()" style="width:100%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">🧮 Calcular División</button>
+            <div id="resultadoCalculo" style="margin-top:20px;"></div>
+        </div>
+
+        <!-- MODAL PROPONER JUNTADA -->
+        <div id="modalProponerJuntada" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:2000;overflow-y:auto;padding:20px;">
+            <div style="max-width:500px;margin:0 auto;position:relative;">
+                <button onclick="cerrarModalProponerJuntada()" style="position:fixed;top:20px;right:20px;background:rgba(255,255,255,0.2);border:2px solid #FFD700;color:#FFD700;padding:10px 20px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;z-index:2001;">✕ Cerrar</button>
+                <div id="modalProponerContent"></div>
+            </div>
+        </div>
+
+        <!-- MODAL EDITAR JUNTADA -->
+        <div id="modalEditarJuntada" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);z-index:2000;overflow-y:auto;padding:20px;">
+            <div style="max-width:500px;margin:0 auto;position:relative;">
+                <button onclick="cerrarModalEditarJuntada()" style="position:fixed;top:20px;right:20px;background:rgba(255,255,255,0.2);border:2px solid #FFD700;color:#FFD700;padding:10px 20px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;z-index:2001;">✕ Cerrar</button>
+                <div id="modalEditarContent"></div>
+            </div>
+        </div>
+
+        <!-- PERFIL -->
+        <div id="perfil" class="content">
+            <div class="section-title">👤 Mi Perfil</div>
+            <div id="perfilData" class="loading"><div class="spinner"></div>Cargando perfil...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrz7UH8fYW5DbP2wD3QtbNC3nigwv_0ZF6HTPgmpZAnouFvR5m1UE1INZAndRbcyKXRA/exec';
+
+    const CULPOSOS_HOSTS = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+    const CATEGORIAS = ['Comida','Salida','Cumpleaños','Entrenamiento','Otro'];
+
+    const FOTOS = {
+        'Toto':'https://i.imgur.com/Y8NOVgH.png','Caamaño':'https://i.imgur.com/N056gxD.png',
+        'Rama':'https://i.imgur.com/8hsqIL8.png','Zabala':'https://i.imgur.com/YrT8QyX.png',
+        'Santi':'https://i.imgur.com/iXHdIVT.png','Mateo':'https://i.imgur.com/MY6KbRq.png',
+        'Tirri':'https://i.imgur.com/biqacxq.png','Toti':'https://i.imgur.com/dXMpfSk.png',
+        'Cata':'https://i.imgur.com/jhme4wb.png','Lola':'https://i.imgur.com/qTP4eT2.png',
+        'Sami':'https://i.imgur.com/HP41gaP.png','Leila':'https://i.imgur.com/wcf3be4.png',
+        'Juli':'https://i.imgur.com/cn779x3.png','Manu':'https://i.imgur.com/BzDK66B.png',
+        'Matu':'https://i.imgur.com/gNabdVm.png'
+    };
+
+    let currentUser = null;
+    let juntadasData = [];
+    let culpososData = [];
+    let premiosData = [];
+
+    // ── LOGIN ─────────────────────────────────────────────────
+    async function login() {
+        const email = document.getElementById('emailInput').value.trim().toLowerCase();
+        const errorMsg = document.getElementById('errorMessage');
+        if (!email || !email.includes('@')) { errorMsg.textContent = 'Por favor ingresá un email válido'; return; }
+        try {
+            const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`);
+            const csv = await r.text();
+            const temp = parseCSV(csv);
+            if (!temp.some(c => c.Email && c.Email.toLowerCase() === email)) {
+                errorMsg.textContent = '❌ Email no autorizado. Solo culposos pueden entrar.';
+                return;
+            }
+        } catch { errorMsg.textContent = 'Error conectando con el servidor. Intentá de nuevo.'; return; }
+        currentUser = email;
+        localStorage.setItem('culpaUserEmail', email);
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        loadData();
     }
-    return true;
-});
 
-const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
-    const realIndex = juntadasData.indexOf(juntada);
-                
-                // Verificar si el usuario asistió
-                const asistio = juntada[nombreUsuario] === '✓' || juntada[nombreUsuario] === 'TRUE';
-                const fotoJuntada = juntada['Foto Juntada'] || juntada['Foto juntada'] || '';
-                
-                return `
-                    <div class="card" onclick="verDetalleJuntada(${realIndex})" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                        ${fotoJuntada ? `
-                            <div style="width: 100%; height: 150px; background-image: url('${fotoJuntada}'); background-size: cover; background-position: center; border-radius: 10px; margin-bottom: 15px;"></div>
-                        ` : ''}
-                        <div class="card-date">${juntada.Fecha || 'Fecha'}</div>
-                        <div class="card-title">${juntada.Descripción || juntada.Descripcion || 'Juntada'}</div>
-                        <div class="card-details" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                            <div>
-                                <span>🏠 ${juntada.Host || 'Sin host'}</span>
-                                <span style="margin-left: 10px;">👥 ${juntada['N° Asist'] || juntada['N° Asistentes'] || juntada['N° asistentes'] || '0'}</span>
-                            </div>
-                            ${nombreUsuario ? `
-                                <span style="display: inline-block; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; white-space: nowrap; ${asistio ? 'background: rgba(76, 175, 80, 0.2); color: #4CAF50;' : 'background: rgba(244, 67, 54, 0.2); color: #f44336;'}">
-                                    ${asistio ? '✅ FUISTE' : '❌ NO FUISTE'}
-                                </span>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Calcular estadísticas del usuario
-            let mensajeMotivacional = '';
-            if (nombreUsuario) {
-                const usuario = culpososData.find(c => c.Nombre === nombreUsuario);
-                if (usuario) {
-                    const totalJuntadas = parseInt(usuario['Total Juntadas']) || 0;
-                    const asistencias = parseInt(usuario.Asistencias) || 0;
-                    const porcentaje = totalJuntadas > 0 ? Math.round((asistencias / totalJuntadas) * 100) : 0;
-                    
-                    let mensaje = '';
-                    let emoji = '';
-                    let color = '';
-                    
-                    if (porcentaje < 40) {
-                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Estás MUY ausente loco, metele más onda.`;
-                        emoji = '😴';
-                        color = '#f44336';
-                    } else if (porcentaje < 70) {
-                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Venís bien, pero no te relajes.`;
-                        emoji = '💪';
-                        color = '#FF9800';
-                    } else if (porcentaje < 90) {
-                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Sos un culposo comprometido, seguí así.`;
-                        emoji = '🔥';
-                        color = '#4CAF50';
+    function logout() {
+        localStorage.removeItem('culpaUserEmail');
+        currentUser = null;
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('emailInput').value = '';
+        document.getElementById('errorMessage').textContent = '';
+    }
+
+    // ── CARGAR DATOS ──────────────────────────────────────────
+    async function loadData() {
+        try {
+            const [jR, cR, pR] = await Promise.all([
+                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Hoja%201`),
+                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`),
+                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PREMIOS`)
+            ]);
+            juntadasData = parseCSV(await jR.text());
+            culpososData = parseCSV(await cR.text());
+            premiosData  = parseCSV(await pR.text());
+            renderHome(); renderRanking(); renderJuntadas(); renderAwards(); renderPerfil();
+        } catch (e) {
+            console.error(e);
+            alert('Error conectando con Google Sheets.');
+        }
+    }
+
+    // ── PARSEAR CSV ───────────────────────────────────────────
+    function parseCSV(csv) {
+        const lines = csv.split('\n');
+        const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim());
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            const values = lines[i].split(',').map(v => v.replace(/"/g,'').trim());
+            if (!values.some(v => v)) continue;
+            const row = {};
+            headers.forEach((h, idx) => row[h] = values[idx] || '');
+            if (headers.includes('Fecha') && !row.Fecha && !row.Descripción && !row.Descripcion) continue;
+            data.push(row);
+        }
+        return data;
+    }
+
+    // ── HELPERS ───────────────────────────────────────────────
+    function getUsuarioActual() {
+        return culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+    }
+
+    function parseFecha(fechaStr) {
+        const p = fechaStr.split('/');
+        if (p.length === 3) return new Date(p[2], p[1]-1, p[0]);
+        return null;
+    }
+
+    function esConfirmadoPositivo(val) { return val === 'TRUE' || val === '✓'; }
+    function esConfirmadoNegativo(val) { return val === 'FALSE' || val === '✗'; }
+    function estaConfirmado(val) { return esConfirmadoPositivo(val) || esConfirmadoNegativo(val); }
+
+    // ── HOME ──────────────────────────────────────────────────
+    function renderHome() {
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+        let proximaJuntada = null, proximaIndex = -1;
+        const juntadasPasadas = [];
+
+        juntadasData.forEach((j, i) => {
+            if (!j.Fecha) return;
+            const f = parseFecha(j.Fecha);
+            if (!f) return;
+            if (f >= hoy && !proximaJuntada) { proximaJuntada = j; proximaIndex = i; }
+            else if (f < hoy) juntadasPasadas.push(j);
+        });
+
+        document.getElementById('totalJuntadas').textContent = juntadasPasadas.length;
+
+        const usuario = getUsuarioActual();
+        if (usuario) {
+            let asistidas = 0;
+            juntadasPasadas.forEach(j => { if (esConfirmadoPositivo(j[usuario.Nombre])) asistidas++; });
+            const pct = juntadasPasadas.length > 0 ? Math.round((asistidas/juntadasPasadas.length)*100) : 0;
+            let col = '#f44336';
+            if (pct>=90) col='#4CAF50'; else if (pct>=70) col='#8BC34A'; else if (pct>=40) col='#FF9800';
+            document.getElementById('totalCulposos').innerHTML = `<span style="color:${col}">${pct}%</span>`;
+        }
+
+        // Próxima juntada
+        let proximaHTML = '';
+        if (proximaJuntada && usuario) {
+            const desc = proximaJuntada.Descripción || proximaJuntada.Descripcion || '';
+            if (desc && desc !== 'undefined') {
+                const miVal = proximaJuntada[usuario.Nombre];
+                const yaConfirme = estaConfirmado(miVal);
+                const positivo = esConfirmadoPositivo(miVal);
+
+                let estadoHTML = '';
+                if (yaConfirme) {
+                    if (positivo) {
+                        estadoHTML = `
+                            <div style="text-align:center;padding:15px;background:rgba(76,175,80,0.2);border-radius:10px;margin-top:15px;border:2px solid #4CAF50;">
+                                <div style="font-size:22px;margin-bottom:6px;">✅</div>
+                                <div style="font-size:16px;font-weight:bold;color:#4CAF50;">¡Ya confirmaste asistencia!</div>
+                                <button onclick="abrirModalConfirmar(${proximaIndex})" style="margin-top:10px;background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:bold;">✏️ Editar respuesta</button>
+                            </div>`;
                     } else {
-                        mensaje = `Asististe al ${porcentaje}% de las juntadas. Sos un CULPOSO DE LEY, un verdadero legendario.`;
-                        emoji = '👑';
-                        color = '#FFD700';
+                        estadoHTML = `
+                            <div style="text-align:center;padding:15px;background:rgba(244,67,54,0.2);border-radius:10px;margin-top:15px;border:2px solid #f44336;">
+                                <div style="font-size:22px;margin-bottom:6px;">❌</div>
+                                <div style="font-size:16px;font-weight:bold;color:#f44336;">Me abstuve — no voy</div>
+                                <button onclick="abrirModalConfirmar(${proximaIndex})" style="margin-top:10px;background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:bold;">✏️ Editar respuesta</button>
+                            </div>`;
                     }
-                    
-                    mensajeMotivacional = `
-                        <div class="card" style="background: rgba(139, 77, 143, 0.2); border-left-color: ${color}; border-left-width: 4px; margin-top: 20px;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 40px; margin-bottom: 10px;">${emoji}</div>
-                                <div style="color: ${color}; font-weight: bold; font-size: 16px;">${mensaje}</div>
-                            </div>
-                        </div>
-                    `;
+                } else {
+                    estadoHTML = `
+                        <button onclick="abrirModalConfirmar(${proximaIndex})" style="width:100%;margin-top:15px;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">
+                            📝 Confirmar asistencia
+                        </button>`;
                 }
+
+                proximaHTML = `
+                    <div class="section-title" style="margin-top:10px;">🎯 Próxima Juntada</div>
+                    <div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.15) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;">
+                        <div class="card-date">${proximaJuntada.Fecha}</div>
+                        <div class="card-title" style="font-size:20px;">${desc}</div>
+                        <div class="card-details" style="margin:10px 0;">
+                            <span>🏠 ${proximaJuntada.Host || 'Sin host'}</span>
+                            ${proximaJuntada.Categoría || proximaJuntada.Categoria ? `<span>🏷️ ${proximaJuntada.Categoría || proximaJuntada.Categoria}</span>` : ''}
+                        </div>
+                        ${estadoHTML}
+                    </div>`;
             }
-            
-            document.getElementById('juntadasList').innerHTML = html + mensajeMotivacional;
-        }
-        
-        // Ver detalle de juntada
-        function verDetalleJuntada(index) {
-            const juntada = juntadasData[index];
-            
-            // Mapeo de fotos
-            const fotos = {
-                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
-                'Caamaño': 'https://i.imgur.com/N056gxD.png',
-                'Rama': 'https://i.imgur.com/8hsqIL8.png',
-                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
-                'Santi': 'https://i.imgur.com/iXHdIVT.png',
-                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
-                'Tirri': 'https://i.imgur.com/biqacxq.png',
-                'Toti': 'https://i.imgur.com/dXMpfSk.png',
-                'Cata': 'https://i.imgur.com/jhme4wb.png',
-                'Lola': 'https://i.imgur.com/qTP4eT2.png',
-                'Sami': 'https://i.imgur.com/HP41gaP.png',
-                'Leila': 'https://i.imgur.com/wcf3be4.png',
-                'Juli': 'https://i.imgur.com/cn779x3.png',
-                'Manu': 'https://i.imgur.com/BzDK66B.png',
-                'Matu': 'https://i.imgur.com/gNabdVm.png'
-            };
-            
-            // Obtener asistentes
-            const asistentes = [];
-            Object.keys(fotos).forEach(nombre => {
-                if (juntada[nombre] === '✓' || juntada[nombre] === 'TRUE') {
-                    asistentes.push({nombre, foto: fotos[nombre]});
-                }
-            });
-            
-            const html = `
-                <div style="background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 30px; border-radius: 20px; margin-top: 60px; border: 2px solid rgba(139, 77, 143, 0.5);">
-                    ${juntada['Foto Juntada'] || juntada['Foto'] ? `
-                        <div style="width: 100%; max-width: 400px; height: 250px; margin: 0 auto 25px; border-radius: 15px; background-image: url('${juntada['Foto Juntada'] || juntada['Foto']}'); background-size: cover; background-position: center; border: 3px solid #FFD700;"></div>
-                    ` : ''}
-                    
-                    <div style="text-align: center; margin-bottom: 25px;">
-                        <div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;">${juntada.Fecha || 'Fecha'}</div>
-                        <div style="color: white; font-size: 24px; font-weight: bold; margin-bottom: 10px;">${juntada.Descripción || juntada.Descripcion || 'Juntada'}</div>
-                        <div style="color: rgba(255,255,255,0.7); font-size: 14px; margin-bottom: 5px;">🏠 Host: ${juntada.Host || 'Sin host'}</div>
-                        <div style="color: rgba(255,255,255,0.7); font-size: 14px; margin-bottom: 5px;">📁 Categoría: ${juntada.Categoría || juntada.Categoria || 'Sin categoría'}</div>
-                        <div style="color: #FFD700; font-size: 18px; font-weight: bold; margin-top: 10px;">👥 ${asistentes.length} Asistentes</div>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 15px; margin-top: 25px;">
-                        ${asistentes.map(a => `
-                            <div style="text-align: center; cursor: pointer;" onclick="verPerfilCulposo('${a.nombre}')">
-                                <div style="width: 70px; height: 70px; border-radius: 50%; background-image: url('${a.foto}'); background-size: cover; background-position: center; margin: 0 auto 8px; border: 3px solid #FFD700;"></div>
-                                <div style="color: white; font-size: 12px; font-weight: bold;">${a.nombre}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('juntadaDetalleContent').innerHTML = html;
-            document.getElementById('juntadaDetalle').style.display = 'block';
-        }
-        
-        // Cerrar detalle
-        function cerrarDetalle() {
-            document.getElementById('juntadaDetalle').style.display = 'none';
-        }
-        
-        // Abrir modal de confirmación
-        function abrirModalConfirmar(indexJuntada) {
-            const juntada = juntadasData[indexJuntada];
-            const usuario = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
-            
-            if (!usuario) return;
-            
-            // Guardar el índice
-            window.proximaJuntadaIndex = indexJuntada;
-            
-            // Los 8 culposos originales
-            const culposos = ['Mateo', 'Rama', 'Tirri', 'Toti', 'Toto', 'Caamaño', 'Zabala', 'Santi'];
-            
-            // Contar confirmaciones LEYENDO DEL SHEET
-            const confirmados = [];
-            const noConfirmados = [];
-            let culpososConfirmados = 0;
-            
-            culpososData.forEach(c => {
-                const respuesta = juntada[c.Nombre];
-                if (respuesta === '✓' || respuesta === 'TRUE') {
-                    confirmados.push(c.Nombre);
-                    if (culposos.includes(c.Nombre)) culpososConfirmados++;
-                } else if (respuesta === '✗' || respuesta === 'FALSE') {
-                    noConfirmados.push(c.Nombre);
-                }
-            });
-            
-            const total = culpososData.length;
-            const hayQuorum = culpososConfirmados >= 4;
-            
-            // Verificar si YO (el usuario actual) ya confirmé
-            const miRespuesta = juntada[usuario.Nombre];
-            const yaConfirme = miRespuesta === '✓' || miRespuesta === 'TRUE' || miRespuesta === '✗' || miRespuesta === 'FALSE';
-            const confirmePositivo = miRespuesta === '✓' || miRespuesta === 'TRUE';
-            
-            // HTML de botones
-            let botonesHTML = '';
-            if (yaConfirme) {
-                // YA CONFIRMÉ
-                const esNegativo = !confirmePositivo;
-                botonesHTML = `
-                    <div style="text-align: center; padding: 20px; background: ${esNegativo ? 'rgba(244, 67, 54, 0.2)' : 'rgba(76, 175, 80, 0.2)'}; border-radius: 10px;">
-                        <div style="font-size: 18px; font-weight: bold; color: ${esNegativo ? '#f44336' : '#4CAF50'}; margin-bottom: ${esNegativo ? '5px' : '10px'};">
-                            ${esNegativo ? 'No vas. Los trolos se abstuvieron. Saludos!' : '✅ Ya confirmaste tu presencia.'}
-                        </div>
-                        ${esNegativo ? '' : ''}
-                        <button onclick="mostrarEdicion()" style="margin-top: 10px; background: rgba(255,255,255,0.2); border: 2px solid #FFD700; color: #FFD700; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                            Editar
-                        </button>
-                    </div>
-                `;
-            } else {
-                // NO CONFIRMÉ
-                botonesHTML = `
-                    <div style="color: white; font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 15px;">¿Vas a asistir?</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <button onclick="confirmarAsistencia(true)" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                            ✅ ASISTIRÉ
-                        </button>
-                        <button onclick="confirmarAsistencia(false)" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; color: white; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                            ❌ NO ASISTIRÉ
-                        </button>
-                    </div>
-                    <div style="text-align: center; margin-top: 10px; color: rgba(255,255,255,0.5); font-size: 11px; font-style: italic;">(trolos abstenerse)</div>
-                `;
-            }
-            
-            const html = `
-                <div style="background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 30px; border-radius: 20px; margin-top: 60px; border: 2px solid rgba(139, 77, 143, 0.5);">
-                    <div style="text-align: center; margin-bottom: 25px;">
-                        <div style="color: #FFD700; font-size: 14px; font-weight: bold; margin-bottom: 10px;">${juntada.Fecha}</div>
-                        <div style="color: white; font-size: 24px; font-weight: bold; margin-bottom: 10px;">${juntada.Descripción || juntada.Descripcion}</div>
-                        <div style="color: rgba(255,255,255,0.7); font-size: 14px;">🏠 ${juntada.Host || 'Sin host'}</div>
-                    </div>
-                    
-                    <!-- QUORUM -->
-                    <div style="background: ${hayQuorum ? 'rgba(76, 175, 80, 0.15)' : 'rgba(139, 77, 143, 0.15)'}; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 2px solid ${hayQuorum ? '#4CAF50' : 'rgba(139, 77, 143, 0.5)'};">
-                        <div style="text-align: center;">
-                            <div style="font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 5px; text-transform: uppercase;">Confirmaciones</div>
-                            <div style="font-size: 28px; font-weight: bold; color: ${hayQuorum ? '#4CAF50' : '#FFD700'};">${confirmados.length}/${total}</div>
-                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 5px;">Culposos: ${culpososConfirmados}/8 ${hayQuorum ? '✅ Hay quorum' : '⏳ Sin quorum'}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="margin: 25px 0;">
-                        ${botonesHTML}
-                    </div>
-                    
-                    ${confirmados.length > 0 || noConfirmados.length > 0 ? `
-                        <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.2);">
-                            ${confirmados.length > 0 ? `
-                                <div style="margin-bottom: 15px;">
-                                    <div style="color: #4CAF50; font-size: 14px; font-weight: bold; margin-bottom: 8px;">✅ Confirmaron (${confirmados.length}):</div>
-                                    <div style="color: rgba(255,255,255,0.8); font-size: 13px;">${confirmados.join(', ')}</div>
-                                </div>
-                            ` : ''}
-                            ${noConfirmados.length > 0 ? `
-                                <div>
-                                    <div style="color: #f44336; font-size: 14px; font-weight: bold; margin-bottom: 8px;">❌ No asisten (${noConfirmados.length}):</div>
-                                    <div style="color: rgba(255,255,255,0.8); font-size: 13px;">${noConfirmados.join(', ')}</div>
-                                </div>
-                            ` : ''}
-                        </div>
-                    ` : ''}
-                    
-                    <div id="mensajeConfirmacion" style="margin-top: 15px; text-align: center; display: none;"></div>
-                </div>
-            `;
-            
-            document.getElementById('modalConfirmarContent').innerHTML = html;
-            document.getElementById('modalConfirmar').style.display = 'block';
-        }
-        
-        // Mostrar edición
-        function mostrarEdicion() {
-            const mensajeDiv = document.getElementById('mensajeConfirmacion');
-            mensajeDiv.style.display = 'block';
-            mensajeDiv.innerHTML = `
-                <div style="background: rgba(139, 77, 143, 0.2); padding: 15px; border-radius: 10px;">
-                    <div style="color: white; font-size: 14px; font-weight: bold; margin-bottom: 10px;">Cambiar respuesta:</div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <button onclick="confirmarAsistencia(true)" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border: none; color: white; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                            ✅ VOY
-                        </button>
-                        <button onclick="confirmarAsistencia(false)" style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; color: white; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                            ❌ NO VOY
-                        </button>
-                    </div>
-                </div>
-            `;
+        } else if (usuario) {
+            proximaHTML = `
+                <div class="section-title" style="margin-top:10px;">🎯 Próxima Juntada</div>
+                <div class="card" style="background:rgba(139,77,143,0.1);text-align:center;">
+                    <div style="font-size:40px;margin-bottom:10px;">📅</div>
+                    <div class="card-title" style="color:rgba(255,255,255,0.7);">No hay próxima juntada programada</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:8px;">Cuando se programe una aparecerá acá</div>
+                </div>`;
         }
 
-        
-        // Cerrar modal confirmar
-        function cerrarModalConfirmar() {
-            document.getElementById('modalConfirmar').style.display = 'none';
-        }
-        
-        // Confirmar asistencia (envía a Apps Script)
-        async function confirmarAsistencia(asistira) {
-            const mensajeDiv = document.getElementById('mensajeConfirmacion');
-            mensajeDiv.style.display = 'block';
-            mensajeDiv.innerHTML = '<div style="color: #FFD700;">⏳ Guardando...</div>';
-            
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        email: currentUser,
-                        fila: window.proximaJuntadaIndex + 2,
-                        asistira: asistira
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    mensajeDiv.innerHTML = `<div style="color: #4CAF50; font-weight: bold;">✅ ${result.mensaje || 'Confirmación guardada'}</div>`;
-                    
-                    // Recargar SOLO juntadas y reabrir modal
-                    setTimeout(async () => {
-                        const juntadasURL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Hoja%201`;
-                        const response = await fetch(juntadasURL);
-                        const csv = await response.text();
-                        juntadasData = parseCSV(csv);
-                        
-                        // Reabrir modal con datos actualizados
-                        abrirModalConfirmar(window.proximaJuntadaIndex);
-                    }, 800);
-                } else {
-                    mensajeDiv.innerHTML = `<div style="color: #f44336;">❌ Error: ${result.error}</div>`;
-                }
-            } catch (error) {
-                mensajeDiv.innerHTML = `<div style="color: #f44336;">❌ Error de conexión</div>`;
-                console.error('Error:', error);
-            }
-        }
-        
-        // Ver perfil de otro culposo
-        function verPerfilCulposo(nombreCulposo) {
-            // Cerrar modal de juntada si está abierto
-            cerrarDetalle();
-            
-            // Cambiar a tab de perfil (ahora es la tab 5, no la 3)
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab')[5].classList.add('active'); // Tab de perfil
-            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
-            document.getElementById('perfil').classList.add('active');
-            
-            // Renderizar perfil del culposo seleccionado
-            renderPerfilCulposo(nombreCulposo);
-        }
-        
-        // Renderizar perfil de un culposo específico
-        function renderPerfilCulposo(nombreCulposo) {
-            const usuario = culpososData.find(c => c.Nombre === nombreCulposo);
-            
-            if (!usuario) {
-                document.getElementById('perfilData').innerHTML = `
-                    <div class="card">
-                        <p style="color: rgba(255,255,255,0.7);">No se encontró el perfil de ${nombreCulposo}</p>
+        const ultimas = juntadasPasadas.slice(-3).reverse();
+        const ultimasHTML = ultimas.map(j => {
+            const ri = juntadasData.indexOf(j);
+            const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
+            return `
+                <div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    ${foto ? `<div style="width:100%;height:120px;background-image:url('${foto}');background-size:cover;background-position:center;border-radius:10px;margin-bottom:12px;"></div>` : ''}
+                    <div class="card-date">${j.Fecha||''}</div>
+                    <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                    <div class="card-details">
+                        <span>🏠 ${j.Host||'Sin host'}</span>
+                        <span>👥 ${j['N° Asist']||j['N° asistentes']||'0'} asistentes</span>
                     </div>
-                `;
-                return;
-            }
-            
-            const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
-            const isPerfecto = percentage == 100;
-            // Colores según asistencia
-let colorAsistencia = '#f44336';
-if (percentage >= 100) colorAsistencia = '#4CAF50';
-else if (percentage >= 90) colorAsistencia = '#8BC34A';
-else if (percentage >= 60) colorAsistencia = '#FFD700';
-else if (percentage >= 35) colorAsistencia = '#FF9800';
-            
-            // Obtener premios del usuario
-            const premiosUsuario = premiosData.filter(p => 
-                p.Ganador && p.Ganador.trim() === usuario.Nombre && p.Tipo === 'Persona'
-            );
-            
-            const culposoOro = premiosUsuario.filter(p => p.Terna && p.Terna.includes('CULPOSO DE ORO'));
-            const otrosPremios = premiosUsuario.filter(p => p.Terna && !p.Terna.includes('CULPOSO DE ORO'));
-            
-            let premiosHTML = '';
-            if (premiosUsuario.length > 0) {
-                const premiosListHTML = [
-                    ...culposoOro.map(p => 
-                        `<div style="margin: 12px 0; padding: 12px; background: rgba(255, 215, 0, 0.15); border-radius: 8px;">
-                            <span style="font-size: 18px; font-weight: bold; color: #FFD700;">
-                                🏆 CULPOSO DE ORO (${p.Año || ''})
-                            </span>
-                        </div>`
-                    ),
-                    ...otrosPremios.map(p => 
-                        `<div style="margin: 8px 0; color: rgba(255,255,255,0.9);">
-                            🥇 <span style="text-transform: uppercase; font-weight: bold;">${p.Terna || 'PREMIO'} (${p.Año || ''})</span>
-                        </div>`
-                    )
-                ].join('');
-                
-                premiosHTML = `
-                    <div class="section-title" style="margin-top: 25px;">🏆 Palmarés</div>
-                    <div class="card" style="padding: 20px;">
-                        ${premiosListHTML}
+                </div>`;
+        }).join('') || '<p style="color:rgba(255,255,255,0.6);">No hay juntadas registradas</p>';
+
+        document.getElementById('ultimasJuntadas').innerHTML =
+            proximaHTML +
+            (juntadasPasadas.length > 0 ? `<div class="section-title" style="margin-top:25px;">🔥 Juntadas en 2026</div>` : '') +
+            ultimasHTML;
+    }
+
+    // ── RANKING ───────────────────────────────────────────────
+    function renderRanking() {
+        const sorted = [...culpososData].sort((a,b) => parseFloat(b.Porcentaje)-parseFloat(a.Porcentaje));
+        const html = sorted.map((c, i) => {
+            const pct = parseFloat(c.Porcentaje).toFixed(0);
+            const foto = FOTOS[c.Nombre] || '';
+            return `
+                <div class="ranking-item ${i<3?'top3':''}">
+                    <div class="rank-number">${i+1}</div>
+                    <div class="rank-avatar" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;${foto?`background-image:url('${foto}');background-size:cover;background-position:center;`:''}">
+                        ${!foto?'🧔':''}
                     </div>
-                `;
-            }
-            
-            // Mapeo de fotos
-            const fotos = {
-                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
-                'Caamaño': 'https://i.imgur.com/N056gxD.png',
-                'Rama': 'https://i.imgur.com/8hsqIL8.png',
-                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
-                'Santi': 'https://i.imgur.com/iXHdIVT.png',
-                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
-                'Tirri': 'https://i.imgur.com/biqacxq.png',
-                'Toti': 'https://i.imgur.com/dXMpfSk.png',
-                'Cata': 'https://i.imgur.com/jhme4wb.png',
-                'Lola': 'https://i.imgur.com/qTP4eT2.png',
-                'Sami': 'https://i.imgur.com/HP41gaP.png',
-                'Leila': 'https://i.imgur.com/wcf3be4.png',
-                'Juli': 'https://i.imgur.com/cn779x3.png',
-                'Manu': 'https://i.imgur.com/BzDK66B.png',
-                'Matu': 'https://i.imgur.com/gNabdVm.png'
-            };
-            
-            const fotoUrl = fotos[usuario.Nombre] || '';
-            
-            // Verificar si es el propio perfil
-            const usuarioLogueado = culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
-            const esMiPerfil = usuarioLogueado && usuarioLogueado.Nombre === nombreCulposo;
-            
-            const html = `
-                ${!esMiPerfil ? `
-                    <div style="text-align: center; margin-bottom: 15px;">
-                        <button onclick="renderPerfil()" style="background: rgba(139, 77, 143, 0.3); border: 2px solid #8B4D8F; color: #FFD700; padding: 8px 15px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer;">
-                            ← Volver a mi perfil
-                        </button>
+                    <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
+                        <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge">👑 PERFECTO</span>':''}</div>
+                        <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
                     </div>
-                ` : ''}
-                
-                ${fotoUrl ? `
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <img src="${fotoUrl}" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #FFD700; object-fit: cover;">
-                    </div>
-                ` : ''}
-                
-                <div class="card" style="border-left-color: ${isPerfecto ? '#FFD700' : '#8B4D8F'};">
-                    <div class="card-title" style="font-size: 24px;">
-                        ${usuario.Nombre}
-                        ${isPerfecto ? '<span class="badge">👑 PERFECTO</span>' : ''}
-                    </div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: ${colorAsistencia};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div>
-                        <div class="stat-label">Asistencias</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" style="color: ${colorAsistencia};">${percentage}%</div>
-                        <div class="stat-label">Porcentaje</div>
-                    </div>
-                </div>
-                
-                ${isPerfecto ? `
-                    <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700;">
-                        <div class="card-title">🏆 ¡CULPOSO PERFECTO!</div>
-                        <div class="card-details">No se perdió ninguna juntada. Un verdadero crack.</div>
-                    </div>
-                ` : ''}
-                
-                ${premiosHTML}
-            `;
-            
-            document.getElementById('perfilData').innerHTML = html;
-        }
-        
-        // Renderizar AWARDS
-        function renderAwards() {
-            const yearFilter = document.getElementById('yearFilter').value;
-            
-            // Mapeo de fotos
-            const fotos = {
-                'Toto': 'https://i.imgur.com/Y8NOVgH.png',
-                'Caamaño': 'https://i.imgur.com/N056gxD.png',
-                'Rama': 'https://i.imgur.com/8hsqIL8.png',
-                'Zabala': 'https://i.imgur.com/YrT8QyX.png',
-                'Santi': 'https://i.imgur.com/iXHdIVT.png',
-                'Mateo': 'https://i.imgur.com/MY6KbRq.png',
-                'Tirri': 'https://i.imgur.com/biqacxq.png',
-                'Toti': 'https://i.imgur.com/dXMpfSk.png',
-                'Cata': 'https://i.imgur.com/jhme4wb.png',
-                'Lola': 'https://i.imgur.com/qTP4eT2.png',
-                'Sami': 'https://i.imgur.com/HP41gaP.png',
-                'Leila': 'https://i.imgur.com/wcf3be4.png',
-                'Juli': 'https://i.imgur.com/cn779x3.png',
-                'Manu': 'https://i.imgur.com/BzDK66B.png',
-                'Matu': 'https://i.imgur.com/gNabdVm.png'
-            };
-            
-            // Filtrar premios por año seleccionado
-            const premiosFiltrados = premiosData.filter(p => p.Año == yearFilter);
-            
-            // Separar: CULPOSO DE ORO va primero
-            const culposoOro = premiosFiltrados.filter(p => 
-                p.Tipo === 'Persona' && p.Terna && p.Terna.toUpperCase().includes('CULPOSO DE ORO')
-            );
-            const premiosPersona = premiosFiltrados.filter(p => 
-                p.Tipo === 'Persona' && p.Terna && !p.Terna.toUpperCase().includes('CULPOSO DE ORO')
-            );
-            const premiosJuntada = premiosFiltrados.filter(p => 
-                p.Tipo === 'Juntada'
-            );
-            
-            let html = '';
-            
-            // 1. CULPOSO DE ORO (máximo premio)
-            if (culposoOro.length > 0) {
-                culposoOro.forEach(premio => {
-                    const fotoUrl = fotos[premio.Ganador] || '';
-                    html += `
-                        <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(255, 215, 0, 0.05) 100%); padding: 30px; border-radius: 20px; margin-bottom: 30px; border: 3px solid #FFD700; text-align: center;">
-                            ${fotoUrl ? `
-                                <img src="${fotoUrl}" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid #FFD700; object-fit: cover; margin-bottom: 15px;">
-                            ` : ''}
-                            <div style="font-size: 40px; margin-bottom: 10px;">🏆</div>
-                            <div style="color: #FFD700; font-size: 24px; font-weight: bold; margin-bottom: 10px;">CULPOSO DE ORO ${yearFilter}</div>
-                            <div style="color: white; font-size: 28px; font-weight: bold;">${premio.Ganador || 'Sin ganador'}</div>
-                        </div>
-                    `;
-                });
-            }
-            
-            // 2. PREMIOS INDIVIDUALES
-            if (premiosPersona.length > 0) {
-                html += '<div class="section-title" style="margin-top: 25px;">🥇 Premios Individuales</div>';
-                premiosPersona.forEach(premio => {
-                    const fotoUrl = fotos[premio.Ganador] || '';
-                    html += `
-                        <div class="card" style="display: flex; align-items: center; gap: 15px;">
-                            ${fotoUrl ? `
-                                <img src="${fotoUrl}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #FFD700; object-fit: cover;">
-                            ` : '<div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%); display: flex; align-items: center; justify-content: center; font-size: 24px;">🏅</div>'}
-                            <div style="flex: 1;">
-                                <div style="color: #FFD700; font-size: 14px; font-weight: bold; text-transform: uppercase;">${premio.Terna || 'Premio'}</div>
-                                <div style="color: white; font-size: 16px; font-weight: bold; margin-top: 3px;">${premio.Ganador || 'Sin ganador'}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            
-            // 3. PREMIOS DE JUNTADAS
-            if (premiosJuntada.length > 0) {
-                html += '<div class="section-title" style="margin-top: 25px;">🎉 Mejores Juntadas</div>';
-                premiosJuntada.forEach(premio => {
-                    html += `
-                        <div class="card">
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                                <div style="font-size: 24px;">🏆</div>
-                                <div style="color: #FFD700; font-size: 14px; font-weight: bold; text-transform: uppercase; flex: 1;">${premio.Terna || 'Premio'}</div>
-                            </div>
-                            <div style="color: white; font-size: 16px; font-weight: bold;">${premio.Ganador || 'Sin ganador'}</div>
-                        </div>
-                    `;
-                });
-            }
-            
-            if (html === '') {
-                html = '<p style="color: rgba(255,255,255,0.6); text-align: center; padding: 40px;">No hay premios registrados para ' + yearFilter + '</p>';
-            }
-            
-            document.getElementById('awardsList').innerHTML = html;
-        }
-        
-                // CALCULADORA DE GASTOS
-        let gastosArray = [];
-        
-        function agregarGasto() {
-            const id = Date.now();
-            gastosArray.push({
-                id: id,
-                quien: '',
-                concepto: '',
-                monto: 0,
-                consumidores: []
-            });
-            renderGastos();
-        }
-        
-        function eliminarGasto(id) {
-            gastosArray = gastosArray.filter(g => g.id !== id);
-            renderGastos();
-        }
-        
-        function renderGastos() {
-            const container = document.getElementById('gastosContainer');
-            
-            if (gastosArray.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
-                        <div style="font-size: 48px; margin-bottom: 15px;">💸</div>
-                        <div>No hay gastos agregados</div>
-                        <div style="font-size: 13px; margin-top: 8px;">Presioná "Agregar Gasto" para empezar</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            const todosLosNombres = ['Toto', 'Caamaño', 'Rama', 'Zabala', 'Santi', 'Mateo', 'Tirri', 'Toti', 'Cata', 'Lola', 'Sami', 'Leila', 'Juli', 'Manu', 'Matu'];
-            
-            let html = '';
-            gastosArray.forEach((gasto, index) => {
-                html += `
-                    <div class="card" style="margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <div style="color: #FFD700; font-weight: bold;">Gasto ${index + 1}</div>
-                            <button onclick="eliminarGasto(${gasto.id})" style="background: rgba(244, 67, 54, 0.2); border: 2px solid #f44336; color: #f44336; padding: 5px 10px; border-radius: 5px; font-size: 12px; cursor: pointer;">
-                                ✕ Eliminar
-                            </button>
-                        </div>
-                        
-                        <div style="margin-bottom: 10px;">
-                            <label style="color: rgba(255,255,255,0.8); font-size: 13px; display: block; margin-bottom: 5px;">¿Quién pagó?</label>
-                            <select onchange="gastosArray[${index}].quien = this.value" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 14px;">
-                                <option value="">Seleccionar...</option>
-                                ${todosLosNombres.map(n => `<option value="${n}" ${gasto.quien === n ? 'selected' : ''}>${n}</option>`).join('')}
-                            </select>
-                        </div>
-                        
-                        <div style="margin-bottom: 10px;">
-                            <label style="color: rgba(255,255,255,0.8); font-size: 13px; display: block; margin-bottom: 5px;">Concepto</label>
-                            <input type="text" value="${gasto.concepto}" oninput="gastosArray[${index}].concepto = this.value" placeholder="Ej: Carne, Pan, Carbón..." style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 14px;">
-                        </div>
-                        
-                        <div style="margin-bottom: 10px;">
-                            <label style="color: rgba(255,255,255,0.8); font-size: 13px; display: block; margin-bottom: 5px;">Monto ($)</label>
-                            <input type="number" value="${gasto.monto || ''}" oninput="gastosArray[${index}].monto = parseFloat(this.value) || 0" placeholder="0" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 14px;">
-                        </div>
-                        
+                    <div class="rank-percentage">${pct}%</div>
+                </div>`;
+        }).join('');
+        document.getElementById('rankingList').innerHTML = html;
+    }
+
+    // ── JUNTADAS ──────────────────────────────────────────────
+    function renderJuntadas() {
+        const usuario = getUsuarioActual();
+        const nombreUsuario = usuario ? usuario.Nombre : '';
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+
+        const pasadas = juntadasData.filter(j => {
+            if (!j.Fecha) return true;
+            const f = parseFecha(j.Fecha);
+            return f ? f < hoy : true;
+        });
+
+        const html = pasadas.slice().reverse().map(j => {
+            const ri = juntadasData.indexOf(j);
+            const asistio = esConfirmadoPositivo(j[nombreUsuario]);
+            const foto = j['Foto Juntada']||j['Foto juntada']||'';
+            return `
+                <div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    ${foto?`<div style="width:100%;height:150px;background-image:url('${foto}');background-size:cover;background-position:center;border-radius:10px;margin-bottom:15px;"></div>`:''}
+                    <div class="card-date">${j.Fecha||'Fecha'}</div>
+                    <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                    <div class="card-details" style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
                         <div>
-                            <label style="color: rgba(255,255,255,0.8); font-size: 13px; display: block; margin-bottom: 8px;">¿Quiénes consumen/usan?</label>
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                                ${todosLosNombres.map(nombre => `
-                                    <label style="display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.9); font-size: 13px; cursor: pointer;">
-                                        <input type="checkbox" ${gasto.consumidores.includes(nombre) ? 'checked' : ''} onchange="
-                                            if (this.checked) {
-                                                if (!gastosArray[${index}].consumidores.includes('${nombre}')) {
-                                                    gastosArray[${index}].consumidores.push('${nombre}');
-                                                }
-                                            } else {
-                                                gastosArray[${index}].consumidores = gastosArray[${index}].consumidores.filter(n => n !== '${nombre}');
-                                            }
-                                        " style="cursor: pointer;">
-                                        ${nombre}
-                                    </label>
-                                `).join('')}
-                            </div>
+                            <span>🏠 ${j.Host||'Sin host'}</span>
+                            <span style="margin-left:10px;">👥 ${j['N° Asist']||j['N° asistentes']||'0'}</span>
                         </div>
+                        ${nombreUsuario?`<span style="display:inline-block;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>`:''}
                     </div>
-                `;
-            });
-            
-            container.innerHTML = html;
+                </div>`;
+        }).join('');
+
+        let motivacional = '';
+        if (nombreUsuario && usuario) {
+            const total = parseInt(usuario['Total Juntadas'])||0;
+            const asist = parseInt(usuario.Asistencias)||0;
+            const pct = total>0?Math.round((asist/total)*100):0;
+            let msg,emoji,col;
+            if (pct<40){msg=`Asististe al ${pct}% de las juntadas. Estás MUY ausente loco, metele más onda.`;emoji='😴';col='#f44336';}
+            else if(pct<70){msg=`Asististe al ${pct}% de las juntadas. Venís bien, pero no te relajes.`;emoji='💪';col='#FF9800';}
+            else if(pct<90){msg=`Asististe al ${pct}% de las juntadas. Sos un culposo comprometido, seguí así.`;emoji='🔥';col='#4CAF50';}
+            else{msg=`Asististe al ${pct}% de las juntadas. Sos un CULPOSO DE LEY, un verdadero legendario.`;emoji='👑';col='#FFD700';}
+            motivacional=`<div class="card" style="background:rgba(139,77,143,0.2);border-left-color:${col};margin-top:20px;"><div style="text-align:center;"><div style="font-size:40px;margin-bottom:10px;">${emoji}</div><div style="color:${col};font-weight:bold;font-size:16px;">${msg}</div></div></div>`;
         }
-        
-        function calcularDivision() {
-            const resultado = document.getElementById('resultadoCalculo');
-            
-            // Validar
-            if (gastosArray.length === 0) {
-                resultado.innerHTML = '<div class="card" style="background: rgba(244, 67, 54, 0.2); border-left-color: #f44336;"><div style="color: #f44336;">⚠️ No hay gastos para calcular</div></div>';
-                return;
-            }
-            
-            for (let g of gastosArray) {
-                if (!g.quien || !g.concepto || g.monto <= 0 || g.consumidores.length === 0) {
-                    resultado.innerHTML = '<div class="card" style="background: rgba(244, 67, 54, 0.2); border-left-color: #f44336;"><div style="color: #f44336;">⚠️ Completá todos los campos de cada gasto</div></div>';
-                    return;
-                }
-            }
-            
-            // Calcular balance de cada persona
-            const balances = {};
-            const todosLosNombres = ['Toto', 'Caamaño', 'Rama', 'Zabala', 'Santi', 'Mateo', 'Tirri', 'Toti', 'Cata', 'Lola', 'Sami', 'Leila', 'Juli', 'Manu', 'Matu'];
-            todosLosNombres.forEach(n => balances[n] = 0);
-            
-            // Por cada gasto
-            gastosArray.forEach(gasto => {
-                const costoPorPersona = gasto.monto / gasto.consumidores.length;
-                
-                // Los que consumen deben pagar
-                gasto.consumidores.forEach(consumidor => {
-                    balances[consumidor] -= costoPorPersona;
-                });
-                
-                // El que pagó debe recibir
-                balances[gasto.quien] += gasto.monto;
-            });
-            
-            // Separar quién debe y quién recibe
-            const deudores = [];
-            const acreedores = [];
-            
-            Object.entries(balances).forEach(([nombre, balance]) => {
-                if (Math.abs(balance) < 1) return; // Ignorar centavos
-                
-                if (balance < 0) {
-                    deudores.push({ nombre, monto: Math.abs(balance) });
-                } else if (balance > 0) {
-                    acreedores.push({ nombre, monto: balance });
-                }
-            });
-            
-            // Generar transferencias óptimas
-            const transferencias = [];
-            const deudoresCopy = [...deudores];
-            const acreedoresCopy = [...acreedores];
-            
-            while (deudoresCopy.length > 0 && acreedoresCopy.length > 0) {
-                const deudor = deudoresCopy[0];
-                const acreedor = acreedoresCopy[0];
-                
-                const monto = Math.min(deudor.monto, acreedor.monto);
-                
-                transferencias.push({
-                    de: deudor.nombre,
-                    a: acreedor.nombre,
-                    monto: monto
-                });
-                
-                deudor.monto -= monto;
-                acreedor.monto -= monto;
-                
-                if (deudor.monto < 1) deudoresCopy.shift();
-                if (acreedor.monto < 1) acreedoresCopy.shift();
-            }
-            
-            // Mostrar resultado
-            const totalGastado = gastosArray.reduce((sum, g) => sum + g.monto, 0);
-            
-            let html = `
-                <div class="card" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.15) 0%, rgba(76, 175, 80, 0.05) 100%); border-left-color: #4CAF50;">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <div style="font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 5px;">TOTAL GASTADO</div>
-                        <div style="font-size: 32px; font-weight: bold; color: #4CAF50;">$${totalGastado.toLocaleString('es-AR')}</div>
-                    </div>
-                    
-                    <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;">
-                        <div style="color: #FFD700; font-weight: bold; margin-bottom: 15px; text-align: center;">💸 TRANSFERENCIAS A REALIZAR</div>
-                        ${transferencias.map(t => `
-                            <div style="background: rgba(139, 77, 143, 0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                                <div style="color: white; font-size: 14px;">
-                                    <span style="font-weight: bold;">${t.de}</span> → <span style="font-weight: bold; color: #4CAF50;">${t.a}</span>
-                                </div>
-                                <div style="color: #FFD700; font-weight: bold; font-size: 16px;">$${Math.round(t.monto).toLocaleString('es-AR')}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    
-                    <button onclick="compartirResultado()" style="width: 100%; margin-top: 15px; background: rgba(37, 211, 102, 0.2); border: 2px solid #25D366; color: #25D366; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
-                        📱 Compartir por WhatsApp
-                    </button>
+
+        document.getElementById('juntadasList').innerHTML = html + motivacional;
+    }
+
+    // ── DETALLE JUNTADA ───────────────────────────────────────
+    function verDetalleJuntada(index) {
+        const j = juntadasData[index];
+        const usuario = getUsuarioActual();
+        const asistentes = Object.keys(FOTOS).filter(n => esConfirmadoPositivo(j[n]));
+
+        // Mostrar botones editar/eliminar solo si soy el host o admin
+        const esHost = usuario && j.Host && j.Host.includes(usuario.Nombre);
+        const botonesAdmin = esHost ? `
+            <div style="display:flex;gap:10px;margin-top:20px;">
+                <button onclick="abrirModalEditarJuntada(${index})" style="flex:1;background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar</button>
+                <button onclick="confirmarEliminar(${index})" style="flex:1;background:rgba(244,67,54,0.15);border:2px solid #f44336;color:#f44336;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
+            </div>` : '';
+
+        const html = `
+            <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
+                ${j['Foto Juntada']||j['Foto']?`<div style="width:100%;max-width:400px;height:250px;margin:0 auto 25px;border-radius:15px;background-image:url('${j['Foto Juntada']||j['Foto']}');background-size:cover;background-position:center;border:3px solid #FFD700;"></div>`:''}
+                <div style="text-align:center;margin-bottom:25px;">
+                    <div style="color:#FFD700;font-size:14px;font-weight:bold;margin-bottom:10px;">${j.Fecha||'Fecha'}</div>
+                    <div style="color:white;font-size:24px;font-weight:bold;margin-bottom:10px;">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                    <div style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:5px;">🏠 Host: ${j.Host||'Sin host'}</div>
+                    ${j.Categoría||j.Categoria?`<div style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:5px;">🏷️ Categoría: ${j.Categoría||j.Categoria}</div>`:''}
+                    <div style="color:#FFD700;font-size:18px;font-weight:bold;margin-top:10px;">👥 ${asistentes.length} Asistentes</div>
                 </div>
-            `;
-            
-            resultado.innerHTML = html;
-        }
-        
-        function compartirResultado() {
-            const totalGastado = gastosArray.reduce((sum, g) => sum + g.monto, 0);
-            
-            let texto = `💰 *DIVISIÓN DE GASTOS - LA CULPA*\n\n`;
-            texto += `Total gastado: $${totalGastado.toLocaleString('es-AR')}\n\n`;
-            
-            gastosArray.forEach((g, i) => {
-                texto += `${i + 1}. ${g.concepto}: $${g.monto.toLocaleString('es-AR')} (${g.quien})\n`;
-            });
-            
-            texto += `\n💸 *TRANSFERENCIAS:*\n`;
-            
-            // Calcular balances
-            const balances = {};
-            const todosLosNombres = ['Toto', 'Caamaño', 'Rama', 'Zabala', 'Santi', 'Mateo', 'Tirri', 'Toti', 'Cata', 'Lola', 'Sami', 'Leila', 'Juli', 'Manu', 'Matu'];
-            todosLosNombres.forEach(n => balances[n] = 0);
-            
-            gastosArray.forEach(gasto => {
-                const costoPorPersona = gasto.monto / gasto.consumidores.length;
-                gasto.consumidores.forEach(c => balances[c] -= costoPorPersona);
-                balances[gasto.quien] += gasto.monto;
-            });
-            
-            // Calcular transferencias óptimas
-            const deudores = [];
-            const acreedores = [];
-            
-            Object.entries(balances).forEach(([nombre, balance]) => {
-                if (Math.abs(balance) < 1) return;
-                if (balance < 0) deudores.push({ nombre, monto: Math.abs(balance) });
-                else if (balance > 0) acreedores.push({ nombre, monto: balance });
-            });
-            
-            const transferencias = [];
-            const deudoresCopy = [...deudores];
-            const acreedoresCopy = [...acreedores];
-            
-            while (deudoresCopy.length > 0 && acreedoresCopy.length > 0) {
-                const deudor = deudoresCopy[0];
-                const acreedor = acreedoresCopy[0];
-                const monto = Math.min(deudor.monto, acreedor.monto);
-                
-                transferencias.push({
-                    de: deudor.nombre,
-                    a: acreedor.nombre,
-                    monto: monto
-                });
-                
-                deudor.monto -= monto;
-                acreedor.monto -= monto;
-                
-                if (deudor.monto < 1) deudoresCopy.shift();
-                if (acreedor.monto < 1) acreedoresCopy.shift();
-            }
-            
-            // Generar texto con transferencias
-            transferencias.forEach(t => {
-                texto += `${t.de} → ${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}\n`;
-            });
-            
-            const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
-            window.open(url, '_blank');
-        }
-        
-                // PROPONER JUNTADA
-        function abrirModalProponerJuntada() {
-            const todosLosNombres = ['Toto', 'Caamaño', 'Rama', 'Zabala', 'Santi', 'Mateo', 'Tirri', 'Toti'];
-            
-            const html = `
-                <div style="background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%); padding: 30px; border-radius: 20px; margin-top: 60px; border: 2px solid rgba(139, 77, 143, 0.5);">
-                    <div style="text-align: center; margin-bottom: 25px;">
-                        <div style="font-size: 32px; margin-bottom: 10px;">🎉</div>
-                        <div style="color: #FFD700; font-size: 24px; font-weight: bold;">Proponer Juntada</div>
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label style="color: rgba(255,255,255,0.9); font-size: 14px; display: block; margin-bottom: 8px;">📅 Fecha</label>
-                        <input type="date" id="propFecha" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 14px;">
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                        <label style="color: rgba(255,255,255,0.9); font-size: 14px; display: block; margin-bottom: 8px;">🏠 Host</label>
-                        <select id="propHost" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 14px;">
-                            <option value="">Seleccionar...</option>
-                            ${todosLosNombres.map(n => `<option value="${n}">${n}</option>`).join('')}
-                        </select>
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <label style="color: rgba(255,255,255,0.9); font-size: 14px; display: block; margin-bottom: 8px;">📝 Descripción</label>
-                        <input type="text" id="propDescripcion" placeholder="Ej: Asado en lo de..." style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(139, 77, 143, 0.3); background: rgba(30, 30, 63, 0.5); color: white; font-size: 14px;">
-                    </div>
-                    
-                    <button onclick="enviarPropuesta()" style="width: 100%; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); border: none; color: #1E1E3F; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                        🚀 Proponer
-                    </button>
-                    
-                    <div id="mensajePropuesta" style="margin-top: 15px; text-align: center; display: none;"></div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:15px;margin-top:25px;">
+                    ${asistentes.map(n=>`
+                        <div style="text-align:center;cursor:pointer;" onclick="verPerfilCulposo('${n}')">
+                            <div style="width:70px;height:70px;border-radius:50%;background-image:url('${FOTOS[n]}');background-size:cover;background-position:center;margin:0 auto 8px;border:3px solid #FFD700;"></div>
+                            <div style="color:white;font-size:12px;font-weight:bold;">${n}</div>
+                        </div>`).join('')}
                 </div>
-            `;
-            
-            document.getElementById('modalProponerContent').innerHTML = html;
-            document.getElementById('modalProponerJuntada').style.display = 'block';
+                ${botonesAdmin}
+            </div>`;
+
+        document.getElementById('juntadaDetalleContent').innerHTML = html;
+        document.getElementById('juntadaDetalle').style.display = 'block';
+    }
+
+    function cerrarDetalle() { document.getElementById('juntadaDetalle').style.display = 'none'; }
+
+    // ── CONFIRMAR ELIMINAR ────────────────────────────────────
+    function confirmarEliminar(index) {
+        const j = juntadasData[index];
+        const desc = j.Descripción || j.Descripcion || 'esta juntada';
+        if (confirm(`¿Seguro que querés eliminar "${desc}" del ${j.Fecha}? Esta acción no se puede deshacer.`)) {
+            eliminarJuntada(index);
         }
-        
-        function cerrarModalProponerJuntada() {
-            document.getElementById('modalProponerJuntada').style.display = 'none';
+    }
+
+    async function eliminarJuntada(index) {
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ accion: 'eliminar_juntada', fila: index + 2 })
+            });
+            const res = await r.json();
+            if (res.success) {
+                alert('✅ Juntada eliminada');
+                cerrarDetalle();
+                await recargarJuntadas();
+                renderHome(); renderJuntadas();
+            } else { alert('❌ Error: ' + res.error); }
+        } catch { alert('❌ Error de conexión'); }
+    }
+
+    // ── MODAL EDITAR JUNTADA ──────────────────────────────────
+    function abrirModalEditarJuntada(index) {
+        cerrarDetalle();
+        const j = juntadasData[index];
+        window.editandoIndex = index;
+
+        // Convertir fecha DD/MM/YYYY a YYYY-MM-DD para el input
+        let fechaInput = '';
+        if (j.Fecha) {
+            const p = j.Fecha.split('/');
+            if (p.length===3) fechaInput = `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
         }
-        
-        async function enviarPropuesta() {
-            const fecha = document.getElementById('propFecha').value;
-            const host = document.getElementById('propHost').value;
-            const descripcion = document.getElementById('propDescripcion').value;
-            const mensajeDiv = document.getElementById('mensajePropuesta');
-            
-            // Validar
-            if (!fecha || !host || !descripcion) {
-                mensajeDiv.style.display = 'block';
-                mensajeDiv.innerHTML = '<div style="color: #f44336;">⚠️ Completá todos los campos</div>';
-                return;
+
+        const hostOptions = CULPOSOS_HOSTS.map(n =>
+            `<option value="${n}" ${j.Host===n?'selected':''}>${n}</option>`
+        ).join('');
+
+        const catActual = j.Categoría || j.Categoria || '';
+        const catOptions = CATEGORIAS.map(c =>
+            `<option value="${c}" ${catActual===c?'selected':''}>${c}</option>`
+        ).join('');
+
+        document.getElementById('modalEditarContent').innerHTML = `
+            <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
+                <div style="text-align:center;margin-bottom:25px;">
+                    <div style="font-size:28px;margin-bottom:8px;">✏️</div>
+                    <div style="color:#FFD700;font-size:22px;font-weight:bold;">Editar Juntada</div>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📅 Fecha</label>
+                    <input type="date" id="editFecha" value="${fechaInput}" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏠 Host</label>
+                    <select id="editHost" class="form-select">${hostOptions}</select>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📝 Descripción</label>
+                    <input type="text" id="editDescripcion" value="${j.Descripción||j.Descripcion||''}" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏷️ Categoría</label>
+                    <select id="editCategoria" class="form-select">
+                        <option value="">Sin categoría</option>
+                        ${catOptions}
+                    </select>
+                </div>
+                <button onclick="enviarEdicion()" style="width:100%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">💾 Guardar cambios</button>
+                <div id="mensajeEdicion" style="margin-top:15px;text-align:center;display:none;"></div>
+            </div>`;
+
+        document.getElementById('modalEditarJuntada').style.display = 'block';
+    }
+
+    function cerrarModalEditarJuntada() { document.getElementById('modalEditarJuntada').style.display = 'none'; }
+
+    async function enviarEdicion() {
+        const fecha = document.getElementById('editFecha').value;
+        const host = document.getElementById('editHost').value;
+        const descripcion = document.getElementById('editDescripcion').value;
+        const categoria = document.getElementById('editCategoria').value;
+        const msg = document.getElementById('mensajeEdicion');
+
+        if (!fecha||!host||!descripcion) {
+            msg.style.display='block';
+            msg.innerHTML='<div style="color:#f44336;">⚠️ Completá todos los campos</div>';
+            return;
+        }
+        const [y,m,d] = fecha.split('-');
+        const fechaFmt = `${d}/${m}/${y}`;
+        msg.style.display='block'; msg.innerHTML='<div style="color:#FFD700;">⏳ Guardando...</div>';
+
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ accion:'editar_juntada', fila: window.editandoIndex+2, fecha:fechaFmt, host, descripcion, categoria })
+            });
+            const res = await r.json();
+            if (res.success) {
+                msg.innerHTML='<div style="color:#4CAF50;font-weight:bold;">✅ ¡Juntada actualizada!</div>';
+                setTimeout(async ()=>{ cerrarModalEditarJuntada(); await recargarJuntadas(); renderHome(); renderJuntadas(); }, 1500);
+            } else { msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`; }
+        } catch { msg.innerHTML='<div style="color:#f44336;">❌ Error de conexión</div>'; }
+    }
+
+    // ── MODAL CONFIRMAR ASISTENCIA ────────────────────────────
+    function abrirModalConfirmar(indexJuntada) {
+        const j = juntadasData[indexJuntada];
+        const usuario = getUsuarioActual();
+        if (!usuario) return;
+        window.proximaJuntadaIndex = indexJuntada;
+
+        const culpososOriginales = ['Mateo','Rama','Tirri','Toti','Toto','Caamaño','Zabala','Santi'];
+        const confirmados = [], noConfirmados = [];
+        let culpososConf = 0;
+
+        culpososData.forEach(c => {
+            const val = j[c.Nombre];
+            if (esConfirmadoPositivo(val)) {
+                confirmados.push(c.Nombre);
+                if (culpososOriginales.includes(c.Nombre)) culpososConf++;
+            } else if (esConfirmadoNegativo(val)) {
+                noConfirmados.push(c.Nombre);
             }
-            
-            // Convertir fecha a DD/MM/YYYY
-            const [year, month, day] = fecha.split('-');
-            const fechaFormateada = `${day}/${month}/${year}`;
-            
-            mensajeDiv.style.display = 'block';
-            mensajeDiv.innerHTML = '<div style="color: #FFD700;">⏳ Creando juntada...</div>';
-            
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        accion: 'crear_juntada',
-                        fecha: fechaFormateada,
-                        host: host,
-                        descripcion: descripcion
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    mensajeDiv.innerHTML = '<div style="color: #4CAF50; font-weight: bold;">✅ ¡Juntada propuesta! Refrescá la app para verla</div>';
-                    setTimeout(() => {
-                        cerrarModalProponerJuntada();
-                        location.reload();
-                    }, 2000);
-                } else {
-                    mensajeDiv.innerHTML = `<div style="color: #f44336;">❌ Error: ${result.error}</div>`;
-                }
-            } catch (error) {
-                mensajeDiv.innerHTML = '<div style="color: #f44336;">❌ Error de conexión</div>';
-                console.error('Error:', error);
+        });
+
+        const total = culpososData.length;
+        const hayQuorum = culpososConf >= 4;
+        const miVal = j[usuario.Nombre];
+        const yaConfirme = estaConfirmado(miVal);
+        const confirmePos = esConfirmadoPositivo(miVal);
+
+        let botonesHTML = '';
+        if (yaConfirme) {
+            if (confirmePos) {
+                botonesHTML = `
+                    <div style="text-align:center;padding:20px;background:rgba(76,175,80,0.2);border-radius:12px;border:2px solid #4CAF50;">
+                        <div style="font-size:32px;margin-bottom:8px;">✅</div>
+                        <div style="font-size:18px;font-weight:bold;color:#4CAF50;margin-bottom:4px;">¡Ya confirmaste asistencia!</div>
+                        <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:12px;">Los culposos te esperan 🔥</div>
+                        <button onclick="mostrarEdicion()" style="background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar respuesta</button>
+                    </div>`;
+            } else {
+                botonesHTML = `
+                    <div style="text-align:center;padding:20px;background:rgba(244,67,54,0.2);border-radius:12px;border:2px solid #f44336;">
+                        <div style="font-size:32px;margin-bottom:8px;">❌</div>
+                        <div style="font-size:18px;font-weight:bold;color:#f44336;margin-bottom:4px;">Me abstuve — no voy</div>
+                        <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:12px;">Los trolos se abstuvieron. Saludos!</div>
+                        <button onclick="mostrarEdicion()" style="background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar respuesta</button>
+                    </div>`;
             }
+        } else {
+            botonesHTML = `
+                <div style="color:white;font-size:18px;font-weight:bold;text-align:center;margin-bottom:15px;">¿Vas a asistir?</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+                    <button onclick="confirmarAsistencia(true)" style="background:linear-gradient(135deg,#4CAF50 0%,#45a049 100%);border:none;color:white;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">✅ ASISTIRÉ</button>
+                    <button onclick="confirmarAsistencia(false)" style="background:linear-gradient(135deg,#f44336 0%,#d32f2f 100%);border:none;color:white;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">❌ NO ASISTIRÉ</button>
+                </div>
+                <div style="text-align:center;margin-top:10px;color:rgba(255,255,255,0.4);font-size:11px;font-style:italic;">(trolos abstenerse)</div>`;
         }
-        
-                // Cambiar tabs
-        function showTab(tabName) {
-            // Actualizar tabs
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // Actualizar contenido
-            document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
+
+        document.getElementById('modalConfirmarContent').innerHTML = `
+            <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
+                <div style="text-align:center;margin-bottom:25px;">
+                    <div style="color:#FFD700;font-size:14px;font-weight:bold;margin-bottom:10px;">${j.Fecha}</div>
+                    <div style="color:white;font-size:24px;font-weight:bold;margin-bottom:10px;">${j.Descripción||j.Descripcion}</div>
+                    <div style="color:rgba(255,255,255,0.7);font-size:14px;">🏠 ${j.Host||'Sin host'}</div>
+                </div>
+                <div style="background:${hayQuorum?'rgba(76,175,80,0.15)':'rgba(139,77,143,0.15)'};padding:15px;border-radius:10px;margin-bottom:20px;border:2px solid ${hayQuorum?'#4CAF50':'rgba(139,77,143,0.5)'};">
+                    <div style="text-align:center;">
+                        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:5px;text-transform:uppercase;">Confirmaciones</div>
+                        <div style="font-size:28px;font-weight:bold;color:${hayQuorum?'#4CAF50':'#FFD700'};">${confirmados.length}/${total}</div>
+                        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:5px;">Culposos: ${culpososConf}/8 ${hayQuorum?'✅ Hay quorum':'⏳ Sin quorum'}</div>
+                    </div>
+                </div>
+                <div style="margin:25px 0;">${botonesHTML}</div>
+                ${confirmados.length>0||noConfirmados.length>0?`
+                    <div style="margin-top:25px;padding-top:25px;border-top:1px solid rgba(255,255,255,0.2);">
+                        ${confirmados.length>0?`<div style="margin-bottom:15px;"><div style="color:#4CAF50;font-size:14px;font-weight:bold;margin-bottom:8px;">✅ Confirmaron (${confirmados.length}):</div><div style="color:rgba(255,255,255,0.8);font-size:13px;">${confirmados.join(', ')}</div></div>`:''}
+                        ${noConfirmados.length>0?`<div><div style="color:#f44336;font-size:14px;font-weight:bold;margin-bottom:8px;">❌ No asisten (${noConfirmados.length}):</div><div style="color:rgba(255,255,255,0.8);font-size:13px;">${noConfirmados.join(', ')}</div></div>`:''}
+                    </div>`:''}
+                <div id="mensajeConfirmacion" style="margin-top:15px;text-align:center;display:none;"></div>
+            </div>`;
+
+        document.getElementById('modalConfirmar').style.display = 'block';
+    }
+
+    function mostrarEdicion() {
+        document.getElementById('mensajeConfirmacion').style.display = 'block';
+        document.getElementById('mensajeConfirmacion').innerHTML = `
+            <div style="background:rgba(139,77,143,0.2);padding:15px;border-radius:10px;">
+                <div style="color:white;font-size:14px;font-weight:bold;margin-bottom:10px;">Cambiar respuesta:</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <button onclick="confirmarAsistencia(true)" style="background:linear-gradient(135deg,#4CAF50 0%,#45a049 100%);border:none;color:white;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">✅ VOY</button>
+                    <button onclick="confirmarAsistencia(false)" style="background:linear-gradient(135deg,#f44336 0%,#d32f2f 100%);border:none;color:white;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">❌ NO VOY</button>
+                </div>
+            </div>`;
+    }
+
+    function cerrarModalConfirmar() { document.getElementById('modalConfirmar').style.display = 'none'; }
+
+    async function confirmarAsistencia(asistira) {
+        const msg = document.getElementById('mensajeConfirmacion');
+        msg.style.display='block'; msg.innerHTML='<div style="color:#FFD700;">⏳ Guardando...</div>';
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ email: currentUser, fila: window.proximaJuntadaIndex+2, asistira })
+            });
+            const res = await r.json();
+            if (res.success) {
+                msg.innerHTML=`<div style="color:#4CAF50;font-weight:bold;">✅ ${res.mensaje||'Confirmación guardada'}</div>`;
+                setTimeout(async ()=>{
+                    await recargarJuntadas();
+                    abrirModalConfirmar(window.proximaJuntadaIndex);
+                    renderHome();
+                }, 800);
+            } else { msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`; }
+        } catch { msg.innerHTML='<div style="color:#f44336;">❌ Error de conexión</div>'; }
+    }
+
+    async function recargarJuntadas() {
+        const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Hoja%201`);
+        juntadasData = parseCSV(await r.text());
+    }
+
+    // ── PROPONER JUNTADA ──────────────────────────────────────
+    function abrirModalProponerJuntada() {
+        // Hosts dinámicos desde culpososData, filtrando solo los 8 originales
+        const hostsDisponibles = culpososData
+            .filter(c => CULPOSOS_HOSTS.includes(c.Nombre))
+            .map(c => c.Nombre);
+        // Fallback si culpososData no cargó aún
+        const hosts = hostsDisponibles.length > 0 ? hostsDisponibles : CULPOSOS_HOSTS;
+
+        const hostOptions = hosts.map(n => `<option value="${n}">${n}</option>`).join('');
+        const catOptions = CATEGORIAS.map(c => `<option value="${c}">${c}</option>`).join('');
+
+        document.getElementById('modalProponerContent').innerHTML = `
+            <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
+                <div style="text-align:center;margin-bottom:25px;">
+                    <div style="font-size:32px;margin-bottom:10px;">🎉</div>
+                    <div style="color:#FFD700;font-size:24px;font-weight:bold;">Proponer Juntada</div>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📅 Fecha</label>
+                    <input type="date" id="propFecha" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏠 Host</label>
+                    <select id="propHost" class="form-select">
+                        <option value="">Seleccionar...</option>
+                        ${hostOptions}
+                    </select>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📝 Descripción</label>
+                    <input type="text" id="propDescripcion" placeholder="Ej: Asado en lo de..." style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏷️ Categoría</label>
+                    <select id="propCategoria" class="form-select">
+                        <option value="">Sin categoría</option>
+                        ${catOptions}
+                    </select>
+                </div>
+                <button onclick="enviarPropuesta()" style="width:100%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">🚀 Proponer</button>
+                <div id="mensajePropuesta" style="margin-top:15px;text-align:center;display:none;"></div>
+            </div>`;
+
+        document.getElementById('modalProponerJuntada').style.display = 'block';
+    }
+
+    function cerrarModalProponerJuntada() { document.getElementById('modalProponerJuntada').style.display = 'none'; }
+
+    async function enviarPropuesta() {
+        const fecha = document.getElementById('propFecha').value;
+        const host  = document.getElementById('propHost').value;
+        const desc  = document.getElementById('propDescripcion').value;
+        const cat   = document.getElementById('propCategoria').value;
+        const msg   = document.getElementById('mensajePropuesta');
+
+        if (!fecha||!host||!desc) { msg.style.display='block'; msg.innerHTML='<div style="color:#f44336;">⚠️ Completá fecha, host y descripción</div>'; return; }
+
+        const [y,m,d] = fecha.split('-');
+        const fechaFmt = `${d}/${m}/${y}`;
+        msg.style.display='block'; msg.innerHTML='<div style="color:#FFD700;">⏳ Creando juntada...</div>';
+
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ accion:'crear_juntada', fecha:fechaFmt, host, descripcion:desc, categoria:cat })
+            });
+            const res = await r.json();
+            if (res.success) {
+                msg.innerHTML='<div style="color:#4CAF50;font-weight:bold;">✅ ¡Juntada propuesta! Actualizando...</div>';
+                setTimeout(()=>{ cerrarModalProponerJuntada(); location.reload(); }, 2000);
+            } else { msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`; }
+        } catch { msg.innerHTML='<div style="color:#f44336;">❌ Error de conexión</div>'; }
+    }
+
+    // ── PERFIL ────────────────────────────────────────────────
+    function renderPerfil() { renderPerfilCulposo(null); }
+
+    function renderPerfilCulposo(nombreCulposo) {
+        const esMio = !nombreCulposo;
+        const usuario = esMio ? getUsuarioActual() : culpososData.find(c=>c.Nombre===nombreCulposo);
+
+        if (!usuario) {
+            document.getElementById('perfilData').innerHTML = `<div class="card"><p style="color:rgba(255,255,255,0.7);">No se encontró el perfil.</p></div>`;
+            return;
         }
-        
-        // Verificar si ya está logueado
-        window.onload = function() {
-            const savedEmail = localStorage.getItem('culpaUserEmail');
-            if (savedEmail) {
-                document.getElementById('emailInput').value = savedEmail;
-                login();
-            }
-        };
-    </script>
+
+        const pct = parseFloat(usuario.Porcentaje).toFixed(0);
+        const isPerfecto = pct==100;
+        let col='#f44336';
+        if(pct>=100)col='#4CAF50';else if(pct>=90)col='#8BC34A';else if(pct>=60)col='#FFD700';else if(pct>=35)col='#FF9800';
+
+        const premios = premiosData.filter(p=>p.Ganador&&p.Ganador.trim()===usuario.Nombre&&p.Tipo==='Persona');
+        const oro = premios.filter(p=>p.Terna&&p.Terna.includes('CULPOSO DE ORO'));
+        const otros = premios.filter(p=>p.Terna&&!p.Terna.includes('CULPOSO DE ORO'));
+
+        const premiosHTML = premios.length>0?`
+            <div class="section-title" style="margin-top:25px;">🏆 Palmarés</div>
+            <div class="card" style="padding:20px;">
+                ${oro.map(p=>`<div style="margin:12px 0;padding:12px;background:rgba(255,215,0,0.15);border-radius:8px;"><span style="font-size:18px;font-weight:bold;color:#FFD700;">🏆 CULPOSO DE ORO (${p.Año||''})</span></div>`).join('')}
+                ${otros.map(p=>`<div style="margin:8px 0;color:rgba(255,255,255,0.9);">🥇 <span style="text-transform:uppercase;font-weight:bold;">${p.Terna||'PREMIO'} (${p.Año||''})</span></div>`).join('')}
+            </div>`:'' ;
+
+        const fotoUrl = FOTOS[usuario.Nombre]||'';
+        const usuarioLogueado = getUsuarioActual();
+        const esMiPerfil = usuarioLogueado&&usuarioLogueado.Nombre===usuario.Nombre;
+
+        document.getElementById('perfilData').innerHTML = `
+            ${!esMiPerfil?`<div style="text-align:center;margin-bottom:15px;"><button onclick="renderPerfil()" style="background:rgba(139,77,143,0.3);border:2px solid #8B4D8F;color:#FFD700;padding:8px 15px;border-radius:10px;font-size:12px;font-weight:bold;cursor:pointer;">← Volver a mi perfil</button></div>`:''}
+            ${fotoUrl?`<div style="text-align:center;margin-bottom:20px;"><img src="${fotoUrl}" style="width:120px;height:120px;border-radius:50%;border:4px solid #FFD700;object-fit:cover;"></div>`:''}
+            <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};">
+                <div class="card-title" style="font-size:24px;">${usuario.Nombre}${isPerfecto?'<span class="badge">👑 PERFECTO</span>':''}</div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-number" style="color:${col};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div><div class="stat-label">Asistencias</div></div>
+                <div class="stat-card"><div class="stat-number" style="color:${col};">${pct}%</div><div class="stat-label">Porcentaje</div></div>
+            </div>
+            ${isPerfecto?`<div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.1) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;"><div class="card-title">🏆 ¡CULPOSO PERFECTO!</div><div class="card-details">${esMiPerfil?'No te perdiste ninguna juntada. Sos un crack.':'No se perdió ninguna juntada. Un verdadero crack.'}</div></div>`:''}
+            ${premiosHTML}
+            ${esMiPerfil?`<div class="section-title">📅 Mi Participación</div><div class="card" onclick="showTab('juntadas',document.querySelectorAll('.tab')[2])" style="cursor:pointer;text-align:center;background:linear-gradient(135deg,rgba(139,77,143,0.2) 0%,rgba(139,77,143,0.1) 100%);"><div class="card-title" style="color:#FFD700;font-size:16px;">📊 Ver todas mis juntadas →</div><div class="card-details" style="margin-top:5px;">Revisá tu historial completo de asistencias</div></div>`:''}`;
+    }
+
+    function verPerfilCulposo(nombre) {
+        cerrarDetalle();
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.tab')[5].classList.add('active');
+        document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+        document.getElementById('perfil').classList.add('active');
+        renderPerfilCulposo(nombre);
+    }
+
+    // ── AWARDS ────────────────────────────────────────────────
+    function renderAwards() {
+        const year = document.getElementById('yearFilter').value;
+        const filtrados = premiosData.filter(p=>p.Año==year);
+        const oro = filtrados.filter(p=>p.Tipo==='Persona'&&p.Terna&&p.Terna.toUpperCase().includes('CULPOSO DE ORO'));
+        const individuales = filtrados.filter(p=>p.Tipo==='Persona'&&p.Terna&&!p.Terna.toUpperCase().includes('CULPOSO DE ORO'));
+        const juntadas = filtrados.filter(p=>p.Tipo==='Juntada');
+        let html='';
+
+        oro.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`
+            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.2) 0%,rgba(255,215,0,0.05) 100%);padding:30px;border-radius:20px;margin-bottom:30px;border:3px solid #FFD700;text-align:center;">
+                ${f?`<img src="${f}" style="width:100px;height:100px;border-radius:50%;border:4px solid #FFD700;object-fit:cover;margin-bottom:15px;">`:''}
+                <div style="font-size:40px;margin-bottom:10px;">🏆</div>
+                <div style="color:#FFD700;font-size:24px;font-weight:bold;margin-bottom:10px;">CULPOSO DE ORO ${year}</div>
+                <div style="color:white;font-size:28px;font-weight:bold;">${p.Ganador||'Sin ganador'}</div>
+            </div>`; });
+
+        if(individuales.length>0){ html+='<div class="section-title" style="margin-top:25px;">🥇 Premios Individuales</div>';
+            individuales.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`
+                <div class="card" style="display:flex;align-items:center;gap:15px;">
+                    ${f?`<img src="${f}" style="width:60px;height:60px;border-radius:50%;border:3px solid #FFD700;object-fit:cover;">`:'<div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8B4D8F 0%,#6B3870 100%);display:flex;align-items:center;justify-content:center;font-size:24px;">🏅</div>'}
+                    <div><div style="color:#FFD700;font-size:14px;font-weight:bold;text-transform:uppercase;">${p.Terna||'Premio'}</div><div style="color:white;font-size:16px;font-weight:bold;margin-top:3px;">${p.Ganador||'Sin ganador'}</div></div>
+                </div>`; }); }
+
+        if(juntadas.length>0){ html+='<div class="section-title" style="margin-top:25px;">🎉 Mejores Juntadas</div>';
+            juntadas.forEach(p=>{ html+=`
+                <div class="card">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="font-size:24px;">🏆</div><div style="color:#FFD700;font-size:14px;font-weight:bold;text-transform:uppercase;flex:1;">${p.Terna||'Premio'}</div></div>
+                    <div style="color:white;font-size:16px;font-weight:bold;">${p.Ganador||'Sin ganador'}</div>
+                </div>`; }); }
+
+        if(!html) html=`<p style="color:rgba(255,255,255,0.6);text-align:center;padding:40px;">No hay premios registrados para ${year}</p>`;
+        document.getElementById('awardsList').innerHTML=html;
+    }
+
+    // ── CALCULADORA ───────────────────────────────────────────
+    let gastosArray=[];
+    const TODOS_NOMBRES=['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti','Cata','Lola','Sami','Leila','Juli','Manu','Matu'];
+
+    function agregarGasto() {
+        gastosArray.push({id:Date.now(),quien:'',concepto:'',monto:0,consumidores:[]});
+        renderGastos();
+    }
+
+    function eliminarGasto(id) { gastosArray=gastosArray.filter(g=>g.id!==id); renderGastos(); }
+
+    function renderGastos() {
+        const c=document.getElementById('gastosContainer');
+        if(!gastosArray.length){ c.innerHTML=`<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><div style="font-size:48px;margin-bottom:15px;">💸</div><div>No hay gastos agregados</div><div style="font-size:13px;margin-top:8px;">Presioná "Agregar Gasto" para empezar</div></div>`; return; }
+        c.innerHTML=gastosArray.map((g,idx)=>`
+            <div class="card" style="margin-bottom:20px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                    <div style="color:#FFD700;font-weight:bold;">Gasto ${idx+1}</div>
+                    <button onclick="eliminarGasto(${g.id})" style="background:rgba(244,67,54,0.2);border:2px solid #f44336;color:#f44336;padding:5px 10px;border-radius:5px;font-size:12px;cursor:pointer;">✕ Eliminar</button>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">¿Quién pagó?</label>
+                    <select onchange="gastosArray[${idx}].quien=this.value" class="form-select">
+                        <option value="">Seleccionar...</option>
+                        ${TODOS_NOMBRES.map(n=>`<option value="${n}" ${g.quien===n?'selected':''}>${n}</option>`).join('')}
+                    </select>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">Concepto</label>
+                    <input type="text" value="${g.concepto}" oninput="gastosArray[${idx}].concepto=this.value" placeholder="Ej: Carne, Pan..." style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
+                </div>
+                <div style="margin-bottom:10px;">
+                    <label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">Monto ($)</label>
+                    <input type="number" value="${g.monto||''}" oninput="gastosArray[${idx}].monto=parseFloat(this.value)||0" placeholder="0" style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
+                </div>
+                <div>
+                    <label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:8px;">¿Quiénes consumen/usan?</label>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                        ${TODOS_NOMBRES.map(n=>`
+                            <label style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.9);font-size:13px;cursor:pointer;">
+                                <input type="checkbox" ${g.consumidores.includes(n)?'checked':''} onchange="if(this.checked){if(!gastosArray[${idx}].consumidores.includes('${n}'))gastosArray[${idx}].consumidores.push('${n}');}else{gastosArray[${idx}].consumidores=gastosArray[${idx}].consumidores.filter(x=>x!=='${n}');}" style="cursor:pointer;">${n}
+                            </label>`).join('')}
+                    </div>
+                </div>
+            </div>`).join('');
+    }
+
+    function calcularDivision() {
+        const res=document.getElementById('resultadoCalculo');
+        if(!gastosArray.length){res.innerHTML='<div class="card" style="background:rgba(244,67,54,0.2);border-left-color:#f44336;"><div style="color:#f44336;">⚠️ No hay gastos para calcular</div></div>';return;}
+        for(let g of gastosArray){if(!g.quien||!g.concepto||g.monto<=0||!g.consumidores.length){res.innerHTML='<div class="card" style="background:rgba(244,67,54,0.2);border-left-color:#f44336;"><div style="color:#f44336;">⚠️ Completá todos los campos</div></div>';return;}}
+
+        const bal={};
+        TODOS_NOMBRES.forEach(n=>bal[n]=0);
+        gastosArray.forEach(g=>{ const cpp=g.monto/g.consumidores.length; g.consumidores.forEach(c=>bal[c]-=cpp); bal[g.quien]+=g.monto; });
+
+        const deu=[],acr=[];
+        Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
+
+        const trans=[];
+        const dc=[...deu],ac=[...acr];
+        while(dc.length&&ac.length){ const d=dc[0],a=ac[0],m=Math.min(d.m,a.m); trans.push({de:d.n,a:a.n,monto:m}); d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); }
+
+        const total=gastosArray.reduce((s,g)=>s+g.monto,0);
+        res.innerHTML=`
+            <div class="card" style="background:linear-gradient(135deg,rgba(76,175,80,0.15) 0%,rgba(76,175,80,0.05) 100%);border-left-color:#4CAF50;">
+                <div style="text-align:center;margin-bottom:20px;">
+                    <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:5px;">TOTAL GASTADO</div>
+                    <div style="font-size:32px;font-weight:bold;color:#4CAF50;">$${total.toLocaleString('es-AR')}</div>
+                </div>
+                <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:15px;">
+                    <div style="color:#FFD700;font-weight:bold;margin-bottom:15px;text-align:center;">💸 TRANSFERENCIAS A REALIZAR</div>
+                    ${trans.map(t=>`<div style="background:rgba(139,77,143,0.2);padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><div style="color:white;font-size:14px;"><span style="font-weight:bold;">${t.de}</span> → <span style="font-weight:bold;color:#4CAF50;">${t.a}</span></div><div style="color:#FFD700;font-weight:bold;font-size:16px;">$${Math.round(t.monto).toLocaleString('es-AR')}</div></div>`).join('')}
+                </div>
+                <button onclick="compartirResultado()" style="width:100%;margin-top:15px;background:rgba(37,211,102,0.2);border:2px solid #25D366;color:#25D366;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">📱 Compartir por WhatsApp</button>
+            </div>`;
+    }
+
+    function compartirResultado() {
+        const total=gastosArray.reduce((s,g)=>s+g.monto,0);
+        let txt=`💰 *DIVISIÓN DE GASTOS - LA CULPA*\n\nTotal gastado: $${total.toLocaleString('es-AR')}\n\n`;
+        gastosArray.forEach((g,i)=>{ txt+=`${i+1}. ${g.concepto}: $${g.monto.toLocaleString('es-AR')} (${g.quien})\n`; });
+        txt+=`\n💸 *TRANSFERENCIAS:*\n`;
+
+        const bal={};
+        TODOS_NOMBRES.forEach(n=>bal[n]=0);
+        gastosArray.forEach(g=>{ const cpp=g.monto/g.consumidores.length; g.consumidores.forEach(c=>bal[c]-=cpp); bal[g.quien]+=g.monto; });
+        const deu=[],acr=[];
+        Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
+        const dc=[...deu],ac=[...acr];
+        while(dc.length&&ac.length){ const d=dc[0],a=ac[0],m=Math.min(d.m,a.m); txt+=`${d.n} → ${a.n}: $${Math.round(m).toLocaleString('es-AR')}\n`; d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); }
+
+        window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
+    }
+
+    // ── TABS ──────────────────────────────────────────────────
+    function showTab(tabName, el) {
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        if(el) el.classList.add('active');
+        document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+    }
+
+    // ── INIT ──────────────────────────────────────────────────
+    window.onload = function() {
+        const saved = localStorage.getItem('culpaUserEmail');
+        if (saved) { document.getElementById('emailInput').value=saved; login(); }
+    };
+</script>
 </body>
 </html>
