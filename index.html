@@ -666,11 +666,19 @@
                 const yaConfirmo = proximaJuntada[usuario.Nombre] === '✓' || proximaJuntada[usuario.Nombre] === '✗';
                 const confirmacion = proximaJuntada[usuario.Nombre];
                 
-                proximaHTML = `
-                    <div class="section-title" style="margin-top: 10px;">🎯 Próxima Juntada</div>
-                    <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700; border-left-width: 4px;">
-                        <div class="card-date">${proximaJuntada.Fecha}</div>
-                        <div class="card-title" style="font-size: 20px;">${proximaJuntada.Descripción || proximaJuntada.Descripcion}</div>
+                // Solo mostrar si tiene descripción válida
+                const descripcionValida = proximaJuntada.Descripción || proximaJuntada.Descripcion || '';
+                if (!descripcionValida || descripcionValida === 'undefined') {
+                    proximaJuntada = null;
+                    proximaIndex = -1;
+                }
+                
+                if (proximaJuntada) {
+                    proximaHTML = `
+                        <div class="section-title" style="margin-top: 10px;">🎯 Próxima Juntada</div>
+                        <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 100%); border-left-color: #FFD700; border-left-width: 4px;">
+                            <div class="card-date">${proximaJuntada.Fecha}</div>
+                            <div class="card-title" style="font-size: 20px;">${descripcionValida}</div>
                         <div class="card-details" style="margin: 10px 0;">
                             <span>🏠 ${proximaJuntada.Host || 'Sin host'}</span>
                         </div>
@@ -690,6 +698,7 @@
                         `}
                     </div>
                 `;
+                }
             } else if (usuario) {
                 // No hay próxima juntada
                 proximaHTML = `
