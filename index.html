@@ -945,8 +945,42 @@
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${pct}%</div><div class="stat-label">Porcentaje</div></div>
             </div>
             ${isPerfecto?`<div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.1) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;"><div class="card-title">🏆 ¡CULPOSO PERFECTO!</div><div class="card-details">${esMiPerfil?'No te perdiste ninguna juntada. Sos un crack.':'No se perdió ninguna juntada. Un verdadero crack.'}</div></div>`:''}
+            ${renderHostPanel(usuario.Nombre)}
             ${premiosHTML}
             ${esMiPerfil?`<div class="section-title">📅 Mi Participación</div><div class="card" onclick="showTab('juntadas',document.querySelectorAll('.tab')[2])" style="cursor:pointer;text-align:center;background:linear-gradient(135deg,rgba(139,77,143,0.2) 0%,rgba(139,77,143,0.1) 100%);"><div class="card-title" style="color:#FFD700;font-size:16px;">📊 Ver todas mis juntadas →</div><div class="card-details" style="margin-top:5px;">Revisá tu historial completo de asistencias</div></div>`:''}`;
+    }
+
+    function renderHostPanel(nombre) {
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+        // Juntadas pasadas con quorum donde fue host (nombre aparece en Host)
+        const hosteadas = juntadasData.filter(j => {
+            if (!j.Host || !j.Host.toLowerCase().includes(nombre.toLowerCase())) return false;
+            if (!j.Fecha) return false;
+            const f = parseFecha(j.Fecha);
+            return f && f < hoy && tieneQuorum(j);
+        });
+
+        if (!hosteadas.length) return '';
+
+        const cards = hosteadas.slice().reverse().map(j => {
+            const ri = juntadasData.indexOf(j);
+            const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
+            return `
+                <div onclick="verDetalleJuntada(${ri})" style="cursor:pointer;background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);border-radius:12px;overflow:hidden;border:2px solid rgba(139,77,143,0.3);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                    ${foto ? `<div style="width:100%;height:80px;background-image:url('${foto}');background-size:cover;background-position:center;"></div>` : `<div style="width:100%;height:80px;background:linear-gradient(135deg,rgba(139,77,143,0.3) 0%,rgba(107,56,112,0.3) 100%);display:flex;align-items:center;justify-content:center;font-size:28px;">🏠</div>`}
+                    <div style="padding:10px;">
+                        <div style="color:#FFD700;font-size:10px;font-weight:bold;">${j.Fecha||''}</div>
+                        <div style="color:white;font-size:12px;font-weight:bold;margin-top:3px;line-height:1.3;">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                        <div style="color:rgba(255,255,255,0.5);font-size:11px;margin-top:4px;">👥 ${j['N° Asist']||'0'}</div>
+                    </div>
+                </div>`;
+        }).join('');
+
+        return `
+            <div class="section-title" style="margin-top:25px;">🏠 Host (${hosteadas.length})</div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:10px;">
+                ${cards}
+            </div>`;
     }
 
     function verPerfilCulposo(nombre) {
@@ -1010,8 +1044,9 @@
 
     function eliminarGasto(id) { gastosArray=gastosArray.filter(g=>g.id!==id); renderGastos(); }
 
-    function marcarTodos(idx) {
-        gastosArray[idx].consumidores = [...TODOS_NOMBRES];
+    function toggleTodos(idx) {
+        const todos = gastosArray[idx].consumidores.length === TODOS_NOMBRES.length;
+        gastosArray[idx].consumidores = todos ? [] : [...TODOS_NOMBRES];
         renderGastos();
     }
 
@@ -1042,7 +1077,7 @@
                 <div>
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
                         <label style="color:rgba(255,255,255,0.8);font-size:13px;">¿Quiénes consumen/usan?</label>
-                        <button onclick="marcarTodos(${idx})" style="background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer;">☑️ Todos</button>
+                        <button onclick="toggleTodos(${idx})" style="background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer;">${g.consumidores.length===TODOS_NOMBRES.length?"☐ Ninguno":"☑️ Todos"}</button>
                     </div>
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
                         ${TODOS_NOMBRES.map(n=>`
@@ -1081,6 +1116,7 @@
                     <div style="color:#FFD700;font-weight:bold;margin-bottom:15px;text-align:center;">💸 TRANSFERENCIAS A REALIZAR</div>
                     ${trans.map(t=>`<div style="background:rgba(139,77,143,0.2);padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><div style="color:white;font-size:14px;"><span style="font-weight:bold;">${t.de}</span> → <span style="font-weight:bold;color:#4CAF50;">${t.a}</span></div><div style="color:#FFD700;font-weight:bold;font-size:16px;">$${Math.round(t.monto).toLocaleString('es-AR')}</div></div>`).join('')}
                 </div>
+                ${(()=>{ const acreedores=[...new Set(trans.map(t=>t.a))]; const aliases=acreedores.map(n=>{const a=getAlias(n);return a?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);"><span style="color:rgba(255,255,255,0.8);font-weight:bold;">${n}</span><span style="color:#FFD700;">💳 ${a}</span></div>`:'';}).filter(Boolean).join(''); return aliases?`<div style="margin-top:15px;padding:12px;background:rgba(255,215,0,0.08);border-radius:8px;border:1px solid rgba(255,215,0,0.3);"><div style="color:#FFD700;font-size:12px;font-weight:bold;text-transform:uppercase;margin-bottom:8px;">Alias para transferir</div>${aliases}</div>`:''; })()}
                 <button onclick="compartirResultado()" style="width:100%;margin-top:15px;background:rgba(37,211,102,0.2);border:2px solid #25D366;color:#25D366;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">📱 Compartir por WhatsApp</button>
             </div>`;
     }
@@ -1097,12 +1133,17 @@
         const deu=[],acr=[];
         Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
         const dc=[...deu],ac=[...acr];
+        const transWA=[];
         while(dc.length&&ac.length){ 
             const d=dc[0],a=ac[0],m=Math.min(d.m,a.m);
-            const aliasAcreedor = getAlias(a.n);
-            txt+=`${d.n} → ${a.n}: $${Math.round(m).toLocaleString('es-AR')}${aliasAcreedor?' 💳 '+aliasAcreedor:''}\n`;
+            transWA.push({de:d.n,a:a.n,monto:m});
             d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); 
         }
+        transWA.forEach(t=>{ txt+=`${t.de} → ${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}\n`; });
+        // Aliases de quienes reciben, una vez al final
+        const acreedoresWA=[...new Set(transWA.map(t=>t.a))];
+        const aliasesWA=acreedoresWA.map(n=>{const a=getAlias(n);return a?`${n}: 💳 ${a}`:null;}).filter(Boolean);
+        if(aliasesWA.length){ txt+=`\n💳 *ALIAS:*\n`+aliasesWA.join('\n'); }
 
         window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
     }
