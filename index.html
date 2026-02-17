@@ -1310,6 +1310,12 @@ const html = juntadasPasadas.slice().reverse().map((juntada, index) => {
             
             const percentage = parseFloat(usuario.Porcentaje).toFixed(0);
             const isPerfecto = percentage == 100;
+            // Colores según asistencia
+            let colorAsistencia = '#f44336';
+            if (percentage >= 100) colorAsistencia = '#4CAF50';
+            else if (percentage >= 90) colorAsistencia = '#8BC34A';
+            else if (percentage >= 60) colorAsistencia = '#FFD700';
+            else if (percentage >= 35) colorAsistencia = '#FF9800';
             
             // Obtener premios del usuario
             const premiosUsuario = premiosData.filter(p => 
