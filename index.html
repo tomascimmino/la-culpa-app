@@ -6,8 +6,8 @@
     <title>LA CULPA - App</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/czObXpX.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/czObXpX.png">
-    <meta name="theme-color" content="#8B4D8F">
-    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkxBIENVTFBBIiwKICAic2hvcnRfbmFtZSI6ICJMYSBDdWxwYSIsCiAgImRlc2NyaXB0aW9uIjogIlJhbmtpbmcgZGUgQXNpc3RlbmNpYXMiLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzFFMUUzRiIsCiAgInRoZW1lX2NvbG9yIjogIiM4QjREOEYiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaW1ndXIuY29tL3RxOXd3d0sucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
+    <meta name="theme-color" content="#6B2D91">
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkxBIENVTFBBIiwKICAic2hvcnRfbmFtZSI6ICJMYSBDdWxwYSIsCiAgImRlc2NyaXB0aW9uIjogIlJhbmtpbmcgZGUgQXNpc3RlbmNpYXMiLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsCiAgInRoZW1lX2NvbG9yIjogIiM2QjJEOTEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaW1ndXIuY29tL2N6T2JYcFgucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -35,7 +35,7 @@
         .subtitle { color: rgba(255,255,255,0.9); font-size: 14px; }
         .tabs {
             display: flex; gap: 10px; margin-bottom: 20px;
-            background: rgba(30,30,63,0.5); padding: 10px; border-radius: 15px;
+            background: rgba(20,10,35,0.7); padding: 10px; border-radius: 15px; border: 1px solid rgba(107,45,145,0.3);
         }
         .tab {
             flex: 1; padding: 10px 6px; text-align: center;
@@ -65,9 +65,9 @@
         .content.active { display: block; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-card {
-            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
             padding: 20px; border-radius: 15px; text-align: center;
-            border: 2px solid rgba(139,77,143,0.3);
+            border: 2px solid rgba(107,45,145,0.35);
         }
         .stat-number { font-size: 32px; font-weight: bold; color: #FFD700; margin-bottom: 5px; }
         .stat-label { color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; }
@@ -76,7 +76,7 @@
             margin: 25px 0 15px; display: flex; align-items: center; gap: 10px;
         }
         .card {
-            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
             padding: 15px; border-radius: 15px; margin-bottom: 15px;
             border-left: 4px solid #C8A830;
         }
@@ -84,10 +84,10 @@
         .card-title { color: white; font-size: 16px; font-weight: bold; margin-bottom: 5px; }
         .card-details { color: rgba(255,255,255,0.6); font-size: 13px; display: flex; gap: 15px; }
         .ranking-item {
-            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
             padding: 15px; border-radius: 12px; margin-bottom: 10px;
             display: flex; align-items: center; gap: 15px;
-            border: 2px solid rgba(139,77,143,0.3);
+            border: 2px solid rgba(107,45,145,0.35);
         }
         .ranking-item.top3 { border-color: #FFD700; }
         .rank-number { font-size: 20px; font-weight: bold; color: #FFD700; min-width: 30px; }
@@ -106,7 +106,7 @@
         }
         .loading { text-align: center; padding: 40px; color: rgba(255,255,255,0.6); }
         .spinner {
-            border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #FFD700;
+            border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #C8A830;
             border-radius: 50%; width: 40px; height: 40px;
             animation: spin 1s linear infinite; margin: 20px auto;
         }
@@ -116,7 +116,7 @@
             justify-content: center; min-height: 80vh; text-align: center;
         }
         .login-card {
-            background: linear-gradient(135deg, #1e1e3f 0%, #2a2a4f 100%);
+            background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
             padding: 40px; border-radius: 20px;
             border: 2px solid rgba(139,77,143,0.3); max-width: 400px; width: 100%;
         }
@@ -314,7 +314,7 @@
         'Toto':'https://i.imgur.com/Y8NOVgH.png','Caamaño':'https://i.imgur.com/N056gxD.png',
         'Rama':'https://i.imgur.com/8hsqIL8.png','Zabala':'https://i.imgur.com/YrT8QyX.png',
         'Santi':'https://i.imgur.com/iXHdIVT.png','Mateo':'https://i.imgur.com/MY6KbRq.png',
-        'Tirri':'https://i.imgur.com/biqacxq.png','Toti':'https://i.imgur.com/fOVTNio.png',
+        'Tirri':'https://i.imgur.com/biqacxq.png','Toti':'https://i.imgur.com/2nIt2J1.png',
         'Cata':'https://i.imgur.com/jhme4wb.png','Lola':'https://i.imgur.com/qTP4eT2.png',
         'Sami':'https://i.imgur.com/HP41gaP.png','Leila':'https://i.imgur.com/wcf3be4.png',
         'Juli':'https://i.imgur.com/cn779x3.png','Manu':'https://i.imgur.com/BzDK66B.png',
@@ -535,7 +535,7 @@
                         ${!foto?'🧔':''}
                     </div>
                     <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
-                        <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge" style="background:rgba(255,215,0,0.15);color:#C8A830;border:1px solid rgba(255,215,0,0.3);">👑 PERFECTO</span>':''}${(()=>{const r=calcularRacha(c.Nombre);if(r>=10)return'<span class="badge" style="background:rgba(180,80,0,0.25);color:#D4845A;border:1px solid rgba(180,80,0,0.4);">🔥 '+r+' en racha</span>';if(r>=5)return'<span class="badge" style="background:rgba(180,150,0,0.2);color:#C4A84A;border:1px solid rgba(180,150,0,0.35);">⚡ '+r+' en racha</span>';return'';})()}</div>
+                        <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge" style="background:rgba(255,215,0,0.12);color:#C8A830;border:1px solid rgba(255,215,0,0.25);cursor:default;" title="Asistió al 100% de las juntadas">👑</span>':''}${(()=>{const r=calcularRacha(c.Nombre);if(r>=10)return'<span class="badge" style="background:rgba(180,80,0,0.2);color:#D4845A;border:1px solid rgba(180,80,0,0.35);cursor:default;" title="'+r+' juntadas seguidas sin faltar">🔥 '+r+'</span>';if(r>=5)return'<span class="badge" style="background:rgba(180,150,0,0.15);color:#C4A84A;border:1px solid rgba(180,150,0,0.3);cursor:default;" title="'+r+' juntadas seguidas sin faltar">⚡ '+r+'</span>';return'';})()}</div>
                         <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
                     </div>
                     <div class="rank-percentage" style="color:${(()=>{const p=parseFloat(pct);if(p>=90)return'#4CAF50';if(p>=75)return'#8BC34A';if(p>=60)return'#FFD700';if(p>=45)return'#FF9800';return'#f44336';})()}">${pct}%</div>
@@ -614,7 +614,7 @@
 
         const html = `
             <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
-                ${j['Foto Juntada']||j['Foto']?`<div style="width:100%;max-width:400px;height:250px;margin:0 auto 25px;border-radius:15px;background-image:url('${j['Foto Juntada']||j['Foto']}');background-size:cover;background-position:center;border:3px solid #FFD700;"></div>`:''}
+                ${j['Foto Juntada']||j['Foto']?`<div style="width:100%;margin:0 auto 25px;border-radius:15px;overflow:hidden;border:3px solid #C8A830;"><img src="${j['Foto Juntada']||j['Foto']}" style="width:100%;max-height:400px;object-fit:contain;background:#0a0614;display:block;"></div>`:''}
                 <div style="text-align:center;margin-bottom:25px;">
                     <div style="color:#FFD700;font-size:14px;font-weight:bold;margin-bottom:10px;">${j.Fecha||'Fecha'}</div>
                     <div style="color:white;font-size:24px;font-weight:bold;margin-bottom:10px;">${j.Descripción||j.Descripcion||'Juntada'}</div>
@@ -1049,7 +1049,7 @@
         if(individuales.length>0){ html+='<div class="section-title" style="margin-top:25px;">🥇 Premios Individuales</div>';
             individuales.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`
                 <div class="card" onclick="verPerfilCulposo('${p.Ganador}')" style="display:flex;align-items:center;gap:15px;cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    ${f?`<img src="${f}" style="width:60px;height:60px;border-radius:50%;border:3px solid #FFD700;object-fit:cover;">`:'<div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8B4D8F 0%,#6B3870 100%);display:flex;align-items:center;justify-content:center;font-size:24px;">🏅</div>'}
+                    ${f?`<img src="${f}" style="width:56px;height:56px;min-width:56px;border-radius:50%;border:3px solid #C8A830;object-fit:cover;">`:'<div style="width:56px;height:56px;min-width:56px;border-radius:50%;background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 100%);display:flex;align-items:center;justify-content:center;font-size:24px;">🏅</div>'}
                     <div><div style="color:#FFD700;font-size:14px;font-weight:bold;text-transform:uppercase;">${p.Terna||'Premio'}</div><div style="color:white;font-size:16px;font-weight:bold;margin-top:3px;">${p.Ganador||'Sin ganador'}</div></div>
                 </div>`; }); }
 
