@@ -170,7 +170,7 @@
             </button>
             <div class="logo"></div>
             <div class="title">LA CULPA</div>
-            <div class="subtitle">👑 8 reyes 👑</div>
+            <div class="subtitle">👑 8 REYTES 👑</div>
         </div>
 
         <div class="tabs">
@@ -313,7 +313,7 @@
         return n >= 4;
     }
 
-    const FOTOS = {
+   const FOTOS = {
         'Toto':'https://i.imgur.com/Y8NOVgH.png','Caamaño':'https://i.imgur.com/7E7f3Xy.png',
         'Rama':'https://i.imgur.com/8hsqIL8.png','Zabala':'https://i.imgur.com/IsgSjm9.png',
         'Santi':'https://i.imgur.com/iXHdIVT.png','Mateo':'https://i.imgur.com/MY6KbRq.png',
@@ -1011,7 +1011,12 @@
             ${(()=>{ const r=calcularRacha(usuario.Nombre); if(r>=10) return `<div class="card" style="background:linear-gradient(135deg,rgba(255,100,0,0.15) 0%,rgba(255,60,0,0.05) 100%);border-left-color:#FF6600;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">🔥</div><div><div class="card-title" style="color:#FF6600;">¡${r} EN RACHA!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} juntadas seguidas sin faltar. Una máquina.</div></div></div></div>`; if(r>=5) return `<div class="card" style="background:linear-gradient(135deg,rgba(204,153,0,0.15) 0%,rgba(204,153,0,0.05) 100%);border-left-color:#CC9900;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">⚡</div><div><div class="card-title" style="color:#CC9900;">¡${r} en racha!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} juntadas seguidas. Va tomando ritmo.</div></div></div></div>`; return ''; })()}
             ${renderHostPanel(usuario.Nombre)}
             ${premiosHTML}
-            ${esMiPerfil?`<div class="section-title">📅 Mi Participación</div><div class="card" onclick="showTab('juntadas',document.querySelectorAll('.tab')[2])" style="cursor:pointer;text-align:center;background:linear-gradient(135deg,rgba(139,77,143,0.2) 0%,rgba(139,77,143,0.1) 100%);"><div class="card-title" style="color:#FFD700;font-size:16px;">📊 Ver todas mis juntadas →</div><div class="card-details" style="margin-top:5px;">Revisá tu historial completo de asistencias</div></div>`:''}`;
+            ${esMiPerfil?`<div class="section-title">📅 Mi Participación</div><div class="card" onclick="showTab('juntadas',document.querySelectorAll('.tab')[2])" style="cursor:pointer;text-align:center;background:linear-gradient(135deg,rgba(139,77,143,0.2) 0%,rgba(139,77,143,0.1) 100%);"><div class="card-title" style="color:#FFD700;font-size:16px;">📊 Ver todas mis juntadas →</div><div class="card-details" style="margin-top:5px;">Revisá tu historial completo de asistencias</div></div>
+            <div class="card" style="margin-top:10px;text-align:center;background:linear-gradient(135deg,rgba(107,45,145,0.15) 0%,rgba(74,29,107,0.1) 100%);">
+                <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-bottom:10px;">🔔 Notificaciones de nueva juntada</div>
+                <button id="btnNotif" onclick="activarNotificaciones()" style="background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 100%);border:2px solid #C8A830;color:#C8A830;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">Activar notificaciones</button>
+                <div id="notifStatus" style="margin-top:8px;font-size:12px;color:rgba(255,255,255,0.5);"></div>
+            </div>`:''}`;
     }
 
     function renderHostPanel(nombre) {
@@ -1307,6 +1312,28 @@
             console.log('Token guardado en Sheet:', res);
             localStorage.setItem('fcmToken', token);
         } catch(e) { console.warn('Error registrando notificaciones:', e); }
+    }
+
+    // Botón manual para activar notificaciones desde Perfil
+    async function activarNotificaciones() {
+        const btn = document.getElementById('btnNotif');
+        const status = document.getElementById('notifStatus');
+        if (btn) btn.disabled = true;
+        if (status) status.textContent = '⏳ Registrando...';
+
+        // Forzar re-registro borrando token guardado
+        localStorage.removeItem('fcmToken');
+        await pedirPermisoNotificaciones();
+
+        // Actualizar UI según resultado
+        const token = localStorage.getItem('fcmToken');
+        if (token) {
+            if (btn) { btn.textContent = '✅ Notificaciones activas'; btn.style.borderColor='#4CAF50'; btn.style.color='#4CAF50'; }
+            if (status) status.textContent = 'Este dispositivo va a recibir avisos de nuevas juntadas';
+        } else {
+            if (btn) { btn.disabled = false; btn.textContent = 'Reintentar'; }
+            if (status) status.textContent = '❌ No se pudo activar. Verificá los permisos del navegador.';
+        }
     }
 
     // ── INIT ──────────────────────────────────────────────────
