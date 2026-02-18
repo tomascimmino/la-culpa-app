@@ -272,24 +272,17 @@
         'Matu':'https://i.imgur.com/gNabdVm.png'
     };
 
-    // ── DRIVE: mapa de carpetas ───────────────────────────────
-    // Para agregar meses futuros, solo añadís la entrada en DRIVE_MESES
-    // y las subcarpetas en DRIVE_FECHAS con el formato "D-M-YYYY" o "D-M-YYYY SUFIJO"
     const DRIVE_MESES = {
         '2026': {
-            '1': '1PSdks-O-hEuQwSIbM0K0qiyYgmFnWHD5',  // Enero
-            '2': '1C58pq1fr-bvBX-WNzEBfkXvu5ObInQ6J'   // Febrero
-            // '3': 'ID_MARZO', ...
+            '1': '1PSdks-O-hEuQwSIbM0K0qiyYgmFnWHD5',
+            '2': '1C58pq1fr-bvBX-WNzEBfkXvu5ObInQ6J'
         }
     };
 
-    // Clave: "D-M-YYYY" o "D-M-YYYY SUFIJO" (sin ceros adelante, sufijo en mayúsculas)
     const DRIVE_FECHAS = {
-        // ENERO
         '7-1-2026':             '1P-bt4zhv4cDpT_O1dBlnlGhBUgu1f45e',
         '18-1-2026':            '1W8SDF-xEZ9QI6f0GwEqqpA18LM1opkLy',
         '24-1-2026':            '1Pq_2Ab6BWCYfIEuUf3pmjGXSX8h5IqJS',
-        // FEBRERO
         '8-2-2026 BRISAS':      '1UZ3iZfeeX8msJNTnTa5lqvVESSCu1OMl',
         '8-2-2026 CABA':        '1zu4_6jC17DYQu1FrpBe8J7c-P6ZeM9Pk',
         '12-2-2026':            '1pf9YS0N4Zvea960Wkvv4o4cLszL7vX-b',
@@ -298,9 +291,7 @@
         '16-2-2026 PASTOR':     '1B36Ri17YnjquRxToBtJcmsGk9_aWcBMk'
     };
 
-    // Devuelve URL de Drive para una juntada, o null si no hay
     function getDriveLink(juntada) {
-        // 1) Prioridad: Drive ID guardado en el Sheet (col W) por el Apps Script
         const sheetId = juntada['Drive ID'] || juntada['Drive Id'] || juntada['drive_id'] || '';
         if (sheetId) return `https://drive.google.com/drive/folders/${sheetId}`;
 
@@ -310,11 +301,9 @@
         const d = parseInt(partes[0]), m = parseInt(partes[1]), y = partes[2];
         const fechaKey = `${d}-${m}-${y}`;
 
-        // 2) Match exacto en mapa hardcodeado
         if (DRIVE_FECHAS[fechaKey])
             return `https://drive.google.com/drive/folders/${DRIVE_FECHAS[fechaKey]}`;
 
-        // 3) Match con sufijo (fechas duplicadas: BRISAS, PASTOR, etc.)
         const desc = (juntada.Descripción || juntada.Descripcion || '').toUpperCase();
         const host = (juntada.Host || '').toUpperCase();
         for (const key of Object.keys(DRIVE_FECHAS)) {
@@ -324,23 +313,19 @@
                 return `https://drive.google.com/drive/folders/${DRIVE_FECHAS[key]}`;
         }
 
-        // 4) Fallback: carpeta del mes
         const mesId = DRIVE_MESES[y]?.[String(m)];
         if (mesId) return `https://drive.google.com/drive/folders/${mesId}`;
 
         return null;
     }
 
-    // ── ESTADO GLOBAL ─────────────────────────────────────────
     let currentUser = null;
     let juntadasData = [];
     let culpososData = [];
     let premiosData  = [];
-    // Estado del filtro de juntadas
     window.juntadasMesActivo = null;
     window.juntadasVerMas    = false;
 
-    // ── HELPERS ───────────────────────────────────────────────
     function esHostDe(hostStr, nombre) {
         if (!hostStr || !nombre) return false;
         const h = hostStr.toLowerCase();
@@ -382,7 +367,6 @@
         return racha;
     }
 
-    // ── LOGIN ─────────────────────────────────────────────────
     async function login() {
         const email = document.getElementById('emailInput').value.trim().toLowerCase();
         const errorMsg = document.getElementById('errorMessage');
@@ -421,7 +405,6 @@
             juntadasData = parseCSV(await jR.text());
             culpososData = parseCSV(await cR.text());
             premiosData  = parseCSV(await pR.text());
-            // Resetear filtro de mes al recargar datos
             window.juntadasMesActivo = null;
             window.juntadasVerMas = false;
             renderHome(); renderRanking(); renderJuntadas(); renderAwards(); renderPerfil();
@@ -444,7 +427,6 @@
         return data;
     }
 
-    // ── HOME ──────────────────────────────────────────────────
     function renderHome() {
         const hoy = new Date(); hoy.setHours(0,0,0,0);
         let proximaJuntada = null, proximaIndex = -1;
@@ -541,7 +523,6 @@
             ultimasHTML;
     }
 
-    // ── RANKING ───────────────────────────────────────────────
     function renderRanking() {
         const sorted = [...culpososData].sort((a,b) => parseFloat(b.Porcentaje)-parseFloat(a.Porcentaje));
         const html = sorted.map((c, i) => {
@@ -569,7 +550,6 @@
         document.getElementById('rankingList').innerHTML = html;
     }
 
-    // ── JUNTADAS con filtro de mes + límite 10 ────────────────
     function renderJuntadas() {
         const usuario = getUsuarioActual();
         const nombreUsuario = usuario ? usuario.Nombre : '';
@@ -579,9 +559,8 @@
             if (!j.Fecha) return false;
             const f = parseFecha(j.Fecha);
             return f && f < hoy && tieneQuorum(j);
-        }).slice().reverse(); // más recientes primero
+        }).slice().reverse();
 
-        // ── Porcentaje TOTAL ──────────────────────────────────
         let totalBannerHTML = '';
         if (nombreUsuario && pasadas.length > 0) {
             const asistTot = pasadas.filter(j => esConfirmadoPositivo(j[nombreUsuario])).length;
@@ -589,7 +568,7 @@
             let msg, emoji, col;
             if (pctTot < 40)      { msg=`Te venís absteniendo mucho. Saludos.`;       emoji='😴'; col='#f44336'; }
             else if (pctTot < 66) { msg=`Venís bien, pero cuidado con abstenerse.`;   emoji='💪'; col='#FF9800'; }
-            else if (pctTot < 91) { msg=`Sos un culposo comprometido. Seguí así.`;           emoji='🔥'; col='#4CAF50'; }
+            else if (pctTot < 91) { msg=`Sos un culposo comprometido. Seguí así.`;    emoji='🔥'; col='#4CAF50'; }
             else                  { msg=`CULPOSO NIVEL LEGENDARIO.`;                  emoji='👑'; col='#FFD700'; }
             totalBannerHTML = `
                 <div style="background:linear-gradient(135deg,rgba(107,45,145,0.25),rgba(74,29,107,0.15));border:2px solid ${col};border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:14px;">
@@ -602,7 +581,6 @@
                 </div>`;
         }
 
-        // ── Meses disponibles ─────────────────────────────────
         const mesesDisponibles = [];
         const mesesVistos = new Set();
         pasadas.forEach(j => {
@@ -630,7 +608,6 @@
         const limite   = window.juntadasVerMas ? filtradas.length : 10;
         const mostradas = filtradas.slice(0, limite);
 
-        // ── Selector de meses ─────────────────────────────────
         const selectorHTML = mesesDisponibles.length > 1 ? `
             <div class="mes-selector" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:18px;">
                 ${mesesDisponibles.map(m => `
@@ -640,35 +617,46 @@
                     </button>`).join('')}
             </div>` : '';
 
-        // ── Cards de juntadas ─────────────────────────────────
         const cardsHTML = mostradas.map(j => {
             const ri = juntadasData.indexOf(j);
             const asistio   = esConfirmadoPositivo(j[nombreUsuario]);
             const foto      = j['Foto Juntada'] || j['Foto juntada'] || '';
             const driveLink = getDriveLink(j);
-            // Solo mostrar botón Fotos si hay carpeta Drive asignada
-            const tieneDrive = !!(j['Drive ID'] || j['Drive Id'] || driveLink);
+            // Solo mostrar Fotos si hay carpeta específica (no fallback de mes)
+            const tieneDrive = !!(j['Drive ID'] || j['Drive Id'] || j['drive_id'] || (() => {
+                if (!j.Fecha) return false;
+                const partes = String(j.Fecha).split('/');
+                if (partes.length !== 3) return false;
+                const d = parseInt(partes[0]), m = parseInt(partes[1]), y = partes[2];
+                const fechaKey = `${d}-${m}-${y}`;
+                if (DRIVE_FECHAS[fechaKey]) return true;
+                const desc = (j.Descripción || j.Descripcion || '').toUpperCase();
+                const host = (j.Host || '').toUpperCase();
+                return Object.keys(DRIVE_FECHAS).some(key => {
+                    if (!key.startsWith(fechaKey + ' ')) return false;
+                    const sufijo = key.replace(fechaKey + ' ', '');
+                    return desc.includes(sufijo) || host.includes(sufijo);
+                });
+            })());
             return `<div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                 ${foto ? `<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>` : ''}
                 <div class="card-date">${j.Fecha||'Fecha'}</div>
                 <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
-                <div class="card-details" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-                    <div><span>🏠 ${j.Host||'Sin host'}</span><span style="margin-left:10px;">👥 ${j['N° Asist']||'0'}</span></div>
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        ${tieneDrive && driveLink ? `<a href="${driveLink}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>` : ''}
-                        ${nombreUsuario ? `<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
-                    </div>
+                <div class="card-details">
+                    <span>🏠 ${j.Host||'Sin host'}</span><span style="margin-left:10px;">👥 ${j['N° Asist']||'0'}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                    ${tieneDrive && driveLink ? `<a href="${driveLink}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>` : ''}
+                    ${nombreUsuario ? `<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
                 </div>
             </div>`;
         }).join('');
 
-        // ── Ver más ───────────────────────────────────────────
         const verMasHTML = filtradas.length > 10 && !window.juntadasVerMas
             ? `<button onclick="verMasJuntadas()" style="width:100%;margin:5px 0 20px;background:rgba(139,77,143,0.2);border:2px solid rgba(139,77,143,0.5);color:#C8A830;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
                 Ver ${filtradas.length - 10} juntadas más de ${NOMBRES_MESES[activo?.month]} ↓
                </button>` : '';
 
-        // ── Motivacional del mes ──────────────────────────────
         let motivacional = '';
         if (nombreUsuario && filtradas.length > 0) {
             const asistMes = filtradas.filter(j => esConfirmadoPositivo(j[nombreUsuario])).length;
@@ -702,7 +690,6 @@
         renderJuntadas();
     }
 
-    // ── DETALLE JUNTADA ───────────────────────────────────────
     function verDetalleJuntada(index) {
         const j = juntadasData[index];
         const usuario = getUsuarioActual();
@@ -714,7 +701,6 @@
         const esHostJuntada = usuario && esHostDe(j.Host, usuario.Nombre);
         const puedeEditar = esFutura ? esHostJuntada : esAdmin;
 
-        // Botón Drive
         const driveLink = getDriveLink(j);
         const driveBtn = driveLink ? `
             <a href="${driveLink}" target="_blank"
@@ -768,7 +754,6 @@
         } catch { alert('❌ Error de conexión'); }
     }
 
-    // ── MODAL EDITAR JUNTADA ──────────────────────────────────
     function abrirModalEditarJuntada(index) {
         cerrarDetalle();
         const j = juntadasData[index];
@@ -811,7 +796,6 @@
         } catch { msg.innerHTML='<div style="color:#f44336;">❌ Error de conexión</div>'; }
     }
 
-    // ── MODAL CONFIRMAR ASISTENCIA ────────────────────────────
     function abrirModalConfirmar(indexJuntada) {
         const j = juntadasData[indexJuntada];
         const usuario = getUsuarioActual();
@@ -899,7 +883,6 @@
         juntadasData = parseCSV(await r.text());
     }
 
-    // ── PROPONER JUNTADA ──────────────────────────────────────
     function abrirModalProponerJuntada() {
         const hostOptions = CULPOSOS_HOSTS.map(n=>`<option value="${n}">${n}</option>`).join('');
         const catOptions = CATEGORIAS.map(c=>`<option value="${c}">${c}</option>`).join('');
@@ -933,7 +916,6 @@
         } catch { msg.innerHTML='<div style="color:#f44336;">❌ Error de conexión</div>'; }
     }
 
-    // ── PERFIL ────────────────────────────────────────────────
     function renderPerfil() { renderPerfilCulposo(null); }
 
     function renderPerfilCulposo(nombreCulposo) {
@@ -1006,7 +988,6 @@
         renderPerfilCulposo(nombre);
     }
 
-    // ── AWARDS ────────────────────────────────────────────────
     function renderAwards() {
         const year=document.getElementById('yearFilter').value;
         const filtrados=premiosData.filter(p=>p.Año==year);
@@ -1022,7 +1003,6 @@
         document.getElementById('awardsList').innerHTML=html;
     }
 
-    // ── CALCULADORA ───────────────────────────────────────────
     let gastosArray=[];
     const TODOS_NOMBRES=['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti','Cata','Lola','Sami','Leila','Juli','Manu','Matu'];
 
@@ -1086,7 +1066,6 @@
         window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
     }
 
-    // ── TABS ──────────────────────────────────────────────────
     function showTab(tabName, el) {
         document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
         if(el) el.classList.add('active');
@@ -1094,7 +1073,6 @@
         document.getElementById(tabName).classList.add('active');
     }
 
-    // ── FIREBASE ──────────────────────────────────────────────
     const FIREBASE_CONFIG = {
         apiKey:"AIzaSyAamBVJC48CtEd41HtvF5Ek0Bxui5TfsjA",authDomain:"la-culpa.firebaseapp.com",
         projectId:"la-culpa",storageBucket:"la-culpa.firebasestorage.app",
@@ -1174,7 +1152,6 @@
         }
     }
 
-    // ── INIT ──────────────────────────────────────────────────
     window.onload = function() {
         initFirebase();
         const saved = localStorage.getItem('culpaUserEmail');
