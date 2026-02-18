@@ -151,7 +151,7 @@
         <div class="header">
             <div class="logo"></div>
             <div class="title">LA CULPA</div>
-            <div class="subtitle">👑 8 reyes 👑</div>
+            <div class="subtitle">👑 8 REYES 👑</div>
         </div>
         <div class="login-card">
             <h2 style="color:#FFD700;margin-bottom:20px;">Bienvenido, Culposo</h2>
@@ -170,7 +170,7 @@
             </button>
             <div class="logo"></div>
             <div class="title">LA CULPA</div>
-            <div class="subtitle">👑 8 REYTES 👑</div>
+            <div class="subtitle">👑 8 REYES 👑</div>
         </div>
 
         <div class="tabs">
@@ -313,7 +313,7 @@
         return n >= 4;
     }
 
-   const FOTOS = {
+  const FOTOS = {
         'Toto':'https://i.imgur.com/Y8NOVgH.png','Caamaño':'https://i.imgur.com/7E7f3Xy.png',
         'Rama':'https://i.imgur.com/8hsqIL8.png','Zabala':'https://i.imgur.com/IsgSjm9.png',
         'Santi':'https://i.imgur.com/iXHdIVT.png','Mateo':'https://i.imgur.com/MY6KbRq.png',
@@ -1321,18 +1321,44 @@
         if (btn) btn.disabled = true;
         if (status) status.textContent = '⏳ Registrando...';
 
-        // Forzar re-registro borrando token guardado
         localStorage.removeItem('fcmToken');
-        await pedirPermisoNotificaciones();
 
-        // Actualizar UI según resultado
-        const token = localStorage.getItem('fcmToken');
-        if (token) {
-            if (btn) { btn.textContent = '✅ Notificaciones activas'; btn.style.borderColor='#4CAF50'; btn.style.color='#4CAF50'; }
+        try {
+            if (!messagingInstance) throw new Error('Firebase no inicializado');
+
+            const perm = await Notification.requestPermission();
+            if (perm !== 'granted') throw new Error('Permiso denegado: ' + perm);
+
+            let swReg = null;
+            if ('serviceWorker' in navigator) {
+                swReg = await navigator.serviceWorker.register(
+                    '/la-culpa-app/firebase-messaging-sw.js',
+                    { scope: '/la-culpa-app/' }
+                );
+                await navigator.serviceWorker.ready;
+            }
+
+            const tokenOpts = { vapidKey: VAPID_KEY };
+            if (swReg) tokenOpts.serviceWorkerRegistration = swReg;
+
+            const token = await messagingInstance.getToken(tokenOpts);
+            if (!token) throw new Error('Token vacío');
+
+            const r = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ accion: 'guardar_token', email: currentUser, token })
+            });
+            const res = await r.json();
+            if (!res.success) throw new Error('Error guardando token: ' + JSON.stringify(res));
+
+            localStorage.setItem('fcmToken', token);
+            if (btn) { btn.textContent = '✅ Notificaciones activas'; btn.style.borderColor='#4CAF50'; btn.style.color='#4CAF50'; btn.disabled = false; }
             if (status) status.textContent = 'Este dispositivo va a recibir avisos de nuevas juntadas';
-        } else {
+
+        } catch(e) {
+            console.error('Error activando notificaciones:', e);
             if (btn) { btn.disabled = false; btn.textContent = 'Reintentar'; }
-            if (status) status.textContent = '❌ No se pudo activar. Verificá los permisos del navegador.';
+            if (status) status.textContent = '❌ ' + e.message;
         }
     }
 
