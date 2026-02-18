@@ -587,10 +587,10 @@
             const asistTot = pasadas.filter(j => esConfirmadoPositivo(j[nombreUsuario])).length;
             const pctTot   = Math.round((asistTot / pasadas.length) * 100);
             let msg, emoji, col;
-            if (pctTot < 40)      { msg=`Muy ausente loco. Aparecé más.`;        emoji='😴'; col='#f44336'; }
-            else if (pctTot < 70) { msg=`Bien, pero no te relajes.`;             emoji='💪'; col='#FF9800'; }
-            else if (pctTot < 90) { msg=`Culposo comprometido. Seguí así.`;      emoji='🔥'; col='#4CAF50'; }
-            else                  { msg=`CULPOSO DE LEY. Sos un legendario.`;    emoji='👑'; col='#FFD700'; }
+            if (pctTot < 40)      { msg=`Te venís absteniendo mucho. Saludos.`;       emoji='😴'; col='#f44336'; }
+            else if (pctTot < 66) { msg=`Venís bien, pero cuidado con abstenerse.`;   emoji='💪'; col='#FF9800'; }
+            else if (pctTot < 91) { msg=`Sos un culposo comprometido. Seguí así.`;           emoji='🔥'; col='#4CAF50'; }
+            else                  { msg=`CULPOSO NIVEL LEGENDARIO.`;                  emoji='👑'; col='#FFD700'; }
             totalBannerHTML = `
                 <div style="background:linear-gradient(135deg,rgba(107,45,145,0.25),rgba(74,29,107,0.15));border:2px solid ${col};border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:14px;">
                     <div style="font-size:34px;flex-shrink:0;">${emoji}</div>
