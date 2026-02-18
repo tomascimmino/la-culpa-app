@@ -151,7 +151,7 @@
         <div class="header">
             <div class="logo"></div>
             <div class="title">LA CULPA</div>
-            <div class="subtitle"> 8 reyes 👑</div>
+            <div class="subtitle">👑 8 reyes 👑</div>
         </div>
         <div class="login-card">
             <h2 style="color:#FFD700;margin-bottom:20px;">Bienvenido, Culposo</h2>
@@ -170,7 +170,7 @@
             </button>
             <div class="logo"></div>
             <div class="title">LA CULPA</div>
-            <div class="subtitle"> 8 reyes 👑</div>
+            <div class="subtitle">👑 8 reyes 👑</div>
         </div>
 
         <div class="tabs">
@@ -1253,23 +1253,7 @@
     async function initFirebase() {
         try {
             firebase.initializeApp(FIREBASE_CONFIG);
-
-            // Registrar service worker explícitamente (necesario para GitHub Pages)
-            if ('serviceWorker' in navigator) {
-                try {
-                    const reg = await navigator.serviceWorker.register(
-                        '/la-culpa-app/firebase-messaging-sw.js'
-                    );
-                    await navigator.serviceWorker.ready;
-                    messagingInstance = firebase.messaging();
-                    messagingInstance.useServiceWorker(reg);
-                } catch(swErr) {
-                    console.warn('SW registration failed:', swErr);
-                    messagingInstance = firebase.messaging();
-                }
-            } else {
-                messagingInstance = firebase.messaging();
-            }
+            messagingInstance = firebase.messaging();
 
             // Handle foreground messages
             messagingInstance.onMessage(payload => {
@@ -1288,21 +1272,40 @@
     }
 
     async function pedirPermisoNotificaciones() {
-        if (!messagingInstance) return;
+        if (!messagingInstance) { console.warn('Messaging no inicializado'); return; }
         try {
             const perm = await Notification.requestPermission();
+            console.log('Permiso notificaciones:', perm);
             if (perm !== 'granted') return;
-            const token = await messagingInstance.getToken({ vapidKey: VAPID_KEY });
+
+            // Registrar SW y pasarlo explícitamente a getToken (Firebase 10+)
+            let swReg = null;
+            if ('serviceWorker' in navigator) {
+                swReg = await navigator.serviceWorker.register(
+                    '/la-culpa-app/firebase-messaging-sw.js'
+                );
+                await navigator.serviceWorker.ready;
+                console.log('SW registrado:', swReg.scope);
+            }
+
+            const tokenOpts = { vapidKey: VAPID_KEY };
+            if (swReg) tokenOpts.serviceWorkerRegistration = swReg;
+
+            const token = await messagingInstance.getToken(tokenOpts);
+            console.log('FCM token:', token ? token.substring(0,20)+'...' : 'null');
             if (!token) return;
-            // Save token to Google Sheet (de-duplicate by email)
+
+            // Guardar solo si cambió
             const saved = localStorage.getItem('fcmToken');
-            if (saved === token) return; // ya guardado
-            await fetch(APPS_SCRIPT_URL, {
+            if (saved === token) { console.log('Token sin cambios'); return; }
+
+            const r = await fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({ accion: 'guardar_token', email: currentUser, token })
             });
+            const res = await r.json();
+            console.log('Token guardado en Sheet:', res);
             localStorage.setItem('fcmToken', token);
-            console.log('FCM token registrado');
         } catch(e) { console.warn('Error registrando notificaciones:', e); }
     }
 
