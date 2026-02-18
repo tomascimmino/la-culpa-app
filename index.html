@@ -151,7 +151,7 @@
         <div class="header">
             <div class="logo"></div>
             <div class="title">LA CULPA</div>
-            <div class="subtitle"> 8 reyes </div>
+            <div class="subtitle"> 8 reyes 👑</div>
         </div>
         <div class="login-card">
             <h2 style="color:#FFD700;margin-bottom:20px;">Bienvenido, Culposo</h2>
@@ -170,7 +170,7 @@
             </button>
             <div class="logo"></div>
             <div class="title">LA CULPA</div>
-            <div class="subtitle"> 8 reyes </div>
+            <div class="subtitle"> 8 reyes 👑</div>
         </div>
 
         <div class="tabs">
@@ -323,7 +323,7 @@
         'Juli':'https://i.imgur.com/cn779x3.png','Manu':'https://i.imgur.com/BzDK66B.png',
         'Matu':'https://i.imgur.com/gNabdVm.png'
     };
-    
+
     // ── ADMIN (puede editar/borrar juntadas pasadas) ─────────
     const ADMIN_EMAIL = 'TU_EMAIL_AQUI'; // <-- reemplazá con tu email
 
@@ -405,9 +405,31 @@
     }
 
     function parseFecha(fechaStr) {
-        const p = fechaStr.split('/');
-        if (p.length === 3) return new Date(p[2], p[1]-1, p[0]);
-        return null;
+        if (!fechaStr) return null;
+        const s = String(fechaStr).trim();
+
+        // DD/MM/YYYY  (formato guardado por nosotros)
+        let p = s.split('/');
+        if (p.length === 3) {
+            const [a, b, c] = p.map(Number);
+            // Si el año está primero (YYYY/MM/DD no es nuestro caso, pero por las dudas)
+            if (a > 1900) return new Date(a, b-1, c);
+            // DD/MM/YYYY normal
+            return new Date(c, b-1, a);
+        }
+
+        // M/D/YYYY o MM/DD/YYYY — Google Sheets con locale en inglés
+        // Detectar: si el tercer parte es año (>1900), segundo es mes (<=12), primero es día
+        // Igual que arriba pero Sheets a veces exporta M/D/YYYY
+        // Ya cubierto por el split anterior
+
+        // YYYY-MM-DD  (ISO, por si acaso)
+        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (iso) return new Date(Number(iso[1]), Number(iso[2])-1, Number(iso[3]));
+
+        // Intentar parseo nativo como último recurso
+        const d = new Date(s);
+        return isNaN(d.getTime()) ? null : d;
     }
 
     function esConfirmadoPositivo(val) { return val === 'TRUE' || val === '✓'; }
@@ -1231,7 +1253,23 @@
     async function initFirebase() {
         try {
             firebase.initializeApp(FIREBASE_CONFIG);
-            messagingInstance = firebase.messaging();
+
+            // Registrar service worker explícitamente (necesario para GitHub Pages)
+            if ('serviceWorker' in navigator) {
+                try {
+                    const reg = await navigator.serviceWorker.register(
+                        '/la-culpa-app/firebase-messaging-sw.js'
+                    );
+                    await navigator.serviceWorker.ready;
+                    messagingInstance = firebase.messaging();
+                    messagingInstance.useServiceWorker(reg);
+                } catch(swErr) {
+                    console.warn('SW registration failed:', swErr);
+                    messagingInstance = firebase.messaging();
+                }
+            } else {
+                messagingInstance = firebase.messaging();
+            }
 
             // Handle foreground messages
             messagingInstance.onMessage(payload => {
