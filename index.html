@@ -300,17 +300,21 @@
 
     // Devuelve URL de Drive para una juntada, o null si no hay
     function getDriveLink(juntada) {
+        // 1) Prioridad: Drive ID guardado en el Sheet (col W) por el Apps Script
+        const sheetId = juntada['Drive ID'] || juntada['Drive Id'] || juntada['drive_id'] || '';
+        if (sheetId) return `https://drive.google.com/drive/folders/${sheetId}`;
+
         if (!juntada.Fecha) return null;
         const partes = String(juntada.Fecha).split('/');
         if (partes.length !== 3) return null;
         const d = parseInt(partes[0]), m = parseInt(partes[1]), y = partes[2];
         const fechaKey = `${d}-${m}-${y}`;
 
-        // Match exacto
+        // 2) Match exacto en mapa hardcodeado
         if (DRIVE_FECHAS[fechaKey])
             return `https://drive.google.com/drive/folders/${DRIVE_FECHAS[fechaKey]}`;
 
-        // Match con sufijo (ej: fechas duplicadas)
+        // 3) Match con sufijo (fechas duplicadas: BRISAS, PASTOR, etc.)
         const desc = (juntada.Descripción || juntada.Descripcion || '').toUpperCase();
         const host = (juntada.Host || '').toUpperCase();
         for (const key of Object.keys(DRIVE_FECHAS)) {
@@ -320,7 +324,7 @@
                 return `https://drive.google.com/drive/folders/${DRIVE_FECHAS[key]}`;
         }
 
-        // Fallback: carpeta del mes
+        // 4) Fallback: carpeta del mes
         const mesId = DRIVE_MESES[y]?.[String(m)];
         if (mesId) return `https://drive.google.com/drive/folders/${mesId}`;
 
