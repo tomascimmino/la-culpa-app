@@ -139,6 +139,9 @@
         }
         .form-select option { background: #1e1e3f; color: white; }
     </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
 </head>
 <body>
 <div class="container" id="app">
@@ -148,7 +151,7 @@
         <div class="header">
             <div class="logo"></div>
             <div class="title">LA CULPA</div>
-            <div class="subtitle">saludos!</div>
+            <div class="subtitle"> 8 reyes </div>
         </div>
         <div class="login-card">
             <h2 style="color:#FFD700;margin-bottom:20px;">Bienvenido, Culposo</h2>
@@ -320,7 +323,7 @@
         'Juli':'https://i.imgur.com/cn779x3.png','Manu':'https://i.imgur.com/BzDK66B.png',
         'Matu':'https://i.imgur.com/gNabdVm.png'
     };
-
+    
     // ── ADMIN (puede editar/borrar juntadas pasadas) ─────────
     const ADMIN_EMAIL = 'TU_EMAIL_AQUI'; // <-- reemplazá con tu email
 
@@ -348,6 +351,8 @@
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         loadData();
+        // Ask for push permission after login (slight delay so UI settles)
+        setTimeout(pedirPermisoNotificaciones, 2000);
     }
 
     function logout() {
@@ -1210,8 +1215,62 @@
         document.getElementById(tabName).classList.add('active');
     }
 
+    // ── FIREBASE PUSH NOTIFICATIONS ──────────────────────────
+    const FIREBASE_CONFIG = {
+        apiKey: "AIzaSyAamBVJC48CtEd41HtvF5Ek0Bxui5TfsjA",
+        authDomain: "la-culpa.firebaseapp.com",
+        projectId: "la-culpa",
+        storageBucket: "la-culpa.firebasestorage.app",
+        messagingSenderId: "339936091040",
+        appId: "1:339936091040:web:608ec8df925b088472a2c5"
+    };
+    const VAPID_KEY = "BLTKtmHW3u6CS-uITlN19AF0IWzlQmOBSwWarERODdaqPZ0jXSoVvhqvz2E64w_Jue5Sa3cazO8gkFHXRfb1Zzs";
+
+    let messagingInstance = null;
+
+    async function initFirebase() {
+        try {
+            firebase.initializeApp(FIREBASE_CONFIG);
+            messagingInstance = firebase.messaging();
+
+            // Handle foreground messages
+            messagingInstance.onMessage(payload => {
+                const { title, body } = payload.notification || {};
+                if (title) showInAppNotification(title, body);
+            });
+        } catch(e) { console.warn('Firebase init error:', e); }
+    }
+
+    function showInAppNotification(title, body) {
+        const el = document.createElement('div');
+        el.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 100%);color:white;padding:14px 20px;border-radius:14px;border:2px solid #C8A830;box-shadow:0 8px 30px rgba(0,0,0,0.5);max-width:320px;width:90%;text-align:center;`;
+        el.innerHTML = `<div style="font-size:18px;margin-bottom:4px;">🎉</div><div style="font-weight:bold;color:#C8A830;margin-bottom:4px;">${title}</div><div style="font-size:13px;opacity:0.9;">${body||''}</div>`;
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(), 5000);
+    }
+
+    async function pedirPermisoNotificaciones() {
+        if (!messagingInstance) return;
+        try {
+            const perm = await Notification.requestPermission();
+            if (perm !== 'granted') return;
+            const token = await messagingInstance.getToken({ vapidKey: VAPID_KEY });
+            if (!token) return;
+            // Save token to Google Sheet (de-duplicate by email)
+            const saved = localStorage.getItem('fcmToken');
+            if (saved === token) return; // ya guardado
+            await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ accion: 'guardar_token', email: currentUser, token })
+            });
+            localStorage.setItem('fcmToken', token);
+            console.log('FCM token registrado');
+        } catch(e) { console.warn('Error registrando notificaciones:', e); }
+    }
+
     // ── INIT ──────────────────────────────────────────────────
     window.onload = function() {
+        initFirebase();
         const saved = localStorage.getItem('culpaUserEmail');
         if (saved) { document.getElementById('emailInput').value=saved; login(); }
     };
