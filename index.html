@@ -13,23 +13,17 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #120D1F 0%, #1A1030 50%, #0F0A1A 100%);
-            min-height: 100vh;
-            color: white;
+            min-height: 100vh; color: white;
         }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
         .header {
             background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 50%, #3A1555 100%);
-            padding: 40px 20px 30px;
-            text-align: center;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 40px 20px 30px; text-align: center; border-radius: 20px;
+            margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .logo {
-            width: min(280px, 70vw); height: min(280px, 70vw);
-            margin: 0 auto 15px;
-            background: url('https://i.imgur.com/czObXpX.png') center/contain no-repeat;
-            border-radius: 20px;
+            width: min(280px, 70vw); height: min(280px, 70vw); margin: 0 auto 15px;
+            background: url('https://i.imgur.com/czObXpX.png') center/contain no-repeat; border-radius: 20px;
         }
         .title { color: #FFD700; font-size: 32px; font-weight: bold; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .subtitle { color: rgba(255,255,255,0.9); font-size: 14px; }
@@ -38,9 +32,8 @@
             background: rgba(20,10,35,0.7); padding: 10px; border-radius: 15px; border: 1px solid rgba(107,45,145,0.3);
         }
         .tab {
-            flex: 1; padding: 10px 6px; text-align: center;
-            background: transparent; border: 2px solid rgba(139,77,143,0.3);
-            border-radius: 10px; color: rgba(255,255,255,0.6);
+            flex: 1; padding: 10px 6px; text-align: center; background: transparent;
+            border: 2px solid rgba(139,77,143,0.3); border-radius: 10px; color: rgba(255,255,255,0.6);
             cursor: pointer; transition: all 0.3s; font-size: 12px; min-width: 0;
         }
         @media (max-width: 500px) {
@@ -57,17 +50,13 @@
             img { max-width: 100% !important; height: auto !important; }
             .card { padding: 12px !important; }
         }
-        .tab.active {
-            background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 100%);
-            color: #C8A830; border-color: #C8A830;
-        }
+        .tab.active { background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 100%); color: #C8A830; border-color: #C8A830; }
         .content { display: none; }
         .content.active { display: block; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-card {
             background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
-            padding: 20px; border-radius: 15px; text-align: center;
-            border: 2px solid rgba(107,45,145,0.35);
+            padding: 20px; border-radius: 15px; text-align: center; border: 2px solid rgba(107,45,145,0.35);
         }
         .stat-number { font-size: 32px; font-weight: bold; color: #FFD700; margin-bottom: 5px; }
         .stat-label { color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; }
@@ -77,8 +66,7 @@
         }
         .card {
             background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
-            padding: 15px; border-radius: 15px; margin-bottom: 15px;
-            border-left: 4px solid #C8A830;
+            padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 4px solid #C8A830;
         }
         .card-date { color: #FFD700; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
         .card-title { color: white; font-size: 16px; font-weight: bold; margin-bottom: 5px; }
@@ -86,8 +74,7 @@
         .ranking-item {
             background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
             padding: 15px; border-radius: 12px; margin-bottom: 10px;
-            display: flex; align-items: center; gap: 15px;
-            border: 2px solid rgba(107,45,145,0.35);
+            display: flex; align-items: center; gap: 15px; border: 2px solid rgba(107,45,145,0.35);
         }
         .ranking-item.top3 { border-color: #FFD700; }
         .rank-number { font-size: 20px; font-weight: bold; color: #FFD700; min-width: 30px; }
@@ -100,46 +87,38 @@
         .rank-name { color: white; font-weight: bold; font-size: 14px; margin-bottom: 3px; display:flex; flex-wrap:wrap; align-items:center; gap:4px; justify-content:flex-start; }
         .rank-stats { color: rgba(255,255,255,0.6); font-size: 12px; display:block; text-align:left; width:100%; }
         .rank-percentage { font-size: 18px; font-weight: bold; color: #FFD700; }
-        .badge {
-            display: inline-block; background: #FFD700; color: #1a1a2e;
-            padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; margin-left: 5px;
-        }
+        .badge { display: inline-block; background: #FFD700; color: #1a1a2e; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; margin-left: 5px; }
         .loading { text-align: center; padding: 40px; color: rgba(255,255,255,0.6); }
         .spinner {
             border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #C8A830;
-            border-radius: 50%; width: 40px; height: 40px;
-            animation: spin 1s linear infinite; margin: 20px auto;
+            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .login-screen {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; min-height: 80vh; text-align: center;
-        }
+        @keyframes slideDown { from { opacity:0; transform:translateX(-50%) translateY(-20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; text-align: center; }
         .login-card {
             background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
-            padding: 40px; border-radius: 20px;
-            border: 2px solid rgba(139,77,143,0.3); max-width: 400px; width: 100%;
+            padding: 40px; border-radius: 20px; border: 2px solid rgba(139,77,143,0.3); max-width: 400px; width: 100%;
         }
         .login-input {
             width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px;
-            border: 2px solid rgba(139,77,143,0.3);
-            background: rgba(30,30,63,0.5); color: white; font-size: 16px;
+            border: 2px solid rgba(139,77,143,0.3); background: rgba(30,30,63,0.5); color: white; font-size: 16px;
         }
         .login-button {
             width: 100%; padding: 15px; margin-top: 20px; border-radius: 10px; border: none;
-            background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 100%);
-            color: #C8A830; font-size: 16px; font-weight: bold; cursor: pointer;
+            background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 100%); color: #C8A830; font-size: 16px; font-weight: bold; cursor: pointer;
         }
         .login-button:hover { opacity: 0.9; }
         .error-message { color: #ff4444; margin-top: 10px; font-size: 14px; }
         .form-select {
-            width: 100%; padding: 12px; border-radius: 8px;
-            border: 2px solid rgba(139,77,143,0.3);
+            width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(139,77,143,0.3);
             background: rgba(30,30,63,0.5); color: white; font-size: 14px;
         }
         .form-select option { background: #1e1e3f; color: white; }
+        /* Selector de meses — ocultar scrollbar */
+        .mes-selector::-webkit-scrollbar { display: none; }
+        .mes-selector { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
 </head>
@@ -185,14 +164,8 @@
         <!-- HOME -->
         <div id="home" class="content active">
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalJuntadas">-</div>
-                    <div class="stat-label">Juntadas</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalCulposos">-</div>
-                    <div class="stat-label">Tu Asistencia</div>
-                </div>
+                <div class="stat-card"><div class="stat-number" id="totalJuntadas">-</div><div class="stat-label">Juntadas</div></div>
+                <div class="stat-card"><div class="stat-number" id="totalCulposos">-</div><div class="stat-label">Tu Asistencia</div></div>
             </div>
             <button onclick="abrirModalProponerJuntada()" style="width:100%;margin:15px 0 10px;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
                 ➕ Proponer Juntada
@@ -208,7 +181,7 @@
 
         <!-- JUNTADAS -->
         <div id="juntadas" class="content">
-            <div class="section-title">📅 Juntadas en 2026</div>
+            <div class="section-title">📅 Historial de Juntadas</div>
             <div id="juntadasList" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
         </div>
 
@@ -277,43 +250,18 @@
 <script>
     const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrz7UH8fYW5DbP2wD3QtbNC3nigwv_0ZF6HTPgmpZAnouFvR5m1UE1INZAndRbcyKXRA/exec';
+    const ADMIN_EMAIL = 'tomascimmino@gmail.com';
 
     const CULPOSOS_HOSTS = ['Zabala - Sami','Caamaño - Manu','Rama','Tirri - Toto','Santi','Toti - Lei','Mateo - Juli','Sin host'];
+    const CATEGORIAS = ['Comida','Salida','Cumpleaños','Entrenamiento','Otro'];
+    const NOMBRES_MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-    // Mapa: si el nombre del culposo no aparece literal en el host, acá está su alias
     const ALIAS_HOST = {
-        'Leila': 'Lei',   // "Toti - Lei"
-        'Juli':  'Juli',  // "Mateo - Juli" — coincide directo
-        'Tirri': 'Tirri', // "Tirri - Toto" — coincide directo
-        'Toto':  'Toto',  // "Tirri - Toto" — coincide directo
-        'Mateo': 'Mateo', // "Mateo - Juli" — coincide directo
-        'Toti':  'Toti',  // "Toti - Lei"   — coincide directo
-        'Zabala':'Zabala',// "Zabala - Sami" — coincide directo
-        'Sami':  'Sami',  // "Zabala - Sami" — coincide directo
-        'Caamaño':'Caamaño',
-        'Manu':  'Manu'
+        'Leila':'Lei','Juli':'Juli','Tirri':'Tirri','Toto':'Toto',
+        'Mateo':'Mateo','Toti':'Toti','Zabala':'Zabala','Sami':'Sami','Caamaño':'Caamaño','Manu':'Manu'
     };
 
-    // Devuelve true si 'nombre' es uno de los hosts de la juntada
-    function esHostDe(hostStr, nombre) {
-        if (!hostStr || !nombre) return false;
-        const h = hostStr.toLowerCase();
-        // Chequeo directo
-        if (h.includes(nombre.toLowerCase())) return true;
-        // Chequeo por alias especial (ej: Leila → Lei)
-        const ak = ALIAS_HOST[nombre];
-        if (ak && h.includes(ak.toLowerCase())) return true;
-        return false;
-    }
-    const CATEGORIAS = ['Comida','Salida','Cumpleaños','Entrenamiento','Otro'];
-
-    // Quorum: la juntada cuenta solo si tuvo 4+ culposos (col N° Culposos)
-    function tieneQuorum(j) {
-        const n = parseInt(j['N° Culposos'] || j['N Culposos'] || '0');
-        return n >= 4;
-    }
-
-   const FOTOS = {
+    const FOTOS = {
         'Toto':'https://i.imgur.com/Y8NOVgH.png','Caamaño':'https://i.imgur.com/7E7f3Xy.png',
         'Rama':'https://i.imgur.com/8hsqIL8.png','Zabala':'https://i.imgur.com/IsgSjm9.png',
         'Santi':'https://i.imgur.com/iXHdIVT.png','Mateo':'https://i.imgur.com/MY6KbRq.png',
@@ -324,13 +272,111 @@
         'Matu':'https://i.imgur.com/gNabdVm.png'
     };
 
-    // ── ADMIN (puede editar/borrar juntadas pasadas) ─────────
-    const ADMIN_EMAIL = 'tomascimmino@gmail.com'; // <-- reemplazá con tu email
+    // ── DRIVE: mapa de carpetas ───────────────────────────────
+    // Para agregar meses futuros, solo añadís la entrada en DRIVE_MESES
+    // y las subcarpetas en DRIVE_FECHAS con el formato "D-M-YYYY" o "D-M-YYYY SUFIJO"
+    const DRIVE_MESES = {
+        '2026': {
+            '1': '1PSdks-O-hEuQwSIbM0K0qiyYgmFnWHD5',  // Enero
+            '2': '1C58pq1fr-bvBX-WNzEBfkXvu5ObInQ6J'   // Febrero
+            // '3': 'ID_MARZO', ...
+        }
+    };
 
+    // Clave: "D-M-YYYY" o "D-M-YYYY SUFIJO" (sin ceros adelante, sufijo en mayúsculas)
+    const DRIVE_FECHAS = {
+        // ENERO
+        '7-1-2026':             '1P-bt4zhv4cDpT_O1dBlnlGhBUgu1f45e',
+        '18-1-2026':            '1W8SDF-xEZ9QI6f0GwEqqpA18LM1opkLy',
+        '24-1-2026':            '1Pq_2Ab6BWCYfIEuUf3pmjGXSX8h5IqJS',
+        // FEBRERO
+        '8-2-2026 BRISAS':      '1UZ3iZfeeX8msJNTnTa5lqvVESSCu1OMl',
+        '8-2-2026 CABA':        '1zu4_6jC17DYQu1FrpBe8J7c-P6ZeM9Pk',
+        '12-2-2026':            '1pf9YS0N4Zvea960Wkvv4o4cLszL7vX-b',
+        '14-2-2026':            '1EZ-VYqpUXpu7vhFGYSkfshOFMYtf97Fc',
+        '16-2-2026 HURLINGHAM': '1b4PVdlHfPVy_G4cR4CETwL_5ya9IHIYo',
+        '16-2-2026 PASTOR':     '1B36Ri17YnjquRxToBtJcmsGk9_aWcBMk'
+    };
+
+    // Devuelve URL de Drive para una juntada, o null si no hay
+    function getDriveLink(juntada) {
+        if (!juntada.Fecha) return null;
+        const partes = String(juntada.Fecha).split('/');
+        if (partes.length !== 3) return null;
+        const d = parseInt(partes[0]), m = parseInt(partes[1]), y = partes[2];
+        const fechaKey = `${d}-${m}-${y}`;
+
+        // Match exacto
+        if (DRIVE_FECHAS[fechaKey])
+            return `https://drive.google.com/drive/folders/${DRIVE_FECHAS[fechaKey]}`;
+
+        // Match con sufijo (ej: fechas duplicadas)
+        const desc = (juntada.Descripción || juntada.Descripcion || '').toUpperCase();
+        const host = (juntada.Host || '').toUpperCase();
+        for (const key of Object.keys(DRIVE_FECHAS)) {
+            if (!key.startsWith(fechaKey + ' ')) continue;
+            const sufijo = key.replace(fechaKey + ' ', '');
+            if (desc.includes(sufijo) || host.includes(sufijo))
+                return `https://drive.google.com/drive/folders/${DRIVE_FECHAS[key]}`;
+        }
+
+        // Fallback: carpeta del mes
+        const mesId = DRIVE_MESES[y]?.[String(m)];
+        if (mesId) return `https://drive.google.com/drive/folders/${mesId}`;
+
+        return null;
+    }
+
+    // ── ESTADO GLOBAL ─────────────────────────────────────────
     let currentUser = null;
     let juntadasData = [];
     let culpososData = [];
-    let premiosData = [];
+    let premiosData  = [];
+    // Estado del filtro de juntadas
+    window.juntadasMesActivo = null;
+    window.juntadasVerMas    = false;
+
+    // ── HELPERS ───────────────────────────────────────────────
+    function esHostDe(hostStr, nombre) {
+        if (!hostStr || !nombre) return false;
+        const h = hostStr.toLowerCase();
+        if (h.includes(nombre.toLowerCase())) return true;
+        const ak = ALIAS_HOST[nombre];
+        if (ak && h.includes(ak.toLowerCase())) return true;
+        return false;
+    }
+    function tieneQuorum(j) {
+        return parseInt(j['N° Culposos'] || j['N Culposos'] || '0') >= 4;
+    }
+    function getUsuarioActual() {
+        return culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
+    }
+    function parseFecha(fechaStr) {
+        if (!fechaStr) return null;
+        const s = String(fechaStr).trim();
+        const p = s.split('/');
+        if (p.length === 3) {
+            const [a, b, c] = p.map(Number);
+            if (a > 1900) return new Date(a, b-1, c);
+            return new Date(c, b-1, a);
+        }
+        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (iso) return new Date(Number(iso[1]), Number(iso[2])-1, Number(iso[3]));
+        const d = new Date(s);
+        return isNaN(d.getTime()) ? null : d;
+    }
+    function esConfirmadoPositivo(val) { return val === 'TRUE' || val === '✓'; }
+    function esConfirmadoNegativo(val) { return val === 'FALSE' || val === '✗'; }
+    function estaConfirmado(val)       { return esConfirmadoPositivo(val) || esConfirmadoNegativo(val); }
+    function calcularRacha(nombre) {
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+        const pasadas = juntadasData
+            .filter(j => { if (!j.Fecha) return false; const f = parseFecha(j.Fecha); return f && f < hoy && tieneQuorum(j); })
+            .sort((a,b) => parseFecha(b.Fecha) - parseFecha(a.Fecha));
+        let racha = 0;
+        for (const j of pasadas) { if (esConfirmadoPositivo(j[nombre])) racha++; else break; }
+        return racha;
+    }
 
     // ── LOGIN ─────────────────────────────────────────────────
     async function login() {
@@ -339,11 +385,9 @@
         if (!email || !email.includes('@')) { errorMsg.textContent = 'Por favor ingresá un email válido'; return; }
         try {
             const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`);
-            const csv = await r.text();
-            const temp = parseCSV(csv);
+            const temp = parseCSV(await r.text());
             if (!temp.some(c => c.Email && c.Email.toLowerCase() === email)) {
-                errorMsg.textContent = '❌ Email no autorizado. Solo culposos pueden entrar.';
-                return;
+                errorMsg.textContent = '❌ Email no autorizado. Solo culposos pueden entrar.'; return;
             }
         } catch { errorMsg.textContent = 'Error conectando con el servidor. Intentá de nuevo.'; return; }
         currentUser = email;
@@ -351,8 +395,7 @@
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         loadData();
-        // Ask for push permission after login (slight delay so UI settles)
-        setTimeout(pedirPermisoNotificaciones, 2000);
+        setTimeout(pedirPermisoNotificaciones, 3000);
     }
 
     function logout() {
@@ -364,7 +407,6 @@
         document.getElementById('errorMessage').textContent = '';
     }
 
-    // ── CARGAR DATOS ──────────────────────────────────────────
     async function loadData() {
         try {
             const [jR, cR, pR] = await Promise.all([
@@ -375,14 +417,13 @@
             juntadasData = parseCSV(await jR.text());
             culpososData = parseCSV(await cR.text());
             premiosData  = parseCSV(await pR.text());
+            // Resetear filtro de mes al recargar datos
+            window.juntadasMesActivo = null;
+            window.juntadasVerMas = false;
             renderHome(); renderRanking(); renderJuntadas(); renderAwards(); renderPerfil();
-        } catch (e) {
-            console.error(e);
-            alert('Error conectando con Google Sheets.');
-        }
+        } catch(e) { console.error(e); alert('Error conectando con Google Sheets.'); }
     }
 
-    // ── PARSEAR CSV ───────────────────────────────────────────
     function parseCSV(csv) {
         const lines = csv.split('\n');
         const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim());
@@ -399,43 +440,6 @@
         return data;
     }
 
-    // ── HELPERS ───────────────────────────────────────────────
-    function getUsuarioActual() {
-        return culpososData.find(c => c.Email && c.Email.toLowerCase() === currentUser);
-    }
-
-    function parseFecha(fechaStr) {
-        if (!fechaStr) return null;
-        const s = String(fechaStr).trim();
-
-        // DD/MM/YYYY  (formato guardado por nosotros)
-        let p = s.split('/');
-        if (p.length === 3) {
-            const [a, b, c] = p.map(Number);
-            // Si el año está primero (YYYY/MM/DD no es nuestro caso, pero por las dudas)
-            if (a > 1900) return new Date(a, b-1, c);
-            // DD/MM/YYYY normal
-            return new Date(c, b-1, a);
-        }
-
-        // M/D/YYYY o MM/DD/YYYY — Google Sheets con locale en inglés
-        // Detectar: si el tercer parte es año (>1900), segundo es mes (<=12), primero es día
-        // Igual que arriba pero Sheets a veces exporta M/D/YYYY
-        // Ya cubierto por el split anterior
-
-        // YYYY-MM-DD  (ISO, por si acaso)
-        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-        if (iso) return new Date(Number(iso[1]), Number(iso[2])-1, Number(iso[3]));
-
-        // Intentar parseo nativo como último recurso
-        const d = new Date(s);
-        return isNaN(d.getTime()) ? null : d;
-    }
-
-    function esConfirmadoPositivo(val) { return val === 'TRUE' || val === '✓'; }
-    function esConfirmadoNegativo(val) { return val === 'FALSE' || val === '✗'; }
-    function estaConfirmado(val) { return esConfirmadoPositivo(val) || esConfirmadoNegativo(val); }
-
     // ── HOME ──────────────────────────────────────────────────
     function renderHome() {
         const hoy = new Date(); hoy.setHours(0,0,0,0);
@@ -447,7 +451,7 @@
             const f = parseFecha(j.Fecha);
             if (!f) return;
             if (f >= hoy && !proximaJuntada) { proximaJuntada = j; proximaIndex = i; }
-            else if (f < hoy && tieneQuorum(j)) juntadasPasadas.push(j); // solo cuentan con quorum
+            else if (f < hoy && tieneQuorum(j)) juntadasPasadas.push(j);
         });
 
         document.getElementById('totalJuntadas').textContent = juntadasPasadas.length;
@@ -462,7 +466,6 @@
             document.getElementById('totalCulposos').innerHTML = `<span style="color:${col}">${pct}%</span>`;
         }
 
-        // Próxima juntada
         let proximaHTML = '';
         if (proximaJuntada && usuario) {
             const desc = proximaJuntada.Descripción || proximaJuntada.Descripcion || '';
@@ -470,32 +473,24 @@
                 const miVal = proximaJuntada[usuario.Nombre];
                 const yaConfirme = estaConfirmado(miVal);
                 const positivo = esConfirmadoPositivo(miVal);
-
                 let estadoHTML = '';
                 if (yaConfirme) {
                     if (positivo) {
-                        estadoHTML = `
-                            <div style="text-align:center;padding:15px;background:rgba(76,175,80,0.2);border-radius:10px;margin-top:15px;border:2px solid #4CAF50;">
-                                <div style="font-size:22px;margin-bottom:6px;">✅</div>
-                                <div style="font-size:16px;font-weight:bold;color:#4CAF50;">¡Ya confirmaste asistencia!</div>
-                                <button onclick="abrirModalConfirmar(${proximaIndex})" style="margin-top:10px;background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:bold;">✏️ Editar respuesta</button>
-                            </div>`;
+                        estadoHTML = `<div style="text-align:center;padding:15px;background:rgba(76,175,80,0.2);border-radius:10px;margin-top:15px;border:2px solid #4CAF50;">
+                            <div style="font-size:22px;margin-bottom:6px;">✅</div>
+                            <div style="font-size:16px;font-weight:bold;color:#4CAF50;">¡Ya confirmaste asistencia!</div>
+                            <button onclick="abrirModalConfirmar(${proximaIndex})" style="margin-top:10px;background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:bold;">✏️ Editar respuesta</button>
+                        </div>`;
                     } else {
-                        estadoHTML = `
-                            <div style="text-align:center;padding:15px;background:rgba(244,67,54,0.2);border-radius:10px;margin-top:15px;border:2px solid #f44336;">
-                                <div style="font-size:22px;margin-bottom:6px;">❌</div>
-                                <div style="font-size:16px;font-weight:bold;color:#f44336;">Me abstuve — no voy</div>
-                                <button onclick="abrirModalConfirmar(${proximaIndex})" style="margin-top:10px;background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:bold;">✏️ Editar respuesta</button>
-                            </div>`;
+                        estadoHTML = `<div style="text-align:center;padding:15px;background:rgba(244,67,54,0.2);border-radius:10px;margin-top:15px;border:2px solid #f44336;">
+                            <div style="font-size:22px;margin-bottom:6px;">❌</div>
+                            <div style="font-size:16px;font-weight:bold;color:#f44336;">Me abstuve — no voy</div>
+                            <button onclick="abrirModalConfirmar(${proximaIndex})" style="margin-top:10px;background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:bold;">✏️ Editar respuesta</button>
+                        </div>`;
                     }
                 } else {
-                    estadoHTML = `
-                        <button onclick="abrirModalConfirmar(${proximaIndex})" style="width:100%;margin-top:15px;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">
-                            📝 Confirmar asistencia
-                        </button>`;
+                    estadoHTML = `<button onclick="abrirModalConfirmar(${proximaIndex})" style="width:100%;margin-top:15px;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">📝 Confirmar asistencia</button>`;
                 }
-
-                // Botones editar/borrar para host o admin en juntada futura
                 const esHostProxima = esHostDe(proximaJuntada.Host, usuario.Nombre);
                 const puedeEditarProxima = esHostProxima || currentUser === ADMIN_EMAIL;
                 const botonesProxima = puedeEditarProxima ? `
@@ -503,7 +498,6 @@
                         <button onclick="abrirModalEditarJuntada(${proximaIndex})" style="flex:1;background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:10px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">✏️ Editar</button>
                         <button onclick="confirmarEliminar(${proximaIndex})" style="flex:1;background:rgba(244,67,54,0.15);border:2px solid #f44336;color:#f44336;padding:10px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
                     </div>` : '';
-
                 proximaHTML = `
                     <div class="section-title" style="margin-top:10px;">🎯 Próxima Juntada</div>
                     <div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.15) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;">
@@ -513,8 +507,7 @@
                             <span>🏠 ${proximaJuntada.Host || 'Sin host'}</span>
                             ${proximaJuntada.Categoría || proximaJuntada.Categoria ? `<span>🏷️ ${proximaJuntada.Categoría || proximaJuntada.Categoria}</span>` : ''}
                         </div>
-                        ${estadoHTML}
-                        ${botonesProxima}
+                        ${estadoHTML}${botonesProxima}
                     </div>`;
             }
         } else if (usuario) {
@@ -523,7 +516,6 @@
                 <div class="card" style="background:rgba(139,77,143,0.1);text-align:center;">
                     <div style="font-size:40px;margin-bottom:10px;">📅</div>
                     <div class="card-title" style="color:rgba(255,255,255,0.7);">No hay próxima juntada programada</div>
-                    <div style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:8px;">Cuando se programe una aparecerá acá</div>
                 </div>`;
         }
 
@@ -531,21 +523,17 @@
         const ultimasHTML = ultimas.map(j => {
             const ri = juntadasData.indexOf(j);
             const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
-            return `
-                <div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    ${foto ? `<div style="width:100%;border-radius:10px;margin-bottom:12px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:180px;object-fit:cover;display:block;"></div>` : ''}
-                    <div class="card-date">${j.Fecha||''}</div>
-                    <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
-                    <div class="card-details">
-                        <span>🏠 ${j.Host||'Sin host'}</span>
-                        <span>👥 ${j['N° Asist']||j['N° asistentes']||'0'} asistentes</span>
-                    </div>
-                </div>`;
+            return `<div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                ${foto ? `<div style="width:100%;border-radius:10px;margin-bottom:12px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:180px;object-fit:cover;display:block;"></div>` : ''}
+                <div class="card-date">${j.Fecha||''}</div>
+                <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                <div class="card-details"><span>🏠 ${j.Host||'Sin host'}</span><span>👥 ${j['N° Asist']||'0'} asistentes</span></div>
+            </div>`;
         }).join('') || '<p style="color:rgba(255,255,255,0.6);">No hay juntadas registradas</p>';
 
         document.getElementById('ultimasJuntadas').innerHTML =
             proximaHTML +
-            (juntadasPasadas.length > 0 ? `<div class="section-title" style="margin-top:25px;">🔥 Juntadas en 2026</div>` : '') +
+            (juntadasPasadas.length > 0 ? `<div class="section-title" style="margin-top:25px;">🔥 Últimas Juntadas</div>` : '') +
             ultimasHTML;
     }
 
@@ -555,23 +543,29 @@
         const html = sorted.map((c, i) => {
             const pct = parseFloat(c.Porcentaje).toFixed(0);
             const foto = FOTOS[c.Nombre] || '';
-            return `
-                <div class="ranking-item ${i<3?'top3':''}">
-                    <div class="rank-number">${i+1}</div>
-                    <div class="rank-avatar" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;${foto?`background-image:url('${foto}');background-size:cover;background-position:center top;`:''}">
-                        ${!foto?'🧔':''}
-                    </div>
-                    <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
-                        <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge" style="background:rgba(255,215,0,0.12);color:#C8A830;border:1px solid rgba(255,215,0,0.25);cursor:default;" title="Asistió al 100% de las juntadas">👑</span>':''}${(()=>{const r=calcularRacha(c.Nombre);if(r>=10)return'<span class="badge" style="background:rgba(180,80,0,0.2);color:#D4845A;border:1px solid rgba(180,80,0,0.35);cursor:default;" title="'+r+' juntadas seguidas sin faltar">🔥 '+r+'</span>';if(r>=5)return'<span class="badge" style="background:rgba(180,150,0,0.15);color:#C4A84A;border:1px solid rgba(180,150,0,0.3);cursor:default;" title="'+r+' juntadas seguidas sin faltar">⚡ '+r+'</span>';return'';})()}</div>
-                        <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
-                    </div>
-                    <div class="rank-percentage" style="color:${(()=>{const p=parseFloat(pct);if(p>=90)return'#4CAF50';if(p>=75)return'#8BC34A';if(p>=60)return'#FFD700';if(p>=45)return'#FF9800';return'#f44336';})()}">${pct}%</div>
-                </div>`;
+            const r = calcularRacha(c.Nombre);
+            const rachaHTML = r>=10
+                ? `<span class="badge" style="background:rgba(180,80,0,0.2);color:#D4845A;border:1px solid rgba(180,80,0,0.35);cursor:default;" title="${r} juntadas seguidas">🔥 ${r}</span>`
+                : r>=5
+                ? `<span class="badge" style="background:rgba(180,150,0,0.15);color:#C4A84A;border:1px solid rgba(180,150,0,0.3);cursor:default;" title="${r} juntadas seguidas">⚡ ${r}</span>`
+                : '';
+            const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800':'#f44336')(parseFloat(pct));
+            return `<div class="ranking-item ${i<3?'top3':''}">
+                <div class="rank-number">${i+1}</div>
+                <div class="rank-avatar" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;${foto?`background-image:url('${foto}');background-size:cover;background-position:center top;`:''}">
+                    ${!foto?'🧔':''}
+                </div>
+                <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
+                    <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge" style="background:rgba(255,215,0,0.12);color:#C8A830;border:1px solid rgba(255,215,0,0.25);cursor:default;">👑</span>':''}${rachaHTML}</div>
+                    <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
+                </div>
+                <div class="rank-percentage" style="color:${col}">${pct}%</div>
+            </div>`;
         }).join('');
         document.getElementById('rankingList').innerHTML = html;
     }
 
-    // ── JUNTADAS ──────────────────────────────────────────────
+    // ── JUNTADAS con filtro de mes + límite 10 ────────────────
     function renderJuntadas() {
         const usuario = getUsuarioActual();
         const nombreUsuario = usuario ? usuario.Nombre : '';
@@ -580,42 +574,106 @@
         const pasadas = juntadasData.filter(j => {
             if (!j.Fecha) return false;
             const f = parseFecha(j.Fecha);
-            return f && f < hoy && tieneQuorum(j); // solo juntadas con quorum
+            return f && f < hoy && tieneQuorum(j);
+        }).slice().reverse(); // más recientes primero
+
+        // Armar lista de meses disponibles (sin repetir)
+        const mesesDisponibles = [];
+        const mesesVistos = new Set();
+        pasadas.forEach(j => {
+            const f = parseFecha(j.Fecha);
+            if (!f) return;
+            const key = `${f.getFullYear()}-${f.getMonth()}`;
+            if (!mesesVistos.has(key)) {
+                mesesVistos.add(key);
+                mesesDisponibles.push({ year: f.getFullYear(), month: f.getMonth(), key });
+            }
         });
 
-        const html = pasadas.slice().reverse().map(j => {
+        // Inicializar mes activo (el más reciente)
+        if (!window.juntadasMesActivo && mesesDisponibles.length)
+            window.juntadasMesActivo = mesesDisponibles[0].key;
+
+        const activo = mesesDisponibles.find(m => m.key === window.juntadasMesActivo) || mesesDisponibles[0];
+
+        // Filtrar por mes activo
+        const filtradas = activo
+            ? pasadas.filter(j => {
+                const f = parseFecha(j.Fecha);
+                return f && f.getFullYear() === activo.year && f.getMonth() === activo.month;
+              })
+            : pasadas;
+
+        const limite = window.juntadasVerMas ? filtradas.length : 10;
+        const mostradas = filtradas.slice(0, limite);
+
+        // Selector de meses (scroll horizontal sin scrollbar)
+        const selectorHTML = mesesDisponibles.length > 1 ? `
+            <div class="mes-selector" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:18px;">
+                ${mesesDisponibles.map(m => `
+                    <button onclick="cambiarMesJuntadas('${m.key}')"
+                        style="flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:2px solid ${m.key===activo?.key?'#FFD700':'rgba(139,77,143,0.4)'};background:${m.key===activo?.key?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)'};color:${m.key===activo?.key?'#FFD700':'rgba(255,255,255,0.6)'};">
+                        ${NOMBRES_MESES[m.month]} ${m.year}
+                    </button>`).join('')}
+            </div>` : '';
+
+        // Cards de juntadas
+        const cardsHTML = mostradas.map(j => {
             const ri = juntadasData.indexOf(j);
             const asistio = esConfirmadoPositivo(j[nombreUsuario]);
-            const foto = j['Foto Juntada']||j['Foto juntada']||'';
-            return `
-                <div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    ${foto?`<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>`:''}
-                    <div class="card-date">${j.Fecha||'Fecha'}</div>
-                    <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
-                    <div class="card-details" style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-                        <div>
-                            <span>🏠 ${j.Host||'Sin host'}</span>
-                            <span style="margin-left:10px;">👥 ${j['N° Asist']||j['N° asistentes']||'0'}</span>
-                        </div>
-                        ${nombreUsuario?`<span style="display:inline-block;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>`:''}
+            const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
+            const driveLink = getDriveLink(j);
+            return `<div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                ${foto ? `<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>` : ''}
+                <div class="card-date">${j.Fecha||'Fecha'}</div>
+                <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                <div class="card-details" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <div><span>🏠 ${j.Host||'Sin host'}</span><span style="margin-left:10px;">👥 ${j['N° Asist']||'0'}</span></div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        ${driveLink ? `<a href="${driveLink}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>` : ''}
+                        ${nombreUsuario ? `<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
                     </div>
-                </div>`;
+                </div>
+            </div>`;
         }).join('');
 
+        // Botón "ver más"
+        const verMasHTML = filtradas.length > 10 && !window.juntadasVerMas
+            ? `<button onclick="verMasJuntadas()" style="width:100%;margin:5px 0 20px;background:rgba(139,77,143,0.2);border:2px solid rgba(139,77,143,0.5);color:#C8A830;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
+                Ver ${filtradas.length - 10} juntadas más de ${NOMBRES_MESES[activo?.month]} ↓
+               </button>` : '';
+
+        // Motivacional del mes
         let motivacional = '';
-        if (nombreUsuario && usuario) {
-            const total = parseInt(usuario['Total Juntadas'])||0;
-            const asist = parseInt(usuario.Asistencias)||0;
-            const pct = total>0?Math.round((asist/total)*100):0;
-            let msg,emoji,col;
-            if (pct<40){msg=`Asististe al ${pct}% de las juntadas. Estás MUY ausente loco, metele más onda.`;emoji='😴';col='#f44336';}
-            else if(pct<70){msg=`Asististe al ${pct}% de las juntadas. Venís bien, pero no te relajes.`;emoji='💪';col='#FF9800';}
-            else if(pct<90){msg=`Asististe al ${pct}% de las juntadas. Sos un culposo comprometido, seguí así.`;emoji='🔥';col='#4CAF50';}
-            else{msg=`Asististe al ${pct}% de las juntadas. Sos un CULPOSO DE LEY, un verdadero legendario.`;emoji='👑';col='#FFD700';}
-            motivacional=`<div class="card" style="background:rgba(139,77,143,0.2);border-left-color:${col};margin-top:20px;"><div style="text-align:center;"><div style="font-size:40px;margin-bottom:10px;">${emoji}</div><div style="color:${col};font-weight:bold;font-size:16px;">${msg}</div></div></div>`;
+        if (nombreUsuario && filtradas.length > 0) {
+            const asistidas = filtradas.filter(j => esConfirmadoPositivo(j[nombreUsuario])).length;
+            const pct = Math.round((asistidas / filtradas.length) * 100);
+            const mes = NOMBRES_MESES[activo?.month] || '';
+            let msg, emoji, col;
+            if (pct < 40)      { msg=`Fuiste al ${pct}% en ${mes}. Muy ausente loco.`;              emoji='😴'; col='#f44336'; }
+            else if (pct < 70) { msg=`Fuiste al ${pct}% en ${mes}. Bien, pero no te relajes.`;       emoji='💪'; col='#FF9800'; }
+            else if (pct < 90) { msg=`Fuiste al ${pct}% en ${mes}. Culposo comprometido.`;           emoji='🔥'; col='#4CAF50'; }
+            else               { msg=`Fuiste al ${pct}% en ${mes}. CULPOSO DE LEY.`;                emoji='👑'; col='#FFD700'; }
+            motivacional = `<div class="card" style="background:rgba(139,77,143,0.2);border-left-color:${col};margin-top:10px;"><div style="text-align:center;"><div style="font-size:36px;margin-bottom:8px;">${emoji}</div><div style="color:${col};font-weight:bold;font-size:15px;">${msg}</div></div></div>`;
         }
 
-        document.getElementById('juntadasList').innerHTML = html + motivacional;
+        const totalMes = filtradas.length;
+        document.getElementById('juntadasList').innerHTML = `
+            <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-bottom:10px;">${totalMes} juntada${totalMes!==1?'s':''} en ${NOMBRES_MESES[activo?.month]||''} ${activo?.year||''}</div>
+            ${selectorHTML}
+            ${cardsHTML || `<p style="color:rgba(255,255,255,0.5);text-align:center;padding:30px;">Sin juntadas en este mes</p>`}
+            ${verMasHTML}
+            ${motivacional}`;
+    }
+
+    function cambiarMesJuntadas(key) {
+        window.juntadasMesActivo = key;
+        window.juntadasVerMas = false;
+        renderJuntadas();
+    }
+    function verMasJuntadas() {
+        window.juntadasVerMas = true;
+        renderJuntadas();
     }
 
     // ── DETALLE JUNTADA ───────────────────────────────────────
@@ -623,30 +681,35 @@
         const j = juntadasData[index];
         const usuario = getUsuarioActual();
         const asistentes = Object.keys(FOTOS).filter(n => esConfirmadoPositivo(j[n]));
-
-        // Puede editar/borrar:
-        // - Juntada futura: si sos el host
-        // - Juntada pasada: solo el admin
         const hoy = new Date(); hoy.setHours(0,0,0,0);
         const fechaJ = j.Fecha ? parseFecha(j.Fecha) : null;
         const esFutura = fechaJ && fechaJ >= hoy;
         const esAdmin = currentUser === ADMIN_EMAIL;
         const esHostJuntada = usuario && esHostDe(j.Host, usuario.Nombre);
         const puedeEditar = esFutura ? esHostJuntada : esAdmin;
+
+        // Botón Drive
+        const driveLink = getDriveLink(j);
+        const driveBtn = driveLink ? `
+            <a href="${driveLink}" target="_blank"
+               style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;padding:14px;border-radius:12px;background:rgba(66,133,244,0.15);border:2px solid #4285F4;color:#4285F4;font-size:15px;font-weight:bold;text-decoration:none;">
+                📁 Ver fotos en Google Drive
+            </a>` : '';
+
         const botonesAdmin = puedeEditar ? `
-            <div style="display:flex;gap:10px;margin-top:20px;">
+            <div style="display:flex;gap:10px;margin-top:15px;">
                 <button onclick="abrirModalEditarJuntada(${index})" style="flex:1;background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar</button>
                 <button onclick="confirmarEliminar(${index})" style="flex:1;background:rgba(244,67,54,0.15);border:2px solid #f44336;color:#f44336;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
             </div>` : '';
 
-        const html = `
+        document.getElementById('juntadaDetalleContent').innerHTML = `
             <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
                 ${j['Foto Juntada']||j['Foto']?`<div style="width:100%;margin:0 auto 25px;border-radius:15px;overflow:hidden;border:3px solid #C8A830;"><img src="${j['Foto Juntada']||j['Foto']}" style="width:100%;max-height:400px;object-fit:contain;background:#0a0614;display:block;"></div>`:''}
                 <div style="text-align:center;margin-bottom:25px;">
                     <div style="color:#FFD700;font-size:14px;font-weight:bold;margin-bottom:10px;">${j.Fecha||'Fecha'}</div>
                     <div style="color:white;font-size:24px;font-weight:bold;margin-bottom:10px;">${j.Descripción||j.Descripcion||'Juntada'}</div>
                     <div style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:5px;">🏠 Host: ${j.Host||'Sin host'}</div>
-                    ${j.Categoría||j.Categoria?`<div style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:5px;">🏷️ Categoría: ${j.Categoría||j.Categoria}</div>`:''}
+                    ${j.Categoría||j.Categoria?`<div style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:5px;">🏷️ ${j.Categoría||j.Categoria}</div>`:''}
                     <div style="color:#FFD700;font-size:18px;font-weight:bold;margin-top:10px;">👥 ${asistentes.length} Asistentes</div>
                 </div>
                 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:15px;margin-top:25px;">
@@ -656,37 +719,26 @@
                             <div style="color:white;font-size:12px;font-weight:bold;">${n}</div>
                         </div>`).join('')}
                 </div>
+                ${driveBtn}
                 ${botonesAdmin}
             </div>`;
 
-        document.getElementById('juntadaDetalleContent').innerHTML = html;
         document.getElementById('juntadaDetalle').style.display = 'block';
     }
 
     function cerrarDetalle() { document.getElementById('juntadaDetalle').style.display = 'none'; }
 
-    // ── CONFIRMAR ELIMINAR ────────────────────────────────────
     function confirmarEliminar(index) {
         const j = juntadasData[index];
-        const desc = j.Descripción || j.Descripcion || 'esta juntada';
-        if (confirm(`¿Seguro que querés eliminar "${desc}" del ${j.Fecha}? Esta acción no se puede deshacer.`)) {
-            eliminarJuntada(index);
-        }
+        if (confirm(`¿Seguro que querés eliminar "${j.Descripción||j.Descripcion||'esta juntada'}" del ${j.Fecha}?`)) eliminarJuntada(index);
     }
 
     async function eliminarJuntada(index) {
         try {
-            const r = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ accion: 'eliminar_juntada', fila: index + 2 })
-            });
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_juntada', fila:index+2 }) });
             const res = await r.json();
-            if (res.success) {
-                alert('✅ Juntada eliminada');
-                cerrarDetalle();
-                await recargarJuntadas();
-                renderHome(); renderJuntadas();
-            } else { alert('❌ Error: ' + res.error); }
+            if (res.success) { alert('✅ Juntada eliminada'); cerrarDetalle(); await recargarJuntadas(); renderHome(); renderJuntadas(); }
+            else alert('❌ Error: ' + res.error);
         } catch { alert('❌ Error de conexión'); }
     }
 
@@ -695,52 +747,22 @@
         cerrarDetalle();
         const j = juntadasData[index];
         window.editandoIndex = index;
-
-        // Convertir fecha DD/MM/YYYY a YYYY-MM-DD para el input
         let fechaInput = '';
-        if (j.Fecha) {
-            const p = j.Fecha.split('/');
-            if (p.length===3) fechaInput = `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
-        }
-
-        const hostOptions = CULPOSOS_HOSTS.map(n =>
-            `<option value="${n}" ${j.Host===n?'selected':''}>${n}</option>`
-        ).join('');
-
-        const catActual = j.Categoría || j.Categoria || '';
-        const catOptions = CATEGORIAS.map(c =>
-            `<option value="${c}" ${catActual===c?'selected':''}>${c}</option>`
-        ).join('');
+        if (j.Fecha) { const p = j.Fecha.split('/'); if (p.length===3) fechaInput=`${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`; }
+        const hostOptions = CULPOSOS_HOSTS.map(n=>`<option value="${n}" ${j.Host===n?'selected':''}>${n}</option>`).join('');
+        const catActual = j.Categoría||j.Categoria||'';
+        const catOptions = CATEGORIAS.map(c=>`<option value="${c}" ${catActual===c?'selected':''}>${c}</option>`).join('');
 
         document.getElementById('modalEditarContent').innerHTML = `
             <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
-                <div style="text-align:center;margin-bottom:25px;">
-                    <div style="font-size:28px;margin-bottom:8px;">✏️</div>
-                    <div style="color:#FFD700;font-size:22px;font-weight:bold;">Editar Juntada</div>
-                </div>
-                <div style="margin-bottom:15px;">
-                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📅 Fecha</label>
-                    <input type="date" id="editFecha" value="${fechaInput}" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
-                </div>
-                <div style="margin-bottom:15px;">
-                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏠 Host</label>
-                    <select id="editHost" class="form-select">${hostOptions}</select>
-                </div>
-                <div style="margin-bottom:15px;">
-                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📝 Descripción</label>
-                    <input type="text" id="editDescripcion" value="${j.Descripción||j.Descripcion||''}" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
-                </div>
-                <div style="margin-bottom:20px;">
-                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏷️ Categoría</label>
-                    <select id="editCategoria" class="form-select">
-                        <option value="">Sin categoría</option>
-                        ${catOptions}
-                    </select>
-                </div>
+                <div style="text-align:center;margin-bottom:25px;"><div style="font-size:28px;margin-bottom:8px;">✏️</div><div style="color:#FFD700;font-size:22px;font-weight:bold;">Editar Juntada</div></div>
+                <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📅 Fecha</label><input type="date" id="editFecha" value="${fechaInput}" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
+                <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏠 Host</label><select id="editHost" class="form-select">${hostOptions}</select></div>
+                <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📝 Descripción</label><input type="text" id="editDescripcion" value="${j.Descripción||j.Descripcion||''}" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
+                <div style="margin-bottom:20px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏷️ Categoría</label><select id="editCategoria" class="form-select"><option value="">Sin categoría</option>${catOptions}</select></div>
                 <button onclick="enviarEdicion()" style="width:100%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">💾 Guardar cambios</button>
                 <div id="mensajeEdicion" style="margin-top:15px;text-align:center;display:none;"></div>
             </div>`;
-
         document.getElementById('modalEditarJuntada').style.display = 'block';
     }
 
@@ -752,26 +774,14 @@
         const descripcion = document.getElementById('editDescripcion').value;
         const categoria = document.getElementById('editCategoria').value;
         const msg = document.getElementById('mensajeEdicion');
-
-        if (!fecha||!host||!descripcion) {
-            msg.style.display='block';
-            msg.innerHTML='<div style="color:#f44336;">⚠️ Completá todos los campos</div>';
-            return;
-        }
+        if (!fecha||!host||!descripcion) { msg.style.display='block'; msg.innerHTML='<div style="color:#f44336;">⚠️ Completá todos los campos</div>'; return; }
         const [y,m,d] = fecha.split('-');
-        const fechaFmt = `${d}/${m}/${y}`;
         msg.style.display='block'; msg.innerHTML='<div style="color:#FFD700;">⏳ Guardando...</div>';
-
         try {
-            const r = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ accion:'editar_juntada', fila: window.editandoIndex+2, fecha:fechaFmt, host, descripcion, categoria })
-            });
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'editar_juntada', fila:window.editandoIndex+2, fecha:`${d}/${m}/${y}`, host, descripcion, categoria }) });
             const res = await r.json();
-            if (res.success) {
-                msg.innerHTML='<div style="color:#4CAF50;font-weight:bold;">✅ ¡Juntada actualizada!</div>';
-                setTimeout(async ()=>{ cerrarModalEditarJuntada(); await recargarJuntadas(); renderHome(); renderJuntadas(); }, 1500);
-            } else { msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`; }
+            if (res.success) { msg.innerHTML='<div style="color:#4CAF50;font-weight:bold;">✅ ¡Juntada actualizada!</div>'; setTimeout(async()=>{ cerrarModalEditarJuntada(); await recargarJuntadas(); renderHome(); renderJuntadas(); }, 1500); }
+            else msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`;
         } catch { msg.innerHTML='<div style="color:#f44336;">❌ Error de conexión</div>'; }
     }
 
@@ -781,56 +791,31 @@
         const usuario = getUsuarioActual();
         if (!usuario) return;
         window.proximaJuntadaIndex = indexJuntada;
-
         const culpososOriginales = ['Mateo','Rama','Tirri','Toti','Toto','Caamaño','Zabala','Santi'];
         const confirmados = [], noConfirmados = [];
         let culpososConf = 0;
-
         culpososData.forEach(c => {
             const val = j[c.Nombre];
-            if (esConfirmadoPositivo(val)) {
-                confirmados.push(c.Nombre);
-                if (culpososOriginales.includes(c.Nombre)) culpososConf++;
-            } else if (esConfirmadoNegativo(val)) {
-                noConfirmados.push(c.Nombre);
-            }
+            if (esConfirmadoPositivo(val)) { confirmados.push(c.Nombre); if (culpososOriginales.includes(c.Nombre)) culpososConf++; }
+            else if (esConfirmadoNegativo(val)) noConfirmados.push(c.Nombre);
         });
-
-        const total = culpososData.length;
         const hayQuorum = culpososConf >= 4;
         const miVal = j[usuario.Nombre];
         const yaConfirme = estaConfirmado(miVal);
         const confirmePos = esConfirmadoPositivo(miVal);
-
         let botonesHTML = '';
         if (yaConfirme) {
-            if (confirmePos) {
-                botonesHTML = `
-                    <div style="text-align:center;padding:20px;background:rgba(76,175,80,0.2);border-radius:12px;border:2px solid #4CAF50;">
-                        <div style="font-size:32px;margin-bottom:8px;">✅</div>
-                        <div style="font-size:18px;font-weight:bold;color:#4CAF50;margin-bottom:4px;">¡Ya confirmaste asistencia!</div>
-                        <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:12px;">Los culposos te esperan 🔥</div>
-                        <button onclick="mostrarEdicion()" style="background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar respuesta</button>
-                    </div>`;
-            } else {
-                botonesHTML = `
-                    <div style="text-align:center;padding:20px;background:rgba(244,67,54,0.2);border-radius:12px;border:2px solid #f44336;">
-                        <div style="font-size:32px;margin-bottom:8px;">❌</div>
-                        <div style="font-size:18px;font-weight:bold;color:#f44336;margin-bottom:4px;">Me abstuve — no voy</div>
-                        <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:12px;">Los trolos se abstuvieron. Saludos!</div>
-                        <button onclick="mostrarEdicion()" style="background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar respuesta</button>
-                    </div>`;
-            }
+            botonesHTML = confirmePos
+                ? `<div style="text-align:center;padding:20px;background:rgba(76,175,80,0.2);border-radius:12px;border:2px solid #4CAF50;"><div style="font-size:32px;margin-bottom:8px;">✅</div><div style="font-size:18px;font-weight:bold;color:#4CAF50;margin-bottom:4px;">¡Ya confirmaste asistencia!</div><div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:12px;">Los culposos te esperan 🔥</div><button onclick="mostrarEdicion()" style="background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar respuesta</button></div>`
+                : `<div style="text-align:center;padding:20px;background:rgba(244,67,54,0.2);border-radius:12px;border:2px solid #f44336;"><div style="font-size:32px;margin-bottom:8px;">❌</div><div style="font-size:18px;font-weight:bold;color:#f44336;margin-bottom:4px;">Me abstuve — no voy</div><div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:12px;">Los trolos se abstuvieron. Saludos!</div><button onclick="mostrarEdicion()" style="background:rgba(255,255,255,0.15);border:2px solid #FFD700;color:#FFD700;padding:10px 22px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar respuesta</button></div>`;
         } else {
-            botonesHTML = `
-                <div style="color:white;font-size:18px;font-weight:bold;text-align:center;margin-bottom:15px;">¿Vas a asistir?</div>
+            botonesHTML = `<div style="color:white;font-size:18px;font-weight:bold;text-align:center;margin-bottom:15px;">¿Vas a asistir?</div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
                     <button onclick="confirmarAsistencia(true)" style="background:linear-gradient(135deg,#4CAF50 0%,#45a049 100%);border:none;color:white;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">✅ ASISTIRÉ</button>
                     <button onclick="confirmarAsistencia(false)" style="background:linear-gradient(135deg,#f44336 0%,#d32f2f 100%);border:none;color:white;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">❌ NO ASISTIRÉ</button>
                 </div>
                 <div style="text-align:center;margin-top:10px;color:rgba(255,255,255,0.4);font-size:11px;font-style:italic;">(trolos abstenerse)</div>`;
         }
-
         document.getElementById('modalConfirmarContent').innerHTML = `
             <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
                 <div style="text-align:center;margin-bottom:25px;">
@@ -841,7 +826,7 @@
                 <div style="background:${hayQuorum?'rgba(76,175,80,0.15)':'rgba(139,77,143,0.15)'};padding:15px;border-radius:10px;margin-bottom:20px;border:2px solid ${hayQuorum?'#4CAF50':'rgba(139,77,143,0.5)'};">
                     <div style="text-align:center;">
                         <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:5px;text-transform:uppercase;">Confirmaciones</div>
-                        <div style="font-size:28px;font-weight:bold;color:${hayQuorum?'#4CAF50':'#FFD700'};">${confirmados.length}/${total}</div>
+                        <div style="font-size:28px;font-weight:bold;color:${hayQuorum?'#4CAF50':'#FFD700'};">${confirmados.length}/${culpososData.length}</div>
                         <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:5px;">Culposos: ${culpososConf}/8 ${hayQuorum?'✅ Hay quorum':'⏳ Sin quorum'}</div>
                     </div>
                 </div>
@@ -853,7 +838,6 @@
                     </div>`:''}
                 <div id="mensajeConfirmacion" style="margin-top:15px;text-align:center;display:none;"></div>
             </div>`;
-
         document.getElementById('modalConfirmar').style.display = 'block';
     }
 
@@ -875,19 +859,12 @@
         const msg = document.getElementById('mensajeConfirmacion');
         msg.style.display='block'; msg.innerHTML='<div style="color:#FFD700;">⏳ Guardando...</div>';
         try {
-            const r = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ email: currentUser, fila: window.proximaJuntadaIndex+2, asistira })
-            });
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ email:currentUser, fila:window.proximaJuntadaIndex+2, asistira }) });
             const res = await r.json();
             if (res.success) {
                 msg.innerHTML=`<div style="color:#4CAF50;font-weight:bold;">✅ ${res.mensaje||'Confirmación guardada'}</div>`;
-                setTimeout(async ()=>{
-                    await recargarJuntadas();
-                    abrirModalConfirmar(window.proximaJuntadaIndex);
-                    renderHome();
-                }, 800);
-            } else { msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`; }
+                setTimeout(async()=>{ await recargarJuntadas(); abrirModalConfirmar(window.proximaJuntadaIndex); renderHome(); }, 800);
+            } else msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`;
         } catch { msg.innerHTML='<div style="color:#f44336;">❌ Error de conexión</div>'; }
     }
 
@@ -898,70 +875,35 @@
 
     // ── PROPONER JUNTADA ──────────────────────────────────────
     function abrirModalProponerJuntada() {
-        // Usar CULPOSOS_HOSTS directamente (nombres compuestos como "Zabala - Sami")
-        const hostOptions = CULPOSOS_HOSTS.map(n => `<option value="${n}">${n}</option>`).join('');
-        const catOptions = CATEGORIAS.map(c => `<option value="${c}">${c}</option>`).join('');
-
+        const hostOptions = CULPOSOS_HOSTS.map(n=>`<option value="${n}">${n}</option>`).join('');
+        const catOptions = CATEGORIAS.map(c=>`<option value="${c}">${c}</option>`).join('');
         document.getElementById('modalProponerContent').innerHTML = `
             <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
-                <div style="text-align:center;margin-bottom:25px;">
-                    <div style="font-size:32px;margin-bottom:10px;">🎉</div>
-                    <div style="color:#FFD700;font-size:24px;font-weight:bold;">Proponer Juntada</div>
-                </div>
-                <div style="margin-bottom:15px;">
-                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📅 Fecha</label>
-                    <input type="date" id="propFecha" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
-                </div>
-                <div style="margin-bottom:15px;">
-                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏠 Host</label>
-                    <select id="propHost" class="form-select">
-                        <option value="">Seleccionar...</option>
-                        ${hostOptions}
-                    </select>
-                </div>
-                <div style="margin-bottom:15px;">
-                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📝 Descripción</label>
-                    <input type="text" id="propDescripcion" placeholder="Ej: Asado en lo de..." style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
-                </div>
-                <div style="margin-bottom:20px;">
-                    <label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏷️ Categoría</label>
-                    <select id="propCategoria" class="form-select">
-                        <option value="">Sin categoría</option>
-                        ${catOptions}
-                    </select>
-                </div>
+                <div style="text-align:center;margin-bottom:25px;"><div style="font-size:32px;margin-bottom:10px;">🎉</div><div style="color:#FFD700;font-size:24px;font-weight:bold;">Proponer Juntada</div></div>
+                <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📅 Fecha</label><input type="date" id="propFecha" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
+                <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏠 Host</label><select id="propHost" class="form-select"><option value="">Seleccionar...</option>${hostOptions}</select></div>
+                <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📝 Descripción</label><input type="text" id="propDescripcion" placeholder="Ej: Asado en lo de..." style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
+                <div style="margin-bottom:20px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏷️ Categoría</label><select id="propCategoria" class="form-select"><option value="">Sin categoría</option>${catOptions}</select></div>
                 <button onclick="enviarPropuesta()" style="width:100%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">🚀 Proponer</button>
                 <div id="mensajePropuesta" style="margin-top:15px;text-align:center;display:none;"></div>
             </div>`;
-
         document.getElementById('modalProponerJuntada').style.display = 'block';
     }
 
     function cerrarModalProponerJuntada() { document.getElementById('modalProponerJuntada').style.display = 'none'; }
 
     async function enviarPropuesta() {
-        const fecha = document.getElementById('propFecha').value;
-        const host  = document.getElementById('propHost').value;
-        const desc  = document.getElementById('propDescripcion').value;
-        const cat   = document.getElementById('propCategoria').value;
-        const msg   = document.getElementById('mensajePropuesta');
-
+        const fecha=document.getElementById('propFecha').value, host=document.getElementById('propHost').value;
+        const desc=document.getElementById('propDescripcion').value, cat=document.getElementById('propCategoria').value;
+        const msg=document.getElementById('mensajePropuesta');
         if (!fecha||!host||!desc) { msg.style.display='block'; msg.innerHTML='<div style="color:#f44336;">⚠️ Completá fecha, host y descripción</div>'; return; }
-
-        const [y,m,d] = fecha.split('-');
-        const fechaFmt = `${d}/${m}/${y}`;
+        const [y,m,d]=fecha.split('-');
         msg.style.display='block'; msg.innerHTML='<div style="color:#FFD700;">⏳ Creando juntada...</div>';
-
         try {
-            const r = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ accion:'crear_juntada', fecha:fechaFmt, host, descripcion:desc, categoria:cat })
-            });
-            const res = await r.json();
-            if (res.success) {
-                msg.innerHTML='<div style="color:#4CAF50;font-weight:bold;">✅ ¡Juntada propuesta! Actualizando...</div>';
-                setTimeout(()=>{ cerrarModalProponerJuntada(); location.reload(); }, 2000);
-            } else { msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`; }
+            const r=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify({accion:'crear_juntada',fecha:`${d}/${m}/${y}`,host,descripcion:desc,categoria:cat})});
+            const res=await r.json();
+            if (res.success) { msg.innerHTML='<div style="color:#4CAF50;font-weight:bold;">✅ ¡Juntada propuesta!</div>'; setTimeout(()=>{ cerrarModalProponerJuntada(); location.reload(); },2000); }
+            else msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`;
         } catch { msg.innerHTML='<div style="color:#f44336;">❌ Error de conexión</div>'; }
     }
 
@@ -971,47 +913,38 @@
     function renderPerfilCulposo(nombreCulposo) {
         const esMio = !nombreCulposo;
         const usuario = esMio ? getUsuarioActual() : culpososData.find(c=>c.Nombre===nombreCulposo);
-
-        if (!usuario) {
-            document.getElementById('perfilData').innerHTML = `<div class="card"><p style="color:rgba(255,255,255,0.7);">No se encontró el perfil.</p></div>`;
-            return;
-        }
-
+        if (!usuario) { document.getElementById('perfilData').innerHTML=`<div class="card"><p style="color:rgba(255,255,255,0.7);">No se encontró el perfil.</p></div>`; return; }
         const pct = parseFloat(usuario.Porcentaje).toFixed(0);
         const isPerfecto = pct==100;
         let col='#f44336';
         if(pct>=100)col='#4CAF50';else if(pct>=90)col='#8BC34A';else if(pct>=60)col='#FFD700';else if(pct>=35)col='#FF9800';
-
-        const premios = premiosData.filter(p=>p.Ganador&&p.Ganador.trim()===usuario.Nombre&&p.Tipo==='Persona');
-        const oro = premios.filter(p=>p.Terna&&p.Terna.includes('CULPOSO DE ORO'));
-        const otros = premios.filter(p=>p.Terna&&!p.Terna.includes('CULPOSO DE ORO'));
-
-        const premiosHTML = premios.length>0?`
-            <div class="section-title" style="margin-top:25px;">🏆 Palmarés</div>
-            <div class="card" style="padding:20px;">
-                ${oro.map(p=>`<div style="margin:12px 0;padding:12px;background:rgba(255,215,0,0.15);border-radius:8px;"><span style="font-size:18px;font-weight:bold;color:#FFD700;">🏆 CULPOSO DE ORO (${p.Año||''})</span></div>`).join('')}
-                ${otros.map(p=>`<div style="margin:8px 0;color:rgba(255,255,255,0.9);">🥇 <span style="text-transform:uppercase;font-weight:bold;">${p.Terna||'PREMIO'} (${p.Año||''})</span></div>`).join('')}
-            </div>`:'' ;
-
-        const fotoUrl = FOTOS[usuario.Nombre]||'';
-        const usuarioLogueado = getUsuarioActual();
-        const esMiPerfil = usuarioLogueado&&usuarioLogueado.Nombre===usuario.Nombre;
-
-        document.getElementById('perfilData').innerHTML = `
+        const premios=premiosData.filter(p=>p.Ganador&&p.Ganador.trim()===usuario.Nombre&&p.Tipo==='Persona');
+        const oro=premios.filter(p=>p.Terna&&p.Terna.includes('CULPOSO DE ORO'));
+        const otros=premios.filter(p=>p.Terna&&!p.Terna.includes('CULPOSO DE ORO'));
+        const premiosHTML=premios.length>0?`<div class="section-title" style="margin-top:25px;">🏆 Palmarés</div><div class="card" style="padding:20px;">${oro.map(p=>`<div style="margin:12px 0;padding:12px;background:rgba(255,215,0,0.15);border-radius:8px;"><span style="font-size:18px;font-weight:bold;color:#FFD700;">🏆 CULPOSO DE ORO (${p.Año||''})</span></div>`).join('')}${otros.map(p=>`<div style="margin:8px 0;color:rgba(255,255,255,0.9);">🥇 <span style="text-transform:uppercase;font-weight:bold;">${p.Terna||'PREMIO'} (${p.Año||''})</span></div>`).join('')}</div>`:'' ;
+        const fotoUrl=FOTOS[usuario.Nombre]||'';
+        const usuarioLogueado=getUsuarioActual();
+        const esMiPerfil=usuarioLogueado&&usuarioLogueado.Nombre===usuario.Nombre;
+        const r=calcularRacha(usuario.Nombre);
+        const rachaCard=r>=10?`<div class="card" style="background:linear-gradient(135deg,rgba(255,100,0,0.15) 0%,rgba(255,60,0,0.05) 100%);border-left-color:#FF6600;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">🔥</div><div><div class="card-title" style="color:#FF6600;">¡${r} EN RACHA!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} juntadas seguidas sin faltar.</div></div></div></div>`:r>=5?`<div class="card" style="background:linear-gradient(135deg,rgba(204,153,0,0.15) 0%,rgba(204,153,0,0.05) 100%);border-left-color:#CC9900;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">⚡</div><div><div class="card-title" style="color:#CC9900;">¡${r} en racha!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} juntadas seguidas.</div></div></div></div>`:'';
+        document.getElementById('perfilData').innerHTML=`
             ${!esMiPerfil?`<div style="text-align:center;margin-bottom:15px;"><button onclick="renderPerfil()" style="background:rgba(139,77,143,0.3);border:2px solid #8B4D8F;color:#FFD700;padding:8px 15px;border-radius:10px;font-size:12px;font-weight:bold;cursor:pointer;">← Volver a mi perfil</button></div>`:''}
             ${fotoUrl?`<div style="text-align:center;margin-bottom:20px;"><img src="${fotoUrl}" style="width:100px;height:100px;border-radius:50%;border:3px solid #C8A830;object-fit:cover;object-position:center top;"></div>`:''}
-            <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};">
-                <div class="card-title" style="font-size:24px;">${usuario.Nombre}</div>
-            </div>
+            <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};"><div class="card-title" style="font-size:24px;">${usuario.Nombre}</div></div>
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div><div class="stat-label">Asistencias</div></div>
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${pct}%</div><div class="stat-label">Porcentaje</div></div>
             </div>
             ${isPerfecto?`<div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.1) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;"><div class="card-title">🏆 ¡CULPOSO PERFECTO!</div><div class="card-details">${esMiPerfil?'No te perdiste ninguna juntada. Sos un crack.':'No se perdió ninguna juntada. Un verdadero crack.'}</div></div>`:''}
-            ${(()=>{ const r=calcularRacha(usuario.Nombre); if(r>=10) return `<div class="card" style="background:linear-gradient(135deg,rgba(255,100,0,0.15) 0%,rgba(255,60,0,0.05) 100%);border-left-color:#FF6600;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">🔥</div><div><div class="card-title" style="color:#FF6600;">¡${r} EN RACHA!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} juntadas seguidas sin faltar. Una máquina.</div></div></div></div>`; if(r>=5) return `<div class="card" style="background:linear-gradient(135deg,rgba(204,153,0,0.15) 0%,rgba(204,153,0,0.05) 100%);border-left-color:#CC9900;"><div style="display:flex;align-items:center;gap:12px;"><div style="font-size:36px;">⚡</div><div><div class="card-title" style="color:#CC9900;">¡${r} en racha!</div><div class="card-details">${esMiPerfil?'Llevas':'Lleva'} ${r} juntadas seguidas. Va tomando ritmo.</div></div></div></div>`; return ''; })()}
+            ${rachaCard}
             ${renderHostPanel(usuario.Nombre)}
             ${premiosHTML}
-            ${esMiPerfil?`<div class="section-title">📅 Mi Participación</div><div class="card" onclick="showTab('juntadas',document.querySelectorAll('.tab')[2])" style="cursor:pointer;text-align:center;background:linear-gradient(135deg,rgba(139,77,143,0.2) 0%,rgba(139,77,143,0.1) 100%);"><div class="card-title" style="color:#FFD700;font-size:16px;">📊 Ver todas mis juntadas →</div><div class="card-details" style="margin-top:5px;">Revisá tu historial completo de asistencias</div></div>
+            ${esMiPerfil?`
+            <div class="section-title">📅 Mi Participación</div>
+            <div class="card" onclick="showTab('juntadas',document.querySelectorAll('.tab')[2])" style="cursor:pointer;text-align:center;background:linear-gradient(135deg,rgba(139,77,143,0.2) 0%,rgba(139,77,143,0.1) 100%);">
+                <div class="card-title" style="color:#FFD700;font-size:16px;">📊 Ver todas mis juntadas →</div>
+                <div class="card-details" style="margin-top:5px;">Revisá tu historial completo de asistencias</div>
+            </div>
             <div class="card" style="margin-top:10px;text-align:center;background:linear-gradient(135deg,rgba(107,45,145,0.15) 0%,rgba(74,29,107,0.1) 100%);">
                 <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-bottom:10px;">🔔 Notificaciones de nueva juntada</div>
                 <button id="btnNotif" onclick="activarNotificaciones()" style="background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 100%);border:2px solid #C8A830;color:#C8A830;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">Activar notificaciones</button>
@@ -1021,35 +954,21 @@
 
     function renderHostPanel(nombre) {
         const hoy = new Date(); hoy.setHours(0,0,0,0);
-        // Juntadas pasadas con quorum donde fue host (nombre aparece en Host)
         const hosteadas = juntadasData.filter(j => {
-            if (!j.Host || !esHostDe(j.Host, nombre)) return false;
-            if (!j.Fecha) return false;
+            if (!j.Host || !esHostDe(j.Host, nombre) || !j.Fecha) return false;
             const f = parseFecha(j.Fecha);
             return f && f < hoy && tieneQuorum(j);
         });
-
         if (!hosteadas.length) return '';
-
         const cards = hosteadas.slice().reverse().map(j => {
             const ri = juntadasData.indexOf(j);
-            const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
-            return `
-                <div onclick="verDetalleJuntada(${ri})" style="cursor:pointer;background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);border-radius:12px;overflow:hidden;border:2px solid rgba(139,77,143,0.3);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
-                    ${foto ? `<div style="width:100%;overflow:hidden;border-radius:8px 8px 0 0;"><img src="${foto}" style="width:100%;height:90px;object-fit:cover;display:block;"></div>` : `<div style="width:100%;height:80px;background:linear-gradient(135deg,rgba(139,77,143,0.3) 0%,rgba(107,56,112,0.3) 100%);display:flex;align-items:center;justify-content:center;font-size:28px;">🏠</div>`}
-                    <div style="padding:10px;">
-                        <div style="color:#FFD700;font-size:10px;font-weight:bold;">${j.Fecha||''}</div>
-                        <div style="color:white;font-size:12px;font-weight:bold;margin-top:3px;line-height:1.3;">${j.Descripción||j.Descripcion||'Juntada'}</div>
-                        <div style="color:rgba(255,255,255,0.5);font-size:11px;margin-top:4px;">👥 ${j['N° Asist']||'0'}</div>
-                    </div>
-                </div>`;
-        }).join('');
-
-        return `
-            <div class="section-title" style="margin-top:25px;">🏠 Host (${hosteadas.length})</div>
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:10px;">
-                ${cards}
+            const foto = j['Foto Juntada']||j['Foto juntada']||'';
+            return `<div onclick="verDetalleJuntada(${ri})" style="cursor:pointer;background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);border-radius:12px;overflow:hidden;border:2px solid rgba(139,77,143,0.3);transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                ${foto?`<div style="overflow:hidden;"><img src="${foto}" style="width:100%;height:90px;object-fit:cover;display:block;"></div>`:`<div style="height:80px;background:linear-gradient(135deg,rgba(139,77,143,0.3),rgba(107,56,112,0.3));display:flex;align-items:center;justify-content:center;font-size:28px;">🏠</div>`}
+                <div style="padding:10px;"><div style="color:#FFD700;font-size:10px;font-weight:bold;">${j.Fecha||''}</div><div style="color:white;font-size:12px;font-weight:bold;margin-top:3px;line-height:1.3;">${j.Descripción||j.Descripcion||'Juntada'}</div><div style="color:rgba(255,255,255,0.5);font-size:11px;margin-top:4px;">👥 ${j['N° Asist']||'0'}</div></div>
             </div>`;
+        }).join('');
+        return `<div class="section-title" style="margin-top:25px;">🏠 Host (${hosteadas.length})</div><div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:10px;">${cards}</div>`;
     }
 
     function verPerfilCulposo(nombre) {
@@ -1063,38 +982,16 @@
 
     // ── AWARDS ────────────────────────────────────────────────
     function renderAwards() {
-        const year = document.getElementById('yearFilter').value;
-        const filtrados = premiosData.filter(p=>p.Año==year);
-        const oro = filtrados.filter(p=>p.Tipo==='Persona'&&p.Terna&&p.Terna.toUpperCase().includes('CULPOSO DE ORO'));
-        const individuales = filtrados.filter(p=>p.Tipo==='Persona'&&p.Terna&&!p.Terna.toUpperCase().includes('CULPOSO DE ORO'));
-        const juntadas = filtrados.filter(p=>p.Tipo==='Juntada');
+        const year=document.getElementById('yearFilter').value;
+        const filtrados=premiosData.filter(p=>p.Año==year);
+        const oro=filtrados.filter(p=>p.Tipo==='Persona'&&p.Terna&&p.Terna.toUpperCase().includes('CULPOSO DE ORO'));
+        const individuales=filtrados.filter(p=>p.Tipo==='Persona'&&p.Terna&&!p.Terna.toUpperCase().includes('CULPOSO DE ORO'));
+        const juntadas=filtrados.filter(p=>p.Tipo==='Juntada');
         let html='';
-
-        oro.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`
-            <div style="background:linear-gradient(135deg,rgba(255,215,0,0.2) 0%,rgba(255,215,0,0.05) 100%);padding:30px;border-radius:20px;margin-bottom:30px;border:3px solid #FFD700;text-align:center;">
-                ${f?`<img src="${f}" onclick="verPerfilCulposo('${p.Ganador}')" style="width:100px;height:100px;border-radius:50%;border:4px solid #FFD700;object-fit:cover;object-position:center top;margin-bottom:15px;cursor:pointer;">`:''}
-                <div style="font-size:40px;margin-bottom:10px;">🏆</div>
-                <div style="color:#FFD700;font-size:24px;font-weight:bold;margin-bottom:10px;">CULPOSO DE ORO ${year}</div>
-                <div onclick="verPerfilCulposo('${p.Ganador}')" style="color:white;font-size:28px;font-weight:bold;cursor:pointer;">${p.Ganador||'Sin ganador'}</div>
-            </div>`; });
-
+        oro.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`<div style="background:linear-gradient(135deg,rgba(255,215,0,0.2) 0%,rgba(255,215,0,0.05) 100%);padding:30px;border-radius:20px;margin-bottom:30px;border:3px solid #FFD700;text-align:center;">${f?`<img src="${f}" onclick="verPerfilCulposo('${p.Ganador}')" style="width:100px;height:100px;border-radius:50%;border:4px solid #FFD700;object-fit:cover;object-position:center top;margin-bottom:15px;cursor:pointer;">`:''}<div style="font-size:40px;margin-bottom:10px;">🏆</div><div style="color:#FFD700;font-size:24px;font-weight:bold;margin-bottom:10px;">CULPOSO DE ORO ${year}</div><div onclick="verPerfilCulposo('${p.Ganador}')" style="color:white;font-size:28px;font-weight:bold;cursor:pointer;">${p.Ganador||'Sin ganador'}</div></div>`; });
         if(individuales.length>0){ html+='<div class="section-title" style="margin-top:25px;">🥇 Premios Individuales</div>';
-            individuales.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`
-                <div onclick="verPerfilCulposo('${p.Ganador}')" style="background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border-radius:12px;border:2px solid rgba(107,45,145,0.4);padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform 0.2s;margin-bottom:10px;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                    <div style="width:52px;height:52px;min-width:52px;border-radius:50%;border:2px solid #C8A830;overflow:hidden;flex-shrink:0;"><img src="${f||'https://i.imgur.com/czObXpX.png'}" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;"></div>
-                    <div style="flex:1;min-width:0;">
-                        <div style="color:#C8A830;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;">${p.Terna||'Premio'}</div>
-                        <div style="color:white;font-size:15px;font-weight:bold;margin-top:3px;">${p.Ganador||'Sin ganador'}</div>
-                    </div>
-                </div>`; }); }
-
-        if(juntadas.length>0){ html+='<div class="section-title" style="margin-top:25px;">🎉 Mejores Juntadas</div>';
-            juntadas.forEach(p=>{ html+=`
-                <div class="card">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="font-size:24px;">🏆</div><div style="color:#FFD700;font-size:14px;font-weight:bold;text-transform:uppercase;flex:1;">${p.Terna||'Premio'}</div></div>
-                    <div style="color:white;font-size:16px;font-weight:bold;">${p.Ganador||'Sin ganador'}</div>
-                </div>`; }); }
-
+            individuales.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`<div onclick="verPerfilCulposo('${p.Ganador}')" style="background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border-radius:12px;border:2px solid rgba(107,45,145,0.4);padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform 0.2s;margin-bottom:10px;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"><div style="width:52px;height:52px;min-width:52px;border-radius:50%;border:2px solid #C8A830;overflow:hidden;flex-shrink:0;"><img src="${f||'https://i.imgur.com/czObXpX.png'}" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;"></div><div style="flex:1;min-width:0;"><div style="color:#C8A830;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;">${p.Terna||'Premio'}</div><div style="color:white;font-size:15px;font-weight:bold;margin-top:3px;">${p.Ganador||'Sin ganador'}</div></div></div>`; }); }
+        if(juntadas.length>0){ html+='<div class="section-title" style="margin-top:25px;">🎉 Mejores Juntadas</div>'; juntadas.forEach(p=>{ html+=`<div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="font-size:24px;">🏆</div><div style="color:#FFD700;font-size:14px;font-weight:bold;text-transform:uppercase;flex:1;">${p.Terna||'Premio'}</div></div><div style="color:white;font-size:16px;font-weight:bold;">${p.Ganador||'Sin ganador'}</div></div>`; }); }
         if(!html) html=`<p style="color:rgba(255,255,255,0.6);text-align:center;padding:40px;">No hay premios registrados para ${year}</p>`;
         document.getElementById('awardsList').innerHTML=html;
     }
@@ -1103,75 +1000,23 @@
     let gastosArray=[];
     const TODOS_NOMBRES=['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti','Cata','Lola','Sami','Leila','Juli','Manu','Matu'];
 
-    // Construir mapa nombre -> alias desde culpososData
-    function getAlias(nombre) {
-        const c = culpososData.find(x => x.Nombre === nombre);
-        return c && c.Alias ? c.Alias : '';
-    }
+    function getAlias(nombre) { const c=culpososData.find(x=>x.Nombre===nombre); return c&&c.Alias?c.Alias:''; }
 
-    // Calcular racha actual (juntadas consecutivas sin faltar, desde la más reciente hacia atrás)
-    function calcularRacha(nombre) {
-        const hoy = new Date(); hoy.setHours(0,0,0,0);
-        const pasadas = juntadasData
-            .filter(j => { if(!j.Fecha) return false; const f=parseFecha(j.Fecha); return f && f<hoy && tieneQuorum(j); })
-            .sort((a,b) => { const fa=parseFecha(a.Fecha),fb=parseFecha(b.Fecha); return fb-fa; }); // más reciente primero
-        let racha = 0;
-        for (const j of pasadas) {
-            if (esConfirmadoPositivo(j[nombre])) racha++;
-            else break;
-        }
-        return racha;
-    }
-
-    function agregarGasto() {
-        gastosArray.push({id:Date.now(),quien:'',concepto:'',monto:0,consumidores:[]});
-        renderGastos();
-    }
-
+    function agregarGasto() { gastosArray.push({id:Date.now(),quien:'',concepto:'',monto:0,consumidores:[]}); renderGastos(); }
     function eliminarGasto(id) { gastosArray=gastosArray.filter(g=>g.id!==id); renderGastos(); }
-
-    function toggleTodos(idx) {
-        const todos = gastosArray[idx].consumidores.length === TODOS_NOMBRES.length;
-        gastosArray[idx].consumidores = todos ? [] : [...TODOS_NOMBRES];
-        renderGastos();
-    }
+    function toggleTodos(idx) { const todos=gastosArray[idx].consumidores.length===TODOS_NOMBRES.length; gastosArray[idx].consumidores=todos?[]:[...TODOS_NOMBRES]; renderGastos(); }
 
     function renderGastos() {
         const c=document.getElementById('gastosContainer');
-        if(!gastosArray.length){ c.innerHTML=`<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><div style="font-size:48px;margin-bottom:15px;">💸</div><div>No hay gastos agregados</div><div style="font-size:13px;margin-top:8px;">Presioná "Agregar Gasto" para empezar</div></div>`; return; }
+        if(!gastosArray.length){ c.innerHTML=`<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.6);"><div style="font-size:48px;margin-bottom:15px;">💸</div><div>No hay gastos agregados</div></div>`; return; }
         c.innerHTML=gastosArray.map((g,idx)=>`
             <div class="card" style="margin-bottom:20px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-                    <div style="color:#FFD700;font-weight:bold;">Gasto ${idx+1}</div>
-                    <button onclick="eliminarGasto(${g.id})" style="background:rgba(244,67,54,0.2);border:2px solid #f44336;color:#f44336;padding:5px 10px;border-radius:5px;font-size:12px;cursor:pointer;">✕ Eliminar</button>
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">¿Quién pagó?</label>
-                    <select onchange="gastosArray[${idx}].quien=this.value" class="form-select">
-                        <option value="">Seleccionar...</option>
-                        ${TODOS_NOMBRES.map(n=>`<option value="${n}" ${g.quien===n?'selected':''}>${n}</option>`).join('')}
-                    </select>
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">Concepto</label>
-                    <input type="text" value="${g.concepto}" oninput="gastosArray[${idx}].concepto=this.value" placeholder="Ej: Carne, Pan..." style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
-                </div>
-                <div style="margin-bottom:10px;">
-                    <label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">Monto ($)</label>
-                    <input type="number" value="${g.monto||''}" oninput="gastosArray[${idx}].monto=parseFloat(this.value)||0" placeholder="0" style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
-                </div>
-                <div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                        <label style="color:rgba(255,255,255,0.8);font-size:13px;">¿Quiénes consumen/usan?</label>
-                        <button onclick="toggleTodos(${idx})" style="background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer;">${g.consumidores.length===TODOS_NOMBRES.length?"☐ Ninguno":"☑️ Todos"}</button>
-                    </div>
-                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-                        ${TODOS_NOMBRES.map(n=>`
-                            <label style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.9);font-size:13px;cursor:pointer;">
-                                <input type="checkbox" ${g.consumidores.includes(n)?'checked':''} onchange="if(this.checked){if(!gastosArray[${idx}].consumidores.includes('${n}'))gastosArray[${idx}].consumidores.push('${n}');}else{gastosArray[${idx}].consumidores=gastosArray[${idx}].consumidores.filter(x=>x!=='${n}');}" style="cursor:pointer;">${n}
-                            </label>`).join('')}
-                    </div>
-                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><div style="color:#FFD700;font-weight:bold;">Gasto ${idx+1}</div><button onclick="eliminarGasto(${g.id})" style="background:rgba(244,67,54,0.2);border:2px solid #f44336;color:#f44336;padding:5px 10px;border-radius:5px;font-size:12px;cursor:pointer;">✕ Eliminar</button></div>
+                <div style="margin-bottom:10px;"><label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">¿Quién pagó?</label><select onchange="gastosArray[${idx}].quien=this.value" class="form-select"><option value="">Seleccionar...</option>${TODOS_NOMBRES.map(n=>`<option value="${n}" ${g.quien===n?'selected':''}>${n}</option>`).join('')}</select></div>
+                <div style="margin-bottom:10px;"><label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">Concepto</label><input type="text" value="${g.concepto}" oninput="gastosArray[${idx}].concepto=this.value" placeholder="Ej: Carne, Pan..." style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
+                <div style="margin-bottom:10px;"><label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">Monto ($)</label><input type="number" value="${g.monto||''}" oninput="gastosArray[${idx}].monto=parseFloat(this.value)||0" placeholder="0" style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
+                <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><label style="color:rgba(255,255,255,0.8);font-size:13px;">¿Quiénes consumen/usan?</label><button onclick="toggleTodos(${idx})" style="background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer;">${g.consumidores.length===TODOS_NOMBRES.length?"☐ Ninguno":"☑️ Todos"}</button></div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">${TODOS_NOMBRES.map(n=>`<label style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.9);font-size:13px;cursor:pointer;"><input type="checkbox" ${g.consumidores.includes(n)?'checked':''} onchange="if(this.checked){if(!gastosArray[${idx}].consumidores.includes('${n}'))gastosArray[${idx}].consumidores.push('${n}');}else{gastosArray[${idx}].consumidores=gastosArray[${idx}].consumidores.filter(x=>x!=='${n}');}" style="cursor:pointer;">${n}</label>`).join('')}</div></div>
             </div>`).join('');
     }
 
@@ -1179,58 +1024,39 @@
         const res=document.getElementById('resultadoCalculo');
         if(!gastosArray.length){res.innerHTML='<div class="card" style="background:rgba(244,67,54,0.2);border-left-color:#f44336;"><div style="color:#f44336;">⚠️ No hay gastos para calcular</div></div>';return;}
         for(let g of gastosArray){if(!g.quien||!g.concepto||g.monto<=0||!g.consumidores.length){res.innerHTML='<div class="card" style="background:rgba(244,67,54,0.2);border-left-color:#f44336;"><div style="color:#f44336;">⚠️ Completá todos los campos</div></div>';return;}}
-
         const bal={};
         TODOS_NOMBRES.forEach(n=>bal[n]=0);
         gastosArray.forEach(g=>{ const cpp=g.monto/g.consumidores.length; g.consumidores.forEach(c=>bal[c]-=cpp); bal[g.quien]+=g.monto; });
-
         const deu=[],acr=[];
         Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
-
-        const trans=[];
-        const dc=[...deu],ac=[...acr];
+        const trans=[],dc=[...deu],ac=[...acr];
         while(dc.length&&ac.length){ const d=dc[0],a=ac[0],m=Math.min(d.m,a.m); trans.push({de:d.n,a:a.n,monto:m}); d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); }
-
         const total=gastosArray.reduce((s,g)=>s+g.monto,0);
-        res.innerHTML=`
-            <div class="card" style="background:linear-gradient(135deg,rgba(76,175,80,0.15) 0%,rgba(76,175,80,0.05) 100%);border-left-color:#4CAF50;">
-                <div style="text-align:center;margin-bottom:20px;">
-                    <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:5px;">TOTAL GASTADO</div>
-                    <div style="font-size:32px;font-weight:bold;color:#4CAF50;">$${total.toLocaleString('es-AR')}</div>
-                </div>
-                <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:15px;">
-                    <div style="color:#FFD700;font-weight:bold;margin-bottom:15px;text-align:center;">💸 TRANSFERENCIAS A REALIZAR</div>
-                    ${trans.map(t=>`<div style="background:rgba(139,77,143,0.2);padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><div style="color:white;font-size:14px;"><span style="font-weight:bold;">${t.de}</span> → <span style="font-weight:bold;color:#4CAF50;">${t.a}</span></div><div style="color:#FFD700;font-weight:bold;font-size:16px;">$${Math.round(t.monto).toLocaleString('es-AR')}</div></div>`).join('')}
-                </div>
-                ${(()=>{ const acreedores=[...new Set(trans.map(t=>t.a))]; const aliases=acreedores.map(n=>{const a=getAlias(n);return a?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);"><span style="color:rgba(255,255,255,0.8);font-weight:bold;">${n}</span><span style="color:#FFD700;">💳 ${a}</span></div>`:'';}).filter(Boolean).join(''); return aliases?`<div style="margin-top:15px;padding:12px;background:rgba(255,215,0,0.08);border-radius:8px;border:1px solid rgba(255,215,0,0.3);"><div style="color:#FFD700;font-size:12px;font-weight:bold;text-transform:uppercase;margin-bottom:8px;">Alias para transferir</div>${aliases}</div>`:''; })()}
-                <button onclick="compartirResultado()" style="width:100%;margin-top:15px;background:rgba(37,211,102,0.2);border:2px solid #25D366;color:#25D366;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">📱 Compartir por WhatsApp</button>
-            </div>`;
+        const acreedores=[...new Set(trans.map(t=>t.a))];
+        const aliases=acreedores.map(n=>{const a=getAlias(n);return a?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);"><span style="color:rgba(255,255,255,0.8);font-weight:bold;">${n}</span><span style="color:#FFD700;">💳 ${a}</span></div>`:''}).filter(Boolean).join('');
+        res.innerHTML=`<div class="card" style="background:linear-gradient(135deg,rgba(76,175,80,0.15) 0%,rgba(76,175,80,0.05) 100%);border-left-color:#4CAF50;">
+            <div style="text-align:center;margin-bottom:20px;"><div style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:5px;">TOTAL GASTADO</div><div style="font-size:32px;font-weight:bold;color:#4CAF50;">$${total.toLocaleString('es-AR')}</div></div>
+            <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:15px;"><div style="color:#FFD700;font-weight:bold;margin-bottom:15px;text-align:center;">💸 TRANSFERENCIAS A REALIZAR</div>
+            ${trans.map(t=>`<div style="background:rgba(139,77,143,0.2);padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><div style="color:white;font-size:14px;"><span style="font-weight:bold;">${t.de}</span> → <span style="font-weight:bold;color:#4CAF50;">${t.a}</span></div><div style="color:#FFD700;font-weight:bold;font-size:16px;">$${Math.round(t.monto).toLocaleString('es-AR')}</div></div>`).join('')}</div>
+            ${aliases?`<div style="margin-top:15px;padding:12px;background:rgba(255,215,0,0.08);border-radius:8px;border:1px solid rgba(255,215,0,0.3);"><div style="color:#FFD700;font-size:12px;font-weight:bold;text-transform:uppercase;margin-bottom:8px;">Alias para transferir</div>${aliases}</div>`:''}
+            <button onclick="compartirResultado()" style="width:100%;margin-top:15px;background:rgba(37,211,102,0.2);border:2px solid #25D366;color:#25D366;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">📱 Compartir por WhatsApp</button>
+        </div>`;
     }
 
     function compartirResultado() {
         const total=gastosArray.reduce((s,g)=>s+g.monto,0);
-        let txt=`💰 *DIVISIÓN DE GASTOS - LA CULPA*\n\nTotal gastado: $${total.toLocaleString('es-AR')}\n\n`;
+        let txt=`💰 *DIVISIÓN DE GASTOS - LA CULPA*\n\nTotal: $${total.toLocaleString('es-AR')}\n\n`;
         gastosArray.forEach((g,i)=>{ txt+=`${i+1}. ${g.concepto}: $${g.monto.toLocaleString('es-AR')} (${g.quien})\n`; });
         txt+=`\n💸 *TRANSFERENCIAS:*\n`;
-
-        const bal={};
-        TODOS_NOMBRES.forEach(n=>bal[n]=0);
+        const bal={};TODOS_NOMBRES.forEach(n=>bal[n]=0);
         gastosArray.forEach(g=>{ const cpp=g.monto/g.consumidores.length; g.consumidores.forEach(c=>bal[c]-=cpp); bal[g.quien]+=g.monto; });
         const deu=[],acr=[];
         Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
-        const dc=[...deu],ac=[...acr];
-        const transWA=[];
-        while(dc.length&&ac.length){ 
-            const d=dc[0],a=ac[0],m=Math.min(d.m,a.m);
-            transWA.push({de:d.n,a:a.n,monto:m});
-            d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); 
-        }
-        transWA.forEach(t=>{ txt+=`${t.de} → ${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}\n`; });
-        // Aliases de quienes reciben, una vez al final
-        const acreedoresWA=[...new Set(transWA.map(t=>t.a))];
-        const aliasesWA=acreedoresWA.map(n=>{const a=getAlias(n);return a?`${n}: 💳 ${a}`:null;}).filter(Boolean);
-        if(aliasesWA.length){ txt+=`\n💳 *ALIAS:*\n`+aliasesWA.join('\n'); }
-
+        const dc=[...deu],ac=[...acr],tw=[];
+        while(dc.length&&ac.length){ const d=dc[0],a=ac[0],m=Math.min(d.m,a.m); tw.push({de:d.n,a:a.n,monto:m}); d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); }
+        tw.forEach(t=>{ txt+=`${t.de} → ${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}\n`; });
+        const aw=[...new Set(tw.map(t=>t.a))].map(n=>{const a=getAlias(n);return a?`${n}: 💳 ${a}`:null;}).filter(Boolean);
+        if(aw.length) txt+=`\n💳 *ALIAS:*\n`+aw.join('\n');
         window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
     }
 
@@ -1242,25 +1068,19 @@
         document.getElementById(tabName).classList.add('active');
     }
 
-    // ── FIREBASE PUSH NOTIFICATIONS ──────────────────────────
+    // ── FIREBASE ──────────────────────────────────────────────
     const FIREBASE_CONFIG = {
-        apiKey: "AIzaSyAamBVJC48CtEd41HtvF5Ek0Bxui5TfsjA",
-        authDomain: "la-culpa.firebaseapp.com",
-        projectId: "la-culpa",
-        storageBucket: "la-culpa.firebasestorage.app",
-        messagingSenderId: "339936091040",
-        appId: "1:339936091040:web:608ec8df925b088472a2c5"
+        apiKey:"AIzaSyAamBVJC48CtEd41HtvF5Ek0Bxui5TfsjA",authDomain:"la-culpa.firebaseapp.com",
+        projectId:"la-culpa",storageBucket:"la-culpa.firebasestorage.app",
+        messagingSenderId:"339936091040",appId:"1:339936091040:web:608ec8df925b088472a2c5"
     };
     const VAPID_KEY = "BLTKtmHW3u6CS-uITlN19AF0IWzlQmOBSwWarERODdaqPZ0jXSoVvhqvz2E64w_Jue5Sa3cazO8gkFHXRfb1Zzs";
-
     let messagingInstance = null;
 
     async function initFirebase() {
         try {
             firebase.initializeApp(FIREBASE_CONFIG);
             messagingInstance = firebase.messaging();
-
-            // Handle foreground messages
             messagingInstance.onMessage(payload => {
                 const { title, body } = payload.notification || {};
                 if (title) showInAppNotification(title, body);
@@ -1270,95 +1090,61 @@
 
     function showInAppNotification(title, body) {
         const el = document.createElement('div');
-        el.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 100%);color:white;padding:14px 20px;border-radius:14px;border:2px solid #C8A830;box-shadow:0 8px 30px rgba(0,0,0,0.5);max-width:320px;width:90%;text-align:center;`;
-        el.innerHTML = `<div style="font-size:18px;margin-bottom:4px;">🎉</div><div style="font-weight:bold;color:#C8A830;margin-bottom:4px;">${title}</div><div style="font-size:13px;opacity:0.9;">${body||''}</div>`;
+        el.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 100%);color:white;padding:16px 22px;border-radius:16px;border:2px solid #C8A830;box-shadow:0 8px 30px rgba(0,0,0,0.6);max-width:340px;width:90%;text-align:center;animation:slideDown 0.3s ease;`;
+        el.innerHTML = `<div style="font-size:22px;margin-bottom:6px;">🎉</div><div style="font-weight:bold;color:#FFD700;font-size:15px;margin-bottom:4px;letter-spacing:0.5px;">${title}</div><div style="font-size:13px;opacity:0.85;line-height:1.4;">${body||''}</div>`;
         document.body.appendChild(el);
-        setTimeout(()=>el.remove(), 5000);
+        setTimeout(() => el.remove(), 5000);
     }
 
     async function pedirPermisoNotificaciones() {
-        if (!messagingInstance) { console.warn('Messaging no inicializado'); return; }
+        if (!messagingInstance) return;
         try {
             const perm = await Notification.requestPermission();
-            console.log('Permiso notificaciones:', perm);
             if (perm !== 'granted') return;
-
-            // Registrar SW y pasarlo explícitamente a getToken (Firebase 10+)
             let swReg = null;
             if ('serviceWorker' in navigator) {
-                swReg = await navigator.serviceWorker.register(
-                    '/la-culpa-app/firebase-messaging-sw.js'
-                );
+                swReg = await navigator.serviceWorker.register('/la-culpa-app/firebase-messaging-sw.js');
                 await navigator.serviceWorker.ready;
-                console.log('SW registrado:', swReg.scope);
             }
-
             const tokenOpts = { vapidKey: VAPID_KEY };
             if (swReg) tokenOpts.serviceWorkerRegistration = swReg;
-
             const token = await messagingInstance.getToken(tokenOpts);
-            console.log('FCM token:', token ? token.substring(0,20)+'...' : 'null');
             if (!token) return;
-
-            // Guardar solo si cambió
             const saved = localStorage.getItem('fcmToken');
-            if (saved === token) { console.log('Token sin cambios'); return; }
-
-            const r = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ accion: 'guardar_token', email: currentUser, token })
-            });
-            const res = await r.json();
-            console.log('Token guardado en Sheet:', res);
+            if (saved === token) return;
+            await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'guardar_token', email:currentUser, token }) });
             localStorage.setItem('fcmToken', token);
         } catch(e) { console.warn('Error registrando notificaciones:', e); }
     }
 
-    // Botón manual para activar notificaciones desde Perfil
     async function activarNotificaciones() {
         const btn = document.getElementById('btnNotif');
         const status = document.getElementById('notifStatus');
         if (btn) btn.disabled = true;
         if (status) status.textContent = '⏳ Registrando...';
-
         localStorage.removeItem('fcmToken');
-
         try {
             if (!messagingInstance) throw new Error('Firebase no inicializado');
-
             const perm = await Notification.requestPermission();
             if (perm !== 'granted') throw new Error('Permiso denegado: ' + perm);
-
             let swReg = null;
             if ('serviceWorker' in navigator) {
-                swReg = await navigator.serviceWorker.register(
-                    '/la-culpa-app/firebase-messaging-sw.js',
-                    { scope: '/la-culpa-app/' }
-                );
+                swReg = await navigator.serviceWorker.register('/la-culpa-app/firebase-messaging-sw.js', { scope:'/la-culpa-app/' });
                 await navigator.serviceWorker.ready;
             }
-
             const tokenOpts = { vapidKey: VAPID_KEY };
             if (swReg) tokenOpts.serviceWorkerRegistration = swReg;
-
             const token = await messagingInstance.getToken(tokenOpts);
             if (!token) throw new Error('Token vacío');
-
-            const r = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({ accion: 'guardar_token', email: currentUser, token })
-            });
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'guardar_token', email:currentUser, token }) });
             const res = await r.json();
-            if (!res.success) throw new Error('Error guardando token: ' + JSON.stringify(res));
-
+            if (!res.success) throw new Error('Error guardando token');
             localStorage.setItem('fcmToken', token);
-            if (btn) { btn.textContent = '✅ Notificaciones activas'; btn.style.borderColor='#4CAF50'; btn.style.color='#4CAF50'; btn.disabled = false; }
-            if (status) status.textContent = 'Este dispositivo va a recibir avisos de nuevas juntadas';
-
+            if (btn) { btn.textContent='✅ Notificaciones activas'; btn.style.borderColor='#4CAF50'; btn.style.color='#4CAF50'; btn.disabled=false; }
+            if (status) status.textContent='Este dispositivo va a recibir avisos de nuevas juntadas 🔔';
         } catch(e) {
-            console.error('Error activando notificaciones:', e);
-            if (btn) { btn.disabled = false; btn.textContent = 'Reintentar'; }
-            if (status) status.textContent = '❌ ' + e.message;
+            if (btn) { btn.disabled=false; btn.textContent='Reintentar'; }
+            if (status) status.textContent='❌ ' + e.message;
         }
     }
 
