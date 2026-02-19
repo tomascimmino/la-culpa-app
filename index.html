@@ -653,17 +653,7 @@ window.juntadasAsistenteActivo = null;
         if (window.juntadasAsistenteActivo) { if (!esConfirmadoPositivo(j[window.juntadasAsistenteActivo])) return false; }
         return true;
     });
-  const categorias = [...new Set(pasadas.map(j => j.Categoría||j.Categoria||'').filter(Boolean))];
-    const hostsDisponibles = [...new Set(pasadas.map(j => j.Host||'').filter(Boolean))];
-    const asistentesDisponibles = Object.keys(FOTOS).filter(n => pasadas.some(j => esConfirmadoPositivo(j[n])));
-
-    function btnFiltro(label, activo, onclick) {
-        return '<button onclick="' + onclick + '" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ' + (activo?'#FFD700':'rgba(139,77,143,0.4)') + ';background:' + (activo?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)') + ';color:' + (activo?'#FFD700':'rgba(255,255,255,0.6)') + ';">' + label + '</button>';
-    }
-
-    // Panel meses
-    let botonesmes = btnFiltro('Todo', !window.juntadasDesde&&!window.juntadasHasta, "window.juntadasDesde='';window.juntadasHasta='';window.juntadasVerMas=false;renderJuntadas()");
-    const mesesVistos = [];
+ const mesesVistos = [];
     const mesesKeys = new Set();
     pasadas.forEach(j => {
         const f = parseFecha(j.Fecha);
@@ -677,59 +667,14 @@ window.juntadasAsistenteActivo = null;
             mesesVistos.push({ label: NOMBRES_MESES[f.getMonth()], desde, hasta });
         }
     });
-    mesesVistos.forEach(op => {
+
+    let botonesmes = '<button onclick="window.juntadasDesde=\'\';window.juntadasHasta=\'\';window.juntadasVerMas=false;renderJuntadas()" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ' + ((!window.juntadasDesde&&!window.juntadasHasta)?'#FFD700':'rgba(139,77,143,0.4)') + ';background:' + ((!window.juntadasDesde&&!window.juntadasHasta)?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)') + ';color:' + ((!window.juntadasDesde&&!window.juntadasHasta)?'#FFD700':'rgba(255,255,255,0.6)') + ';">Todo</button>';
+    mesesVistos.forEach(function(op) {
         const activo = window.juntadasDesde===op.desde && window.juntadasHasta===op.hasta;
-        botonesmes += btnFiltro(op.label, activo, "window.juntadasDesde='" + op.desde + "';window.juntadasHasta='" + op.hasta + "';window.juntadasVerMas=false;renderJuntadas()");
+        botonesmes += '<button onclick="window.juntadasDesde=\'' + op.desde + '\';window.juntadasHasta=\'' + op.hasta + '\';window.juntadasVerMas=false;renderJuntadas()" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ' + (activo?'#FFD700':'rgba(139,77,143,0.4)') + ';background:' + (activo?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)') + ';color:' + (activo?'#FFD700':'rgba(255,255,255,0.6)') + ';">' + op.label + '</button>';
     });
 
-    // Panel categorías
-    let botonesCat = '';
-    if (categorias.length) {
-        botonesCat += btnFiltro('Todas', !window.juntadasCatActiva, "window.juntadasCatActiva='';window.juntadasVerMas=false;renderJuntadas()");
-        categorias.forEach(cat => {
-            botonesCat += btnFiltro(cat, window.juntadasCatActiva===cat, "window.juntadasCatActiva='" + cat + "';window.juntadasVerMas=false;renderJuntadas()");
-        });
-    }
-
-    // Panel hosts
-    let botonesHost = btnFiltro('Todos', !window.juntadasHostActivo, "window.juntadasHostActivo='';window.juntadasVerMas=false;renderJuntadas()");
-    hostsDisponibles.forEach(h => {
-        // Nombre corto para el botón
-        const label = h.length > 12 ? h.split(' ')[0] : h;
-        botonesHost += btnFiltro(label, window.juntadasHostActivo===h, "window.juntadasHostActivo='" + h.replace(/'/g,"\\'") + "';window.juntadasVerMas=false;renderJuntadas()");
-    });
-
-    // Panel asistentes (con foto si tiene)
-    let botonesAsist = '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">';
-    botonesAsist += btnFiltro('Todos', !window.juntadasAsistenteActivo, "window.juntadasAsistenteActivo='';window.juntadasVerMas=false;renderJuntadas()");
-    asistentesDisponibles.forEach(n => {
-        const activo = window.juntadasAsistenteActivo === n;
-        const foto = FOTOS[n] || '';
-        botonesAsist += '<div onclick="window.juntadasAsistenteActivo=\'' + n + '\';window.juntadasVerMas=false;renderJuntadas()" style="cursor:pointer;text-align:center;">'
-            + '<div style="width:38px;height:38px;border-radius:50%;border:2.5px solid ' + (activo?'#FFD700':'rgba(139,77,143,0.4)') + ';background:url(\'' + foto + '\') center top/cover;box-shadow:' + (activo?'0 0 8px rgba(255,215,0,0.6)':'none') + ';transition:all 0.2s;"></div>'
-            + '<div style="font-size:9px;color:' + (activo?'#FFD700':'rgba(255,255,255,0.5)') + ';margin-top:3px;font-weight:' + (activo?'bold':'normal') + ';">' + n + '</div>'
-            + '</div>';
-    });
-    botonesAsist += '</div>';
-
-    const panelStyle = 'background:rgba(20,10,35,0.6);border:1px solid rgba(107,45,145,0.3);border-radius:12px;padding:12px;margin-bottom:10px;';
-    const panelLabel = 'font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:bold;';
-
-    const selectorHTML =
-        '<div style="' + panelStyle + '">'
-            + '<div style="' + panelLabel + '">📅 Fecha</div>'
-            + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + botonesmes + '</div>'
-        + '</div>'
-        + (categorias.length ? '<div style="' + panelStyle + '"><div style="' + panelLabel + '">🏷️ Categoría</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + botonesCat + '</div></div>' : '')
-        + '<div style="' + panelStyle + '">'
-            + '<div style="' + panelLabel + '">🏠 Host</div>'
-            + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + botonesHost + '</div>'
-        + '</div>'
-        + '<div style="' + panelStyle + '">'
-            + '<div style="' + panelLabel + '">👤 Asistente</div>'
-            + botonesAsist
-        + '</div>';
-
+    const selectorHTML = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">' + botonesmes + '</div>';
     const limite = window.juntadasVerMas ? filtradas.length : 10;
     const mostradas = filtradas.slice(0, limite);
 
