@@ -990,6 +990,16 @@
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${pct}%</div><div class="stat-label">Porcentaje</div></div>
             </div>
             ${isPerfecto?`<div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.1) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;"><div class="card-title">🏆 ¡CULPOSO PERFECTO!</div><div class="card-details">${esMiPerfil?'No te perdiste ninguna juntada. Sos un crack.':'No se perdió ninguna juntada. Un verdadero crack.'}</div></div>`:''}
+            ${(()=>{
+    const oros = premiosData.filter(p=>p.Terna&&p.Terna.toUpperCase().includes('CULPOSO DE ORO')).sort((a,b)=>(b.Año||0)-(a.Año||0));
+    const esOro = oros.length && oros[0].Ganador === usuario.Nombre;
+    return esOro ? `<div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.18) 0%,rgba(255,165,0,0.08) 100%);border:2px solid #FFD700;border-left:4px solid #FFD700;text-align:center;padding:20px;">
+        <div style="font-size:36px;margin-bottom:8px;">🏆</div>
+        <div style="color:#FFD700;font-size:18px;font-weight:bold;letter-spacing:1px;">CULPOSO DE ORO ${oros[0].Año}</div>
+        <div style="color:rgba(255,215,0,0.65);font-size:13px;margin-top:6px;">El culposo más presente del año. Una leyenda.</div>
+    </div>` : '';
+})()}
+${rachaCard}
             ${rachaCard}
             ${renderHostPanel(usuario.Nombre)}
             ${premiosHTML}
