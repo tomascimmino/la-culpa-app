@@ -318,25 +318,6 @@
         'Matu':'https://i.imgur.com/gNabdVm.png'
     };
 
-    const REYES   = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
-const REINAS  = ['Manu','Juli','Sami','Leila','Cata','Lola'];
-const MATU    = ['Matu'];
-
-function getIconos(nombre) {
-    let iconos = '';
-    // Culposo de Oro vigente (último año en PREMIOS)
-    if (premiosData && premiosData.length) {
-        const oros = premiosData
-            .filter(p => p.Terna && p.Terna.toUpperCase().includes('CULPOSO DE ORO'))
-            .sort((a,b) => (b.Año||0) - (a.Año||0));
-        if (oros.length && oros[0].Ganador === nombre) iconos += ' <span title="Culposo de Oro">🏆</span>';
-    }
-    if (REYES.includes(nombre))  iconos += ' <span title="Rey Culposo">👑</span>';
-    if (REINAS.includes(nombre)) iconos += ' <span title="Reina">💎</span>';
-    if (MATU.includes(nombre))   iconos += ' <span title="Editor / Asistente técnico">🎬</span>';
-    return iconos;
-}
-    
     const DRIVE_MESES = {
         '2026': {
             '1': '1PSdks-O-hEuQwSIbM0K0qiyYgmFnWHD5',
@@ -606,8 +587,8 @@ function getIconos(nombre) {
                     ${!foto?'🧔':''}
                 </div>
                 <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
-                <div class="rank-name">${c.Nombre}${getIconos(c.Nombre)}${rachaHTML}</div>
-                <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
+                    <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge" style="background:rgba(255,215,0,0.12);color:#C8A830;border:1px solid rgba(255,215,0,0.25);cursor:default;">👑</span>':''}${rachaHTML}</div>
+                    <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
                 </div>
                 <div class="rank-percentage" style="color:${col}">${pct}%</div>
             </div>`;
@@ -1008,7 +989,8 @@ function getIconos(nombre) {
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div><div class="stat-label">Asistencias</div></div>
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${pct}%</div><div class="stat-label">Porcentaje</div></div>
             </div>
-            ${getIconos(usuario.Nombre) ? `<div class="card" style="background:linear-gradient(135deg,rgba(107,45,145,0.15) 0%,rgba(107,45,145,0.05) 100%);border-left-color:#C8A830;"><div style="font-size:22px;letter-spacing:4px;">${getIconos(usuario.Nombre)}</div></div>` : ''}
+            ${isPerfecto?`<div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.1) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;"><div class="card-title">🏆 ¡CULPOSO PERFECTO!</div><div class="card-details">${esMiPerfil?'No te perdiste ninguna juntada. Sos un crack.':'No se perdió ninguna juntada. Un verdadero crack.'}</div></div>`:''}
+            ${rachaCard}
             ${renderHostPanel(usuario.Nombre)}
             ${premiosHTML}
             ${esMiPerfil?`
