@@ -895,13 +895,33 @@
                     <div style="color:white;font-size:24px;font-weight:bold;margin-bottom:10px;">${j.Descripción||j.Descripcion}</div>
                     <div style="color:rgba(255,255,255,0.7);font-size:14px;">🏠 ${j.Host||'Sin host'}</div>
                 </div>
-                <div style="background:${hayQuorum?'rgba(76,175,80,0.15)':'rgba(139,77,143,0.15)'};padding:15px;border-radius:10px;margin-bottom:20px;border:2px solid ${hayQuorum?'#4CAF50':'rgba(139,77,143,0.5)'};">
-                    <div style="text-align:center;">
-                        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:5px;text-transform:uppercase;">Confirmaciones</div>
-                        <div style="font-size:28px;font-weight:bold;color:${hayQuorum?'#4CAF50':'#FFD700'};">${confirmados.length}/${culpososData.length}</div>
-                        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:5px;">Culposos: ${culpososConf}/8 ${hayQuorum?'✅ Hay quorum':'⏳ Sin quorum'}</div>
-                    </div>
+                <div style="background:${hayQuorum?'rgba(76,175,80,0.1)':'rgba(139,77,143,0.1)'};padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid ${hayQuorum?'#4CAF50':'rgba(139,77,143,0.5)'};">
+    <div style="text-align:center;margin-bottom:12px;">
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Confirmaciones</div>
+        <div style="font-size:26px;font-weight:bold;color:${hayQuorum?'#4CAF50':'#FFD700'};">${confirmados.length}<span style="font-size:14px;color:rgba(255,255,255,0.4);font-weight:normal;">/${culpososData.length}</span></div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:3px;">Culposos: ${culpososConf}/8 — ${hayQuorum?'✅ Hay quorum':'⏳ Sin quorum'}</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px;">
+        ${culpososData.map(c=>{
+            const esRey = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'].includes(c.Nombre);
+            const conf  = esConfirmadoPositivo(j[c.Nombre]);
+            const noConf = esConfirmadoNegativo(j[c.Nombre]);
+            const foto  = FOTOS[c.Nombre] || '';
+            const borderColor = conf ? '#4CAF50' : noConf ? '#f44336' : 'rgba(255,255,255,0.15)';
+            const opacity = conf ? '1' : noConf ? '0.35' : '0.5';
+            const ringExtra = esRey ? `box-shadow:0 0 0 2px #FFD700;` : '';
+            return `<div style="position:relative;text-align:center;">
+                ${esRey ? `<div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:9px;line-height:1;z-index:1;">👑</div>` : ''}
+                <div style="width:36px;height:36px;border-radius:50%;border:2px solid ${borderColor};${ringExtra}opacity:${opacity};
+                    background:${foto?`url('${foto}') center top/cover`:'linear-gradient(135deg,#8B4D8F,#6B3870)'};
+                    display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.3s;">
+                    ${!foto?'🧔':''}
                 </div>
+                <div style="font-size:8px;color:rgba(255,255,255,0.5);margin-top:3px;max-width:36px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${c.Nombre}</div>
+            </div>`;
+        }).join('')}
+    </div>
+</div>
                 <div style="margin:25px 0;">${botonesHTML}</div>
                 ${confirmados.length>0||noConfirmados.length>0?`
                     <div style="margin-top:25px;padding-top:25px;border-top:1px solid rgba(255,255,255,0.2);">
