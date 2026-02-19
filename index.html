@@ -118,16 +118,6 @@
         /* Selector de meses — ocultar scrollbar */
         .mes-selector::-webkit-scrollbar { display: none; }
         .mes-selector { -ms-overflow-style: none; scrollbar-width: none; }
-        /* ROLES */
-.rol-rey   { color: #FFD700; }
-.rol-reina { color: #C084FC; }
-.rol-tec   { color: #60A5FA; }
-
-/* Fondo sala del trono */
-body {
-    background: radial-gradient(ellipse at top, #1a1035 0%, #0f0a1f 50%, #050510 100%);
-}
-.card { border: 1px solid rgba(255,215,0,0.15); }
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
@@ -300,20 +290,6 @@ body {
         '16-2-2026 HURLINGHAM': '1b4PVdlHfPVy_G4cR4CETwL_5ya9IHIYo',
         '16-2-2026 PASTOR':     '1B36Ri17YnjquRxToBtJcmsGk9_aWcBMk'
     };
-    
-    const ROLES = {
-    'Toto':'rey','Caamaño':'rey','Rama':'rey','Zabala':'rey',
-    'Santi':'rey','Mateo':'rey','Tirri':'rey','Toti':'rey',
-    'Sami':'reina','Manu':'reina','Juli':'reina','Leila':'reina','Cata':'reina','Lola':'reina',
-    'Matu':'tec'
-};
-const ROL_ICON = { rey:'👑', reina:'💎', tec:'🎬' };
-function renderRol(nombre) {
-    const r = ROLES[nombre];
-    if (!r) return '';
-    const cls = r==='rey'?'rol-rey':r==='reina'?'rol-reina':'rol-tec';
-    return `<span class="${cls}" style="font-size:13px;">${ROL_ICON[r]}</span>`;
-}
 
     function getDriveLink(juntada) {
         const sheetId = juntada['Drive ID'] || juntada['Drive Id'] || juntada['drive_id'] || '';
@@ -563,7 +539,7 @@ function renderRol(nombre) {
                     ${!foto?'🧔':''}
                 </div>
                 <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
-                    <div class="rank-name">${renderRol(c.Nombre)} ${c.Nombre}${pct==100?'<span class="badge" style="background:rgba(255,215,0,0.12);color:#C8A830;border:1px solid rgba(255,215,0,0.25);cursor:default;">👑</span>':''}${rachaHTML}</div>
+                    <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge" style="background:rgba(255,215,0,0.12);color:#C8A830;border:1px solid rgba(255,215,0,0.25);cursor:default;">👑</span>':''}${rachaHTML}</div>
                     <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
                 </div>
                 <div class="rank-percentage" style="color:${col}">${pct}%</div>
@@ -960,7 +936,7 @@ function renderRol(nombre) {
         document.getElementById('perfilData').innerHTML=`
             ${!esMiPerfil?`<div style="text-align:center;margin-bottom:15px;"><button onclick="renderPerfil()" style="background:rgba(139,77,143,0.3);border:2px solid #8B4D8F;color:#FFD700;padding:8px 15px;border-radius:10px;font-size:12px;font-weight:bold;cursor:pointer;">← Volver a mi perfil</button></div>`:''}
             ${fotoUrl?`<div style="text-align:center;margin-bottom:20px;"><img src="${fotoUrl}" style="width:100px;height:100px;border-radius:50%;border:3px solid #C8A830;object-fit:cover;object-position:center top;"></div>`:''}
-            <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};"><div class="card-title" style="font-size:24px;">${renderRol(usuario.Nombre)} ${usuario.Nombre}</div></div>
+            <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};"><div class="card-title" style="font-size:24px;">${usuario.Nombre}</div></div>
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div><div class="stat-label">Asistencias</div></div>
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${pct}%</div><div class="stat-label">Porcentaje</div></div>
