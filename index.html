@@ -118,47 +118,6 @@
         /* Selector de meses — ocultar scrollbar */
         .mes-selector::-webkit-scrollbar { display: none; }
         .mes-selector { -ms-overflow-style: none; scrollbar-width: none; }
-        /* ===== MEJORA VISUAL SEGURA ===== */
-
-/* Títulos con glow dorado */
-h1, h2 {
-    text-shadow: 0 0 10px rgba(255,215,0,0.4),
-                 0 0 20px rgba(255,215,0,0.2);
-}
-
-/* Cards más elegantes */
-.card {
-    backdrop-filter: blur(6px);
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,215,0,0.15);
-    box-shadow: 0 0 20px rgba(0,0,0,0.4);
-}
-
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(255,215,0,0.2);
-}
-
-/* Botones con efecto moderno */
-button {
-    background: linear-gradient(135deg, #FFD700, #c9a227);
-    border: none;
-    color: #1a1035;
-    font-weight: bold;
-    box-shadow: 0 4px 15px rgba(255,215,0,0.3);
-}
-
-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(255,215,0,0.5);
-}
-
-/* Ranking top destacado */
-.rank-item:first-child {
-    box-shadow: 0 0 25px rgba(255,215,0,0.5);
-    border: 1px solid rgba(255,215,0,0.5);
-}
-
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
