@@ -10,67 +10,153 @@
     <meta name="theme-color" content="#6B2D91">
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkxBIENVTFBBIiwKICAic2hvcnRfbmFtZSI6ICJMYSBDdWxwYSIsCiAgImRlc2NyaXB0aW9uIjogIlJhbmtpbmcgZGUgQXNpc3RlbmNpYXMiLAogICJzdGFydF91cmwiOiAiL2xhLWN1bHBhLWFwcC8iLAogICJzY29wZSI6ICIvbGEtY3VscGEtYXBwLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsCiAgInRoZW1lX2NvbG9yIjogIiM2QjJEOTEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaW1ndXIuY29tL2N6T2JYcFgucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
     <style>
-     <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #120D1F 0%, #1A1030 50%, #0F0A1A 100%);
+            min-height: 100vh; color: white;
+        }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 50%, #3A1555 100%);
+            padding: 40px 20px 30px; text-align: center; border-radius: 20px;
+            margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .logo {
+            width: min(280px, 70vw); height: min(280px, 70vw); margin: 0 auto 15px;
+            background: url('https://i.imgur.com/czObXpX.png') center/contain no-repeat; border-radius: 20px;
+        }
+        .title { color: #FFD700; font-size: 32px; font-weight: bold; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .subtitle { color: rgba(255,255,255,0.9); font-size: 14px; }
+        .tabs {
+            display: flex; gap: 10px; margin-bottom: 20px;
+            background: rgba(20,10,35,0.7); padding: 10px; border-radius: 15px; border: 1px solid rgba(107,45,145,0.3);
+        }
+        .tab {
+            flex: 1; padding: 10px 6px; text-align: center; background: transparent;
+            border: 2px solid rgba(139,77,143,0.3); border-radius: 10px; color: rgba(255,255,255,0.6);
+            cursor: pointer; transition: all 0.3s; font-size: 12px; min-width: 0;
+        }
+        @media (max-width: 500px) {
+            .tabs { gap: 5px !important; padding: 8px !important; }
+            .tab { padding: 8px 4px !important; font-size: 11px !important; }
+            .container { padding: 12px !important; }
+            .stats-grid { gap: 10px !important; }
+            .stat-number { font-size: 24px !important; }
+            .ranking-item { gap: 10px !important; padding: 12px !important; }
+            .rank-avatar { width: 38px !important; height: 38px !important; min-width: 38px; }
+            .rank-number { min-width: 22px !important; font-size: 16px !important; }
+            .rank-percentage { font-size: 15px !important; }
+            .badge { font-size: 10px !important; padding: 2px 6px !important; }
+            img { max-width: 100% !important; height: auto !important; }
+            .card { padding: 12px !important; }
+        }
+        .tab.active { background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 100%); color: #C8A830; border-color: #C8A830; }
+        .content { display: none; }
+        .content.active { display: block; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-card {
+            background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
+            padding: 20px; border-radius: 15px; text-align: center; border: 2px solid rgba(107,45,145,0.35);
+        }
+        .stat-number { font-size: 32px; font-weight: bold; color: #FFD700; margin-bottom: 5px; }
+        .stat-label { color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; }
+        .section-title {
+            color: #C8A830; font-size: 18px; font-weight: bold;
+            margin: 25px 0 15px; display: flex; align-items: center; gap: 10px;
+        }
+        .card {
+            background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
+            padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 4px solid #C8A830;
+        }
+        .card-date { color: #FFD700; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .card-title { color: white; font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        .card-details { color: rgba(255,255,255,0.6); font-size: 13px; display: flex; gap: 15px; }
+        .ranking-item {
+            background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
+            padding: 15px; border-radius: 12px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 15px; border: 2px solid rgba(107,45,145,0.35);
+        }
+        .ranking-item.top3 { border-color: #FFD700; }
+        .rank-number { font-size: 20px; font-weight: bold; color: #FFD700; min-width: 30px; }
+        .rank-avatar {
+            width: 45px; height: 45px; border-radius: 50%;
+            background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .rank-info { flex: 1; }
+        .rank-name { color: white; font-weight: bold; font-size: 14px; margin-bottom: 3px; display:flex; flex-wrap:wrap; align-items:center; gap:4px; justify-content:flex-start; }
+        .rank-stats { color: rgba(255,255,255,0.6); font-size: 12px; display:block; text-align:left; width:100%; }
+        .rank-percentage { font-size: 18px; font-weight: bold; color: #FFD700; }
+        .badge { display: inline-block; background: #FFD700; color: #1a1a2e; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; margin-left: 5px; }
+        .loading { text-align: center; padding: 40px; color: rgba(255,255,255,0.6); }
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #C8A830;
+            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes slideDown { from { opacity:0; transform:translateX(-50%) translateY(-20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+        .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; text-align: center; }
+        .login-card {
+            background: linear-gradient(135deg, #160D2E 0%, #1E1040 100%);
+            padding: 40px; border-radius: 20px; border: 2px solid rgba(139,77,143,0.3); max-width: 400px; width: 100%;
+        }
+        .login-input {
+            width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px;
+            border: 2px solid rgba(139,77,143,0.3); background: rgba(30,30,63,0.5); color: white; font-size: 16px;
+        }
+        .login-button {
+            width: 100%; padding: 15px; margin-top: 20px; border-radius: 10px; border: none;
+            background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 100%); color: #C8A830; font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+        .login-button:hover { opacity: 0.9; }
+        .error-message { color: #ff4444; margin-top: 10px; font-size: 14px; }
+        .form-select {
+            width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(139,77,143,0.3);
+            background: rgba(30,30,63,0.5); color: white; font-size: 14px;
+        }
+        .form-select option { background: #1e1e3f; color: white; }
+        /* Selector de meses — ocultar scrollbar */
+        .mes-selector::-webkit-scrollbar { display: none; }
+        .mes-selector { -ms-overflow-style: none; scrollbar-width: none; }
+        /* ===== TRANSICIONES GLOBALES SUAVES ===== */
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(135deg, #120D1F 0%, #1A1030 50%, #0F0A1A 100%);
-    min-height: 100vh;
-    color: white;
+* {
+    transition: background 0.25s ease,
+                color 0.25s ease,
+                border-color 0.25s ease;
 }
 
-.container { max-width: 500px; margin: 0 auto; padding: 20px; }
-
-.header {
-    background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 50%, #3A1555 100%);
-    padding: 40px 20px 30px;
-    text-align: center;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-.logo {
-    width: min(280px, 70vw);
-    height: min(280px, 70vw);
-    margin: 0 auto 15px;
-    background: url('https://i.imgur.com/czObXpX.png') center/contain no-repeat;
-    border-radius: 20px;
-}
-
-.title {
-    color: #FFD700;
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.subtitle { color: rgba(255,255,255,0.9); font-size: 14px; }
-
-.tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    background: rgba(20,10,35,0.7);
-    padding: 10px;
-    border-radius: 15px;
-    border: 1px solid rgba(107,45,145,0.3);
-}
-
+.card,
+.stat-card,
+.ranking-item,
 .tab {
-    flex: 1;
-    padding: 10px 6px;
-    text-align: center;
-    background: transparent;
-    border: 2px solid rgba(139,77,143,0.3);
-    border-radius: 10px;
-    color: rgba(255,255,255,0.6);
-    cursor: pointer;
-    font-size: 12px;
-    min-width: 0;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    transition: transform 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+}
+
+.content {
+    transition: opacity 0.2s ease;
+}
+
+.stat-card:hover,
+.card:hover,
+.ranking-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(200,168,48,0.25);
+}
+
+/* Top 3 más épico */
+.ranking-item.top3 {
+    background: linear-gradient(135deg, #1E1040 0%, #2A1455 100%);
+    box-shadow: 0 0 15px rgba(255,215,0,0.3);
+}
+
+/* Número ranking más grande */
+.rank-number {
+    font-size: 22px;
+    letter-spacing: 1px;
 }
 
 .tab:hover {
@@ -78,118 +164,6 @@ body {
     color: #FFD700;
     border-color: #FFD700;
 }
-
-.tab.active {
-    background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 100%);
-    color: #C8A830;
-    border-color: #C8A830;
-}
-
-.content { display: none; transition: opacity 0.2s ease; }
-.content.active { display: block; }
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 25px;
-}
-
-.stat-card,
-.card,
-.ranking-item {
-    background: linear-gradient(145deg, #1b1038, #140c2c);
-    border-radius: 15px;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.stat-card {
-    padding: 20px;
-    text-align: center;
-    border: 2px solid rgba(107,45,145,0.35);
-}
-
-.card {
-    padding: 15px;
-    margin-bottom: 15px;
-    border-left: 4px solid #C8A830;
-}
-
-.ranking-item {
-    padding: 15px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    border: 2px solid rgba(107,45,145,0.35);
-    box-shadow:
-        0 4px 10px rgba(0,0,0,0.5),
-        inset 0 1px 0 rgba(255,255,255,0.05);
-}
-
-.stat-card:hover,
-.card:hover,
-.ranking-item:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow:
-        0 10px 25px rgba(0,0,0,0.6),
-        0 0 15px rgba(200,168,48,0.35);
-}
-
-.ranking-item.top3 {
-    border-color: #FFD700;
-    box-shadow:
-        0 8px 20px rgba(0,0,0,0.6),
-        0 0 25px rgba(255,215,0,0.4);
-}
-
-.rank-number {
-    font-size: 22px;
-    font-weight: bold;
-    color: #FFD700;
-    min-width: 30px;
-    letter-spacing: 1px;
-}
-
-.rank-avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #8B4D8F 0%, #6B3870 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-}
-
-.rank-info { flex: 1; }
-
-.badge {
-    background: #FFD700;
-    color: #1a1a2e;
-    padding: 3px 8px;
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: bold;
-}
-
-.login-card {
-    padding: 40px;
-    border-radius: 20px;
-    border: 2px solid rgba(139,77,143,0.3);
-    max-width: 400px;
-    width: 100%;
-}
-
-.mes-selector::-webkit-scrollbar { display: none; }
-.mes-selector { -ms-overflow-style: none; scrollbar-width: none; }
-
-@media (max-width: 500px) {
-    .container { padding: 12px !important; }
-    .ranking-item { padding: 12px !important; }
-}
-</style>
-
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
