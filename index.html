@@ -612,129 +612,135 @@
         document.getElementById('rankingList').innerHTML = html;
     }
 
- function renderJuntadas() {
-    const usuario = getUsuarioActual();
-    const nombreUsuario = usuario ? usuario.Nombre : '';
-    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    function renderJuntadas() {
+        const usuario = getUsuarioActual();
+        const nombreUsuario = usuario ? usuario.Nombre : '';
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
 
-    const pasadas = juntadasData.filter(j => {
-        if (!j.Fecha) return false;
-        const f = parseFecha(j.Fecha);
-        return f && f < hoy && tieneQuorum(j);
-    }).slice().reverse();
+        const pasadas = juntadasData.filter(j => {
+            if (!j.Fecha) return false;
+            const f = parseFecha(j.Fecha);
+            return f && f < hoy && tieneQuorum(j);
+        }).slice().reverse();
 
-    let totalBannerHTML = '';
-    if (nombreUsuario && pasadas.length > 0) {
-        const asistTot = pasadas.filter(j => esConfirmadoPositivo(j[nombreUsuario])).length;
-        const pctTot   = Math.round((asistTot / pasadas.length) * 100);
-        let msg, emoji, col;
-        if (pctTot < 40)      { msg=`Te venís absteniendo mucho. Saludos.`;       emoji='😴'; col='#f44336'; }
-        else if (pctTot < 66) { msg=`Venís bien, pero cuidado con abstenerse.`;   emoji='💪'; col='#FF9800'; }
-        else if (pctTot < 91) { msg=`Sos un culposo comprometido. Seguí así.`;    emoji='🔥'; col='#4CAF50'; }
-        else                  { msg=`CULPOSO NIVEL LEGENDARIO.`;                  emoji='👑'; col='#FFD700'; }
-        totalBannerHTML = `
-            <div style="background:linear-gradient(135deg,rgba(107,45,145,0.25),rgba(74,29,107,0.15));border:2px solid ${col};border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:14px;">
-                <div style="font-size:34px;flex-shrink:0;">${emoji}</div>
-                <div style="text-align:center;">
-                    <div style="color:${col};font-size:20px;font-weight:bold;line-height:1;">${asistTot}<span style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:normal;"> / ${pasadas.length} juntadas</span></div>
-                    <div style="color:${col};font-size:13px;font-weight:bold;">${pctTot}% de asistencia total</div>
-                    <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:2px;">${msg}</div>
+        let totalBannerHTML = '';
+        if (nombreUsuario && pasadas.length > 0) {
+            const asistTot = pasadas.filter(j => esConfirmadoPositivo(j[nombreUsuario])).length;
+            const pctTot   = Math.round((asistTot / pasadas.length) * 100);
+            let msg, emoji, col;
+            if (pctTot < 40)      { msg=`Te venís absteniendo mucho. Saludos.`;       emoji='😴'; col='#f44336'; }
+            else if (pctTot < 66) { msg=`Venís bien, pero cuidado con abstenerse.`;   emoji='💪'; col='#FF9800'; }
+            else if (pctTot < 91) { msg=`Sos un culposo comprometido. Seguí así.`;    emoji='🔥'; col='#4CAF50'; }
+            else                  { msg=`CULPOSO NIVEL LEGENDARIO.`;                  emoji='👑'; col='#FFD700'; }
+     totalBannerHTML = `
+    <div style="background:linear-gradient(135deg,rgba(107,45,145,0.25),rgba(74,29,107,0.15));border:2px solid ${col};border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:14px;">
+        <div style="font-size:34px;flex-shrink:0;">${emoji}</div>
+        <div style="text-align:center;">
+            <div style="color:${col};font-size:20px;font-weight:bold;line-height:1;">${asistTot}<span style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:normal;"> / ${pasadas.length} juntadas</span></div>
+            <div style="color:${col};font-size:13px;font-weight:bold;">${pctTot}% de asistencia total</div>
+            <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:2px;">${msg}</div>
+        </div>
+    </div>`;
+        }
+
+        const mesesDisponibles = [];
+        const mesesVistos = new Set();
+        pasadas.forEach(j => {
+            const f = parseFecha(j.Fecha);
+            if (!f) return;
+            const key = `${f.getFullYear()}-${f.getMonth()}`;
+            if (!mesesVistos.has(key)) {
+                mesesVistos.add(key);
+                mesesDisponibles.push({ year: f.getFullYear(), month: f.getMonth(), key });
+            }
+        });
+
+        if (!window.juntadasMesActivo && mesesDisponibles.length)
+            window.juntadasMesActivo = mesesDisponibles[0].key;
+
+        const activo = mesesDisponibles.find(m => m.key === window.juntadasMesActivo) || mesesDisponibles[0];
+
+        const filtradas = activo
+            ? pasadas.filter(j => {
+                const f = parseFecha(j.Fecha);
+                return f && f.getFullYear() === activo.year && f.getMonth() === activo.month;
+              })
+            : pasadas;
+
+        const limite   = window.juntadasVerMas ? filtradas.length : 10;
+        const mostradas = filtradas.slice(0, limite);
+
+        const selectorHTML = mesesDisponibles.length > 1 ? `
+            <div class="mes-selector" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:18px;">
+                ${mesesDisponibles.map(m => `
+                    <button onclick="cambiarMesJuntadas('${m.key}')"
+                        style="flex-shrink:0;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:2px solid ${m.key===activo?.key?'#FFD700':'rgba(139,77,143,0.4)'};background:${m.key===activo?.key?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)'};color:${m.key===activo?.key?'#FFD700':'rgba(255,255,255,0.6)'};">
+                        ${NOMBRES_MESES[m.month]} ${m.year}
+                    </button>`).join('')}
+            </div>` : '';
+
+        const cardsHTML = mostradas.map(j => {
+            const ri = juntadasData.indexOf(j);
+            const asistio   = esConfirmadoPositivo(j[nombreUsuario]);
+            const foto      = j['Foto Juntada'] || j['Foto juntada'] || '';
+            const driveLink = getDriveLink(j);
+            // Solo mostrar Fotos si hay carpeta específica (no fallback de mes)
+            const tieneDrive = !!(j['Drive ID'] || j['Drive Id'] || j['drive_id'] || (() => {
+                if (!j.Fecha) return false;
+                const partes = String(j.Fecha).split('/');
+                if (partes.length !== 3) return false;
+                const d = parseInt(partes[0]), m = parseInt(partes[1]), y = partes[2];
+                const fechaKey = `${d}-${m}-${y}`;
+                if (DRIVE_FECHAS[fechaKey]) return true;
+                const desc = (j.Descripción || j.Descripcion || '').toUpperCase();
+                const host = (j.Host || '').toUpperCase();
+                return Object.keys(DRIVE_FECHAS).some(key => {
+                    if (!key.startsWith(fechaKey + ' ')) return false;
+                    const sufijo = key.replace(fechaKey + ' ', '');
+                    return desc.includes(sufijo) || host.includes(sufijo);
+                });
+            })());
+            return `<div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                ${foto ? `<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>` : ''}
+                <div class="card-date">${j.Fecha||'Fecha'}</div>
+                <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                <div class="card-details">
+                    <span>🏠 ${j.Host||'Sin host'}</span><span style="margin-left:10px;">👥 ${j['N° Asist']||'0'}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                    ${tieneDrive && driveLink ? `<a href="${driveLink}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>` : ''}
+                    ${nombreUsuario ? `<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
                 </div>
             </div>`;
+        }).join('');
+
+        const verMasHTML = filtradas.length > 10 && !window.juntadasVerMas
+            ? `<button onclick="verMasJuntadas()" style="width:100%;margin:5px 0 20px;background:rgba(139,77,143,0.2);border:2px solid rgba(139,77,143,0.5);color:#C8A830;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
+                Ver ${filtradas.length - 10} juntadas más de ${NOMBRES_MESES[activo?.month]} ↓
+               </button>` : '';
+
+        let motivacional = '';
+        if (nombreUsuario && filtradas.length > 0) {
+            const asistMes = filtradas.filter(j => esConfirmadoPositivo(j[nombreUsuario])).length;
+            const pctMes   = Math.round((asistMes / filtradas.length) * 100);
+            const mes      = NOMBRES_MESES[activo?.month] || '';
+            let msg, emoji, col;
+            if (pctMes < 40)      { msg=`Fuiste al ${pctMes}% en ${mes}. Muy ausente loco.`;     emoji='😴'; col='#f44336'; }
+            else if (pctMes < 70) { msg=`Fuiste al ${pctMes}% en ${mes}. Bien, no te relajes.`;  emoji='💪'; col='#FF9800'; }
+            else if (pctMes < 90) { msg=`Fuiste al ${pctMes}% en ${mes}. Culposo comprometido.`; emoji='🔥'; col='#4CAF50'; }
+            else                  { msg=`Fuiste al ${pctMes}% en ${mes}. CULPOSO DE LEY.`;       emoji='👑'; col='#FFD700'; }
+            motivacional = `<div class="card" style="background:rgba(139,77,143,0.2);border-left-color:${col};margin-top:10px;"><div style="text-align:center;"><div style="font-size:36px;margin-bottom:8px;">${emoji}</div><div style="color:${col};font-weight:bold;font-size:15px;">${msg}</div></div></div>`;
+        }
+
+        const totalMes = filtradas.length;
+        document.getElementById('juntadasList').innerHTML = `
+            ${totalBannerHTML}
+            <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-bottom:10px;">${totalMes} juntada${totalMes!==1?'s':''} en ${NOMBRES_MESES[activo?.month]||''} ${activo?.year||''}</div>
+            ${selectorHTML}
+            ${cardsHTML || `<p style="color:rgba(255,255,255,0.5);text-align:center;padding:30px;">Sin juntadas en este mes</p>`}
+            ${verMasHTML}
+            ${motivacional}`;
     }
-
-    // Filtros
-    if (window.juntadasDesde === undefined) window.juntadasDesde = '';
-    if (window.juntadasHasta === undefined) window.juntadasHasta = '';
-    if (window.juntadasCatActiva === undefined) window.juntadasCatActiva = '';
-
-    const filtradas = pasadas.filter(j => {
-        const f = parseFecha(j.Fecha);
-        if (!f) return false;
-        if (window.juntadasDesde) { const desde = new Date(window.juntadasDesde); if (f < desde) return false; }
-        if (window.juntadasHasta) { const hasta = new Date(window.juntadasHasta); hasta.setHours(23,59,59); if (f > hasta) return false; }
-        if (window.juntadasCatActiva) { const cat = j.Categoría||j.Categoria||''; if (cat !== window.juntadasCatActiva) return false; }
-        return true;
-    });
-
-    const categorias = [...new Set(pasadas.map(j=>j.Categoría||j.Categoria||'').filter(Boolean))];
-    const hayFiltros = window.juntadasDesde || window.juntadasHasta || window.juntadasCatActiva;
-
-    const selectorHTML = `
-        <div style="background:rgba(20,10,35,0.6);border:1px solid rgba(107,45,145,0.3);border-radius:12px;padding:14px;margin-bottom:16px;">
-            <div style="display:flex;gap:10px;margin-bottom:${categorias.length?'12px':'0'};">
-                <div style="flex:1;">
-                    <div style="color:rgba(255,255,255,0.5);font-size:10px;text-transform:uppercase;margin-bottom:5px;">Desde</div>
-                    <input type="date" value="${window.juntadasDesde}" onchange="window.juntadasDesde=this.value;window.juntadasVerMas=false;renderJuntadas()"
-                        style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(139,77,143,0.4);background:rgba(30,16,64,0.8);color:white;font-size:13px;">
-                </div>
-                <div style="flex:1;">
-                    <div style="color:rgba(255,255,255,0.5);font-size:10px;text-transform:uppercase;margin-bottom:5px;">Hasta</div>
-                    <input type="date" value="${window.juntadasHasta}" onchange="window.juntadasHasta=this.value;window.juntadasVerMas=false;renderJuntadas()"
-                        style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(139,77,143,0.4);background:rgba(30,16,64,0.8);color:white;font-size:13px;">
-                </div>
-                ${hayFiltros ? `<button onclick="window.juntadasDesde='';window.juntadasHasta='';window.juntadasCatActiva='';window.juntadasVerMas=false;renderJuntadas()"
-                    style="align-self:flex-end;padding:8px 12px;border-radius:8px;border:1px solid rgba(244,67,54,0.5);background:rgba(244,67,54,0.15);color:#f44336;font-size:12px;font-weight:bold;cursor:pointer;white-space:nowrap;">✕ Reset</button>` : ''}
-            </div>
-            ${categorias.length ? `
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                ${['', ...categorias].map(cat=>`
-                    <button onclick="window.juntadasCatActiva='${cat}';window.juntadasVerMas=false;renderJuntadas()"
-                        style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${window.juntadasCatActiva===cat?'#FFD700':'rgba(139,77,143,0.4)'};background:${window.juntadasCatActiva===cat?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)'};color:${window.juntadasCatActiva===cat?'#FFD700':'rgba(255,255,255,0.6)'};">
-                        ${cat||'Todas'}
-                    </button>`).join('')}
-            </div>` : ''}
-        </div>`;
-
-    const limite = window.juntadasVerMas ? filtradas.length : 10;
-    const mostradas = filtradas.slice(0, limite);
-
-    const cardsHTML = mostradas.map(j => {
-        const ri = juntadasData.indexOf(j);
-        const asistio   = esConfirmadoPositivo(j[nombreUsuario]);
-        const foto      = j['Foto Juntada'] || j['Foto juntada'] || '';
-        const driveLink = getDriveLink(j);
-        const tieneDrive = !!(j['Drive ID'] || j['Drive Id'] || j['drive_id'] || (() => {
-            if (!j.Fecha) return false;
-            const partes = String(j.Fecha).split('/');
-            if (partes.length !== 3) return false;
-            const d = parseInt(partes[0]), m = parseInt(partes[1]), y = partes[2];
-            const fechaKey = `${d}-${m}-${y}`;
-            if (DRIVE_FECHAS[fechaKey]) return true;
-            const desc = (j.Descripción || j.Descripcion || '').toUpperCase();
-            const host = (j.Host || '').toUpperCase();
-            return Object.keys(DRIVE_FECHAS).some(key => {
-                if (!key.startsWith(fechaKey + ' ')) return false;
-                const sufijo = key.replace(fechaKey + ' ', '');
-                return desc.includes(sufijo) || host.includes(sufijo);
-            });
-        })());
-        return `<div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-            ${foto ? `<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>` : ''}
-            <div class="card-date">${j.Fecha||'Fecha'}</div>
-            <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
-            <div class="card-details">
-                <span>🏠 ${j.Host||'Sin host'}</span><span style="margin-left:10px;">👥 ${j['N° Asist']||'0'}</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">
-                ${tieneDrive && driveLink ? `<a href="${driveLink}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>` : ''}
-                ${nombreUsuario ? `<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
-            </div>
-        </div>`;
-    }).join('');
-
-    const verMasHTML = filtradas.length > 10 && !window.juntadasVerMas
-        ? `<button onclick="window.juntadasVerMas=true;renderJuntadas()" style="width:100%;margin:5px 0 20px;background:rgba(139,77,143,0.2);border:2px solid rgba(139,77,143,0.5);color:#C8A830;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
-            Ver ${filtradas.length - 10} juntadas más ↓
-           </button>` : '';
-
-    document.getElementById('juntadasList').innerHTML = `
-        ${totalBannerHTML}
-        <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-bottom:10px;">${filtradas.length} juntada${filtradas.length!==1?'s':''} encontradas</div>
-        ${selectorHTML}
-        ${cardsHTML || `<p style="color:rgba(255,255,255,0.5);text-align:center;padding:30px;">Sin juntadas para este filtro</p>`}
-        ${verMasHTML}`;
-}}
 
     function cambiarMesJuntadas(key) {
         window.juntadasMesActivo = key;
