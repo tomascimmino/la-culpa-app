@@ -119,11 +119,25 @@
         /* Selector de meses — ocultar scrollbar */
         .mes-selector::-webkit-scrollbar { display: none; }
         .mes-selector { -ms-overflow-style: none; scrollbar-width: none; }
-        /* Glow dorado suave general */
-.stat-card,
+        /* ===== TRANSICIONES GLOBALES SUAVES ===== */
+
+* {
+    transition: background 0.25s ease,
+                color 0.25s ease,
+                border-color 0.25s ease;
+}
+
 .card,
-.ranking-item {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+.stat-card,
+.ranking-item,
+.tab {
+    transition: transform 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+}
+
+.content {
+    transition: opacity 0.2s ease;
 }
 
 .stat-card:hover,
@@ -143,11 +157,6 @@
 .rank-number {
     font-size: 22px;
     letter-spacing: 1px;
-}
-
-/* Botones con efecto más fino */
-.tab {
-    transition: all 0.3s ease;
 }
 
 .tab:hover {
