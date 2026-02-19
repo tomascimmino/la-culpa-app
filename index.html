@@ -384,9 +384,7 @@
         document.getElementById('mainApp').style.display = 'block';
         loadData();
         setTimeout(pedirPermisoNotificaciones, 3000);
-    }
-
-    function logout() {
+           
         localStorage.removeItem('culpaUserEmail');
         currentUser = null;
         document.getElementById('loginScreen').style.display = 'flex';
