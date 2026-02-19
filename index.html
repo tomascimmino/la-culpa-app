@@ -164,9 +164,9 @@
     color: #FFD700;
     border-color: #FFD700;
 }
-        @keyframes splaShPulse {
-    0%,100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(107,45,145,0.5)); }
-    50%      { transform: scale(1.08); filter: drop-shadow(0 0 25px rgba(200,168,48,0.8)); }
+       @keyframes splaShPulse {
+    0%   { transform: scale(0.7); filter: drop-shadow(0 0 5px rgba(107,45,145,0.3)); opacity: 0.6; }
+    100% { transform: scale(1.15); filter: drop-shadow(0 0 30px rgba(200,168,48,0.9)); opacity: 1; }
 }
 @keyframes splashFade {
     0%,100% { opacity: 1; }
@@ -181,7 +181,7 @@
     
     <!-- PANTALLA DE CARGA -->
 <div id="splashScreen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#080510;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.6s ease;">
-    <div style="width:140px;height:140px;background:url('https://i.imgur.com/czObXpX.png') center/contain no-repeat;animation:splaShPulse 1.2s ease-in-out infinite;"></div>
+    <div style="width:140px;height:140px;background:url('https://i.imgur.com/czObXpX.png') center/contain no-repeat;animation:splaShPulse 1.8s ease-out forwards;"></div>
     <div style="color:#FFD700;font-size:28px;font-weight:bold;letter-spacing:3px;margin-top:25px;animation:splashFade 1.2s ease-in-out infinite;">LA CULPA</div>
     <div style="color:rgba(255,255,255,0.4);font-size:13px;margin-top:8px;letter-spacing:1px;">👑 8 reyes 👑</div>
 </div>
