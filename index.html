@@ -656,21 +656,37 @@
     const hayFiltros = window.juntadasDesde || window.juntadasHasta || window.juntadasCatActiva;
 
     const selectorHTML = `
-        <div style="background:rgba(20,10,35,0.6);border:1px solid rgba(107,45,145,0.3);border-radius:12px;padding:14px;margin-bottom:16px;">
-            <div style="display:flex;gap:8px;margin-bottom:${categorias.length?'12px':'0'};">
-                <div style="flex:1;">
-                    <div style="color:rgba(255,255,255,0.5);font-size:10px;text-transform:uppercase;margin-bottom:5px;letter-spacing:1px;">Desde</div>
-                    <input type="date" value="${window.juntadasDesde}" onchange="window.juntadasDesde=this.value;window.juntadasVerMas=false;renderJuntadas()"
-                        style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(139,77,143,0.4);background:rgba(30,16,64,0.8);color:white;font-size:13px;">
-                </div>
-                <div style="flex:1;">
-                    <div style="color:rgba(255,255,255,0.5);font-size:10px;text-transform:uppercase;margin-bottom:5px;letter-spacing:1px;">Hasta</div>
-                    <input type="date" value="${window.juntadasHasta}" onchange="window.juntadasHasta=this.value;window.juntadasVerMas=false;renderJuntadas()"
-                        style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(139,77,143,0.4);background:rgba(30,16,64,0.8);color:white;font-size:13px;">
-                </div>
-                ${hayFiltros ? `<button onclick="window.juntadasDesde='';window.juntadasHasta='';window.juntadasCatActiva='';window.juntadasVerMas=false;renderJuntadas()"
-                    style="align-self:flex-end;padding:8px 12px;border-radius:8px;border:1px solid rgba(244,67,54,0.5);background:rgba(244,67,54,0.15);color:#f44336;font-size:12px;font-weight:bold;cursor:pointer;white-space:nowrap;">✕ Reset</button>` : ''}
-            </div>
+        const selectorHTML = `
+    <div style="background:rgba(20,10,35,0.6);border:1px solid rgba(107,45,145,0.3);border-radius:12px;padding:14px;margin-bottom:16px;">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:${categorias.length?'12px':'0'};">
+            ${[
+                {label:'Todo', desde:'', hasta:''},
+                {label:'Enero', desde:'2026-01-01', hasta:'2026-01-31'},
+                {label:'Febrero', desde:'2026-02-01', hasta:'2026-02-28'},
+                {label:'Marzo', desde:'2026-03-01', hasta:'2026-03-31'},
+            ].map(op => {
+                const activo = window.juntadasDesde===op.desde && window.juntadasHasta===op.hasta;
+                return `<button onclick="window.juntadasDesde='${op.desde}';window.juntadasHasta='${op.hasta}';window.juntadasVerMas=false;renderJuntadas()"
+                    style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;
+                           border:1.5px solid ${activo?'#FFD700':'rgba(139,77,143,0.4)'};
+                           background:${activo?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)'};
+                           color:${activo?'#FFD700':'rgba(255,255,255,0.6)'};">
+                    ${op.label}
+                </button>`;
+            }).join('')}
+        </div>
+        ${categorias.length ? `
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            ${['', ...categorias].map(cat=>`
+                <button onclick="window.juntadasCatActiva='${cat}';window.juntadasVerMas=false;renderJuntadas()"
+                    style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;
+                           border:1.5px solid ${window.juntadasCatActiva===cat?'#FFD700':'rgba(139,77,143,0.4)'};
+                           background:${window.juntadasCatActiva===cat?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)'};
+                           color:${window.juntadasCatActiva===cat?'#FFD700':'rgba(255,255,255,0.6)'};">
+                    ${cat||'Todas'}
+                </button>`).join('')}
+        </div>` : ''}
+    </div>`;
             ${categorias.length ? `
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
                 ${['', ...categorias].map(cat=>`
@@ -731,8 +747,11 @@
         <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-bottom:10px;">${filtradas.length} juntada${filtradas.length!==1?'s':''} encontradas</div>
         ${selectorHTML}
         ${cardsHTML || `<p style="color:rgba(255,255,255,0.5);text-align:center;padding:30px;">Sin juntadas para este filtro</p>`}
-        ${verMasHTML}`;
-}
+        ${verMasHTML}
+        ${(() => {
+            if (!nombreUsuario || filtradas.length === 0) return '';
+            const asistFilt = filtradas.filter(j => esConfirmadoPositivo(j[nombreUsuario])).length;
+            const pctFilt = Math.round((asistFilt / filtradas.
 
     function cambiarMesJuntadas(key) {
         window.juntadasMesActivo = key;
