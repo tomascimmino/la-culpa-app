@@ -909,7 +909,7 @@
             const foto  = FOTOS[c.Nombre] || '';
             const borderColor = conf ? '#4CAF50' : noConf ? '#f44336' : 'rgba(255,255,255,0.15)';
             const opacity = conf ? '1' : noConf ? '0.35' : '0.5';
-            const ringExtra = esRey ? `box-shadow:0 0 0 2px #FFD700;` : '';
+            const ringExtra = '';
             return `<div style="position:relative;text-align:center;">
                 ${esRey ? `<div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:9px;line-height:1;z-index:1;">👑</div>` : ''}
                 <div style="width:36px;height:36px;border-radius:50%;border:2px solid ${borderColor};${ringExtra}opacity:${opacity};
@@ -923,11 +923,6 @@
     </div>
 </div>
                 <div style="margin:25px 0;">${botonesHTML}</div>
-                ${confirmados.length>0||noConfirmados.length>0?`
-                    <div style="margin-top:25px;padding-top:25px;border-top:1px solid rgba(255,255,255,0.2);">
-                        ${confirmados.length>0?`<div style="margin-bottom:15px;"><div style="color:#4CAF50;font-size:14px;font-weight:bold;margin-bottom:8px;">✅ Confirmaron (${confirmados.length}):</div><div style="color:rgba(255,255,255,0.8);font-size:13px;">${confirmados.join(', ')}</div></div>`:''}
-                        ${noConfirmados.length>0?`<div><div style="color:#f44336;font-size:14px;font-weight:bold;margin-bottom:8px;">❌ No asisten (${noConfirmados.length}):</div><div style="color:rgba(255,255,255,0.8);font-size:13px;">${noConfirmados.join(', ')}</div></div>`:''}
-                    </div>`:''}
                 <div id="mensajeConfirmacion" style="margin-top:15px;text-align:center;display:none;"></div>
             </div>`;
         document.getElementById('modalConfirmar').style.display = 'block';
