@@ -119,6 +119,42 @@
         /* Selector de meses — ocultar scrollbar */
         .mes-selector::-webkit-scrollbar { display: none; }
         .mes-selector { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Glow dorado suave general */
+.stat-card,
+.card,
+.ranking-item {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.stat-card:hover,
+.card:hover,
+.ranking-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(200,168,48,0.25);
+}
+
+/* Top 3 más épico */
+.ranking-item.top3 {
+    background: linear-gradient(135deg, #1E1040 0%, #2A1455 100%);
+    box-shadow: 0 0 15px rgba(255,215,0,0.3);
+}
+
+/* Número ranking más grande */
+.rank-number {
+    font-size: 22px;
+    letter-spacing: 1px;
+}
+
+/* Botones con efecto más fino */
+.tab {
+    transition: all 0.3s ease;
+}
+
+.tab:hover {
+    background: rgba(200,168,48,0.15);
+    color: #FFD700;
+    border-color: #FFD700;
+}
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
