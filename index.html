@@ -616,15 +616,15 @@
             else if (pctTot < 66) { msg=`Venís bien, pero cuidado con abstenerse.`;   emoji='💪'; col='#FF9800'; }
             else if (pctTot < 91) { msg=`Sos un culposo comprometido. Seguí así.`;    emoji='🔥'; col='#4CAF50'; }
             else                  { msg=`CULPOSO NIVEL LEGENDARIO.`;                  emoji='👑'; col='#FFD700'; }
-            totalBannerHTML = `
-                <div style="background:linear-gradient(135deg,rgba(107,45,145,0.25),rgba(74,29,107,0.15));border:2px solid ${col};border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;gap:14px;">
-                    <div style="font-size:34px;flex-shrink:0;">${emoji}</div>
-                    <div>
-                        <div style="color:${col};font-size:20px;font-weight:bold;line-height:1;">${asistTot}<span style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:normal;"> / ${pasadas.length} juntadas</span></div>
-                        <div style="color:${col};font-size:13px;font-weight:bold;">${pctTot}% de asistencia total</div>
-                        <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:2px;">${msg}</div>
-                    </div>
-                </div>`;
+     totalBannerHTML = `
+    <div style="background:linear-gradient(135deg,rgba(107,45,145,0.25),rgba(74,29,107,0.15));border:2px solid ${col};border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:14px;">
+        <div style="font-size:34px;flex-shrink:0;">${emoji}</div>
+        <div style="text-align:center;">
+            <div style="color:${col};font-size:20px;font-weight:bold;line-height:1;">${asistTot}<span style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:normal;"> / ${pasadas.length} juntadas</span></div>
+            <div style="color:${col};font-size:13px;font-weight:bold;">${pctTot}% de asistencia total</div>
+            <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:2px;">${msg}</div>
+        </div>
+    </div>`;
         }
 
         const mesesDisponibles = [];
@@ -1000,7 +1000,7 @@
     </div>` : '';
 })()}
 ${rachaCard}
-            ${rachaCard}
+           
             ${renderHostPanel(usuario.Nombre)}
             ${premiosHTML}
             ${esMiPerfil?`
