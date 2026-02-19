@@ -7,8 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LA CULPA - App</title>
-    <link rel="icon" type="image/png" href="https://i.imgur.com/czObXpX.png">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/czObXpX.png">
+    <link rel="icon" type="image/png" href="https://i.imgur.com/MGNvtJV.png">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/MGNvtJV.png">
     <meta name="theme-color" content="#6B2D91">
     <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkxBIENVTFBBIiwKICAic2hvcnRfbmFtZSI6ICJMYSBDdWxwYSIsCiAgImRlc2NyaXB0aW9uIjogIlJhbmtpbmcgZGUgQXNpc3RlbmNpYXMiLAogICJzdGFydF91cmwiOiAiL2xhLWN1bHBhLWFwcC8iLAogICJzY29wZSI6ICIvbGEtY3VscGEtYXBwLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsCiAgInRoZW1lX2NvbG9yIjogIiM2QjJEOTEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaW1ndXIuY29tL2N6T2JYcFgucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
     <style>
@@ -26,7 +26,7 @@
         }
         .logo {
             width: min(280px, 70vw); height: min(280px, 70vw); margin: 0 auto 15px;
-            background: url('https://i.imgur.com/czObXpX.png') center/contain no-repeat; border-radius: 20px;
+            background: url('https://i.imgur.com/MGNvtJV.png') center/contain no-repeat; border-radius: 20px;
         }
         .title { color: #FFD700; font-size: 32px; font-weight: bold; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .subtitle { color: rgba(255,255,255,0.9); font-size: 14px; }
@@ -183,7 +183,7 @@
     
     <!-- PANTALLA DE CARGA -->
 <div id="splashScreen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#080510;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.6s ease;">
-    <div style="width:140px;height:140px;background:url('https://i.imgur.com/czObXpX.png') center/contain no-repeat;animation:splaShPulse 1.8s ease-out forwards;"></div>
+    <div style="width:140px;height:140px;background:url('https://i.imgur.com/MGNvtJV.png') center/contain no-repeat;animation:splaShPulse 1.8s ease-out forwards;"></div>
     <div style="color:#FFD700;font-size:28px;font-weight:bold;letter-spacing:3px;margin-top:25px;animation:splashFade 1.2s ease-in-out infinite;">LA CULPA</div>
     <div style="color:rgba(255,255,255,0.4);font-size:13px;margin-top:8px;letter-spacing:1px;">👑 8 reyes 👑</div>
 </div>
@@ -1083,7 +1083,7 @@ ${rachaCard}
         let html='';
         oro.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`<div style="background:linear-gradient(135deg,rgba(255,215,0,0.2) 0%,rgba(255,215,0,0.05) 100%);padding:30px;border-radius:20px;margin-bottom:30px;border:3px solid #FFD700;text-align:center;">${f?`<img src="${f}" onclick="verPerfilCulposo('${p.Ganador}')" style="width:100px;height:100px;border-radius:50%;border:4px solid #FFD700;object-fit:cover;object-position:center top;margin-bottom:15px;cursor:pointer;">`:''}<div style="font-size:40px;margin-bottom:10px;">🏆</div><div style="color:#FFD700;font-size:24px;font-weight:bold;margin-bottom:10px;">CULPOSO DE ORO ${year}</div><div onclick="verPerfilCulposo('${p.Ganador}')" style="color:white;font-size:28px;font-weight:bold;cursor:pointer;">${p.Ganador||'Sin ganador'}</div></div>`; });
         if(individuales.length>0){ html+='<div class="section-title" style="margin-top:25px;">🥇 Premios Individuales</div>';
-            individuales.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`<div onclick="verPerfilCulposo('${p.Ganador}')" style="background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border-radius:12px;border:2px solid rgba(107,45,145,0.4);padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform 0.2s;margin-bottom:10px;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"><div style="width:52px;height:52px;min-width:52px;border-radius:50%;border:2px solid #C8A830;overflow:hidden;flex-shrink:0;"><img src="${f||'https://i.imgur.com/czObXpX.png'}" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;"></div><div style="flex:1;min-width:0;"><div style="color:#C8A830;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;">${p.Terna||'Premio'}</div><div style="color:white;font-size:15px;font-weight:bold;margin-top:3px;">${p.Ganador||'Sin ganador'}</div></div></div>`; }); }
+            individuales.forEach(p=>{ const f=FOTOS[p.Ganador]||''; html+=`<div onclick="verPerfilCulposo('${p.Ganador}')" style="background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border-radius:12px;border:2px solid rgba(107,45,145,0.4);padding:14px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform 0.2s;margin-bottom:10px;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"><div style="width:52px;height:52px;min-width:52px;border-radius:50%;border:2px solid #C8A830;overflow:hidden;flex-shrink:0;"><img src="${f||'https://i.imgur.com/MGNvtJV.png'}" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;"></div><div style="flex:1;min-width:0;"><div style="color:#C8A830;font-size:11px;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;">${p.Terna||'Premio'}</div><div style="color:white;font-size:15px;font-weight:bold;margin-top:3px;">${p.Ganador||'Sin ganador'}</div></div></div>`; }); }
         if(juntadas.length>0){ html+='<div class="section-title" style="margin-top:25px;">🎉 Mejores Juntadas</div>'; juntadas.forEach(p=>{ html+=`<div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><div style="font-size:24px;">🏆</div><div style="color:#FFD700;font-size:14px;font-weight:bold;text-transform:uppercase;flex:1;">${p.Terna||'Premio'}</div></div><div style="color:white;font-size:16px;font-weight:bold;">${p.Ganador||'Sin ganador'}</div></div>`; }); }
         if(!html) html=`<p style="color:rgba(255,255,255,0.6);text-align:center;padding:40px;">No hay premios registrados para ${year}</p>`;
         document.getElementById('awardsList').innerHTML=html;
