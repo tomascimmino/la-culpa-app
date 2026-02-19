@@ -12,8 +12,8 @@
     <link rel="icon" type="image/png" href="https://i.imgur.com/czObXpX.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/vMUWFvp.jpeg">
     <meta name="theme-color" content="#120D1F">
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkxBIENVTFBBIiwgInNob3J0X25hbWUiOiAiTGEgQ3VscGEiLCAiZGVzY3JpcHRpb24iOiAiUmFua2luZyBkZSBBc2lzdGVuY2lhcyIsICJzdGFydF91cmwiOiAiL2xhLWN1bHBhLWFwcC8iLCAic2NvcGUiOiAiL2xhLWN1bHBhLWFwcC8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsICJ0aGVtZV9jb2xvciI6ICIjMTIwRDFGIiwgImljb25zIjogW3sic3JjIjogImh0dHBzOi8vaS5pbWd1ci5jb20vMFQ2dUVUaS5wbmciLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9XX0=">
-       <style> 
+ <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkxBIENVTFBBIiwgInNob3J0X25hbWUiOiAiTGEgQ3VscGEiLCAiZGVzY3JpcHRpb24iOiAiUmFua2luZyBkZSBBc2lzdGVuY2lhcyIsICJzdGFydF91cmwiOiAiL2xhLWN1bHBhLWFwcC8iLCAic2NvcGUiOiAiL2xhLWN1bHBhLWFwcC8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsICJ0aGVtZV9jb2xvciI6ICIjMTIwRDFGIiwgImljb25zIjogW3sic3JjIjogImh0dHBzOi8vaS5pbWd1ci5jb20vdk1VV0Z2cC5qcGVnIiwgInNpemVzIjogIjUxMng1MTIiLCAidHlwZSI6ICJpbWFnZS9qcGVnIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn1dfQ==">     
+    <style> 
            * { margin: 0; padding: 0; box-sizing: border-box; }
            body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
@@ -390,6 +390,8 @@
     let premiosData  = [];
     window.juntadasMesActivo = null;
     window.juntadasVerMas    = false;
+    window.juntadasHostActivo = null;
+window.juntadasAsistenteActivo = null;
 
     function esHostDe(hostStr, nombre) {
         if (!hostStr || !nombre) return false;
@@ -472,6 +474,8 @@
             premiosData  = parseCSV(await pR.text());
             window.juntadasMesActivo = null;
             window.juntadasVerMas = false;
+            window.juntadasHostActivo = null;
+window.juntadasAsistenteActivo = null;
             renderHome(); renderRanking(); renderJuntadas(); renderAwards(); renderPerfil();
         } catch(e) { console.error(e); alert('Error conectando con Google Sheets.'); }
     }
@@ -645,12 +649,20 @@
         if (window.juntadasDesde) { const desde = new Date(window.juntadasDesde); if (f < desde) return false; }
         if (window.juntadasHasta) { const hasta = new Date(window.juntadasHasta); hasta.setHours(23,59,59); if (f > hasta) return false; }
         if (window.juntadasCatActiva) { const cat = j.Categoría||j.Categoria||''; if (cat !== window.juntadasCatActiva) return false; }
+        if (window.juntadasHostActivo) { if (!(j.Host||'').toLowerCase().includes(window.juntadasHostActivo.toLowerCase())) return false; }
+        if (window.juntadasAsistenteActivo) { if (!esConfirmadoPositivo(j[window.juntadasAsistenteActivo])) return false; }
         return true;
     });
+  const categorias = [...new Set(pasadas.map(j => j.Categoría||j.Categoria||'').filter(Boolean))];
+    const hostsDisponibles = [...new Set(pasadas.map(j => j.Host||'').filter(Boolean))];
+    const asistentesDisponibles = Object.keys(FOTOS).filter(n => pasadas.some(j => esConfirmadoPositivo(j[n])));
 
-    const categorias = [...new Set(pasadas.map(j => j.Categoría||j.Categoria||'').filter(Boolean))];
+    function btnFiltro(label, activo, onclick) {
+        return '<button onclick="' + onclick + '" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ' + (activo?'#FFD700':'rgba(139,77,143,0.4)') + ';background:' + (activo?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)') + ';color:' + (activo?'#FFD700':'rgba(255,255,255,0.6)') + ';">' + label + '</button>';
+    }
 
-    // Botones de mes dinámicos
+    // Panel meses
+    let botonesmes = btnFiltro('Todo', !window.juntadasDesde&&!window.juntadasHasta, "window.juntadasDesde='';window.juntadasHasta='';window.juntadasVerMas=false;renderJuntadas()");
     const mesesVistos = [];
     const mesesKeys = new Set();
     pasadas.forEach(j => {
@@ -665,22 +677,58 @@
             mesesVistos.push({ label: NOMBRES_MESES[f.getMonth()], desde, hasta });
         }
     });
-
-    let botonesmes = '<button onclick="window.juntadasDesde=\'\';window.juntadasHasta=\'\';window.juntadasVerMas=false;renderJuntadas()" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ' + ((!window.juntadasDesde&&!window.juntadasHasta)?'#FFD700':'rgba(139,77,143,0.4)') + ';background:' + ((!window.juntadasDesde&&!window.juntadasHasta)?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)') + ';color:' + ((!window.juntadasDesde&&!window.juntadasHasta)?'#FFD700':'rgba(255,255,255,0.6)') + ';">Todo</button>';
-    mesesVistos.forEach(function(op) {
+    mesesVistos.forEach(op => {
         const activo = window.juntadasDesde===op.desde && window.juntadasHasta===op.hasta;
-        botonesmes += '<button onclick="window.juntadasDesde=\'' + op.desde + '\';window.juntadasHasta=\'' + op.hasta + '\';window.juntadasVerMas=false;renderJuntadas()" style="padding:6px 14px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ' + (activo?'#FFD700':'rgba(139,77,143,0.4)') + ';background:' + (activo?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)') + ';color:' + (activo?'#FFD700':'rgba(255,255,255,0.6)') + ';">' + op.label + '</button>';
+        botonesmes += btnFiltro(op.label, activo, "window.juntadasDesde='" + op.desde + "';window.juntadasHasta='" + op.hasta + "';window.juntadasVerMas=false;renderJuntadas()");
     });
 
+    // Panel categorías
     let botonesCat = '';
     if (categorias.length) {
-        ['', ...categorias].forEach(function(cat) {
-            const activo = window.juntadasCatActiva === cat;
-            botonesCat += '<button onclick="window.juntadasCatActiva=\'' + cat + '\';window.juntadasVerMas=false;renderJuntadas()" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ' + (activo?'#FFD700':'rgba(139,77,143,0.4)') + ';background:' + (activo?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)') + ';color:' + (activo?'#FFD700':'rgba(255,255,255,0.6)') + ';">' + (cat||'Todas') + '</button>';
+        botonesCat += btnFiltro('Todas', !window.juntadasCatActiva, "window.juntadasCatActiva='';window.juntadasVerMas=false;renderJuntadas()");
+        categorias.forEach(cat => {
+            botonesCat += btnFiltro(cat, window.juntadasCatActiva===cat, "window.juntadasCatActiva='" + cat + "';window.juntadasVerMas=false;renderJuntadas()");
         });
     }
 
-    const selectorHTML = '<div style="background:rgba(20,10,35,0.6);border:1px solid rgba(107,45,145,0.3);border-radius:12px;padding:14px;margin-bottom:16px;"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:' + (categorias.length?'12px':'0') + ';">' + botonesmes + '</div>' + (categorias.length ? '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + botonesCat + '</div>' : '') + '</div>';
+    // Panel hosts
+    let botonesHost = btnFiltro('Todos', !window.juntadasHostActivo, "window.juntadasHostActivo='';window.juntadasVerMas=false;renderJuntadas()");
+    hostsDisponibles.forEach(h => {
+        // Nombre corto para el botón
+        const label = h.length > 12 ? h.split(' ')[0] : h;
+        botonesHost += btnFiltro(label, window.juntadasHostActivo===h, "window.juntadasHostActivo='" + h.replace(/'/g,"\\'") + "';window.juntadasVerMas=false;renderJuntadas()");
+    });
+
+    // Panel asistentes (con foto si tiene)
+    let botonesAsist = '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">';
+    botonesAsist += btnFiltro('Todos', !window.juntadasAsistenteActivo, "window.juntadasAsistenteActivo='';window.juntadasVerMas=false;renderJuntadas()");
+    asistentesDisponibles.forEach(n => {
+        const activo = window.juntadasAsistenteActivo === n;
+        const foto = FOTOS[n] || '';
+        botonesAsist += '<div onclick="window.juntadasAsistenteActivo=\'' + n + '\';window.juntadasVerMas=false;renderJuntadas()" style="cursor:pointer;text-align:center;">'
+            + '<div style="width:38px;height:38px;border-radius:50%;border:2.5px solid ' + (activo?'#FFD700':'rgba(139,77,143,0.4)') + ';background:url(\'' + foto + '\') center top/cover;box-shadow:' + (activo?'0 0 8px rgba(255,215,0,0.6)':'none') + ';transition:all 0.2s;"></div>'
+            + '<div style="font-size:9px;color:' + (activo?'#FFD700':'rgba(255,255,255,0.5)') + ';margin-top:3px;font-weight:' + (activo?'bold':'normal') + ';">' + n + '</div>'
+            + '</div>';
+    });
+    botonesAsist += '</div>';
+
+    const panelStyle = 'background:rgba(20,10,35,0.6);border:1px solid rgba(107,45,145,0.3);border-radius:12px;padding:12px;margin-bottom:10px;';
+    const panelLabel = 'font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:bold;';
+
+    const selectorHTML =
+        '<div style="' + panelStyle + '">'
+            + '<div style="' + panelLabel + '">📅 Fecha</div>'
+            + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + botonesmes + '</div>'
+        + '</div>'
+        + (categorias.length ? '<div style="' + panelStyle + '"><div style="' + panelLabel + '">🏷️ Categoría</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + botonesCat + '</div></div>' : '')
+        + '<div style="' + panelStyle + '">'
+            + '<div style="' + panelLabel + '">🏠 Host</div>'
+            + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + botonesHost + '</div>'
+        + '</div>'
+        + '<div style="' + panelStyle + '">'
+            + '<div style="' + panelLabel + '">👤 Asistente</div>'
+            + botonesAsist
+        + '</div>';
 
     const limite = window.juntadasVerMas ? filtradas.length : 10;
     const mostradas = filtradas.slice(0, limite);
