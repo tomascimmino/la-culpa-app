@@ -239,6 +239,12 @@
     <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
   </div>
   <input type="range" id="progressBar" value="0" min="0" step="1" style="width:100%; margin-top:10px;">
+                <div id="timeDisplay" 
+     style="display:flex;justify-content:space-between;
+            font-size:11px;margin-top:4px;
+            color:rgba(255,255,255,0.7);">
+  <span id="currentTime">0:00</span>
+  <span id="duration">0:00</span>
 </div>
        <div id="ultimasJuntadas" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
         </div>
@@ -1358,8 +1364,28 @@ function prevSong() {
   player.play();
   playBtn.textContent = "⏸";
 }
+    function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return mins + ":" + (secs < 10 ? "0" : "") + secs;
+}
 
 player.onended = nextSong;
+
+    player.ontimeupdate = function() {
+  const progressBar = document.getElementById("progressBar");
+  const currentTimeEl = document.getElementById("currentTime");
+
+  progressBar.max = player.duration;
+  progressBar.value = player.currentTime;
+
+  currentTimeEl.textContent = formatTime(player.currentTime);
+};
+
+player.onloadedmetadata = function() {
+  const durationEl = document.getElementById("duration");
+  durationEl.textContent = formatTime(player.duration);
+};
 
 volume.addEventListener("input", () => {
   player.volume = volume.value;
