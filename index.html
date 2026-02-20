@@ -1057,7 +1057,7 @@ function editarBio() {
         <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};">
     <div class="card-title" style="font-size:24px;">${usuario.Nombre}</div>
     ${usuario.Bio ? `<div style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:8px;font-style:italic;">${usuario.Bio}</div>` : ''}
-    ${esMiPerfil ? `<button onclick="editarBio()" style="margin-top:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(200,168,48,0.4);color:#C8A830;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;">✏️ ${usuario.Bio ? 'Editar bio' : 'Agregar bio'}</button>` : ''}
+    ${esMiPerfil ? `<button onclick="editarBio()" style="margin-top:8px;background:none;border:none;color:rgba(200,168,48,0.4);font-size:12px;cursor:pointer;padding:2px 6px;">${usuario.Bio ? '✏️' : '✏️ Agregar descripción'}</button>` : ''}''}
 </div>
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div><div class="stat-label">Asistencias</div></div>
