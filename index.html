@@ -475,21 +475,35 @@ window.juntadasAsistenteActivo = null;
         } catch(e) { console.error(e); alert('Error conectando con Google Sheets.'); }
     }
 
-    function parseCSV(csv) {
-        const lines = csv.split('\n');
-        const headers = lines[0].split(',').map(h => h.replace(/"/g,'').trim());
-        const data = [];
-        for (let i = 1; i < lines.length; i++) {
-            if (!lines[i].trim()) continue;
-            const values = lines[i].split(',').map(v => v.replace(/"/g,'').trim());
-            if (!values.some(v => v)) continue;
-            const row = {};
-            headers.forEach((h, idx) => row[h] = values[idx] || '');
-            if (headers.includes('Fecha') && !row.Fecha && !row.Descripción && !row.Descripcion) continue;
-            data.push(row);
-        }
-        return data;
+   function parseCSV(csv) {
+    const lines = csv.split('\n');
+    const headers = parseCSVLine(lines[0]);
+    const data = [];
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const values = parseCSVLine(lines[i]);
+        if (!values.some(v => v)) continue;
+        const row = {};
+        headers.forEach((h, idx) => row[h] = values[idx] || '');
+        if (headers.includes('Fecha') && !row.Fecha && !row.Descripción && !row.Descripcion) continue;
+        data.push(row);
     }
+    return data;
+}
+
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') { inQuotes = !inQuotes; }
+        else if (ch === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+        else { current += ch; }
+    }
+    result.push(current.trim());
+    return result;
+}
 
     function renderHome() {
         const hoy = new Date(); hoy.setHours(0,0,0,0);
