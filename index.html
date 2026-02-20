@@ -1272,25 +1272,22 @@ ${rachaCard}
 
 <style>
 #culpapp-player {
-   background: #2e1065;
+  background: linear-gradient(135deg, #3A0CA3 0%, #240046 100%);
   color: white;
-  padding: 12px 16px;
-  border-radius: 14px;
+  padding: 16px;
+  border-radius: 16px;
   box-shadow: 0 8px 25px rgba(0,0,0,0.4);
   display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 9999;
+  flex-direction: column;
+  gap: 12px;
   font-family: sans-serif;
-    width: 100%;
-max-width: 420px;
-margin: 15px auto;
-flex-direction: column;
-align-items: stretch;
+  width: 100%;
+  max-width: 420px;
+  margin: 15px auto;
 }
 
 #culpapp-player button {
-  background: #6d28d9;
+  background: #560BAD;
   border: none;
   color: white;
   width: 36px;
@@ -1298,18 +1295,36 @@ align-items: stretch;
   border-radius: 50%;
   cursor: pointer;
   font-size: 14px;
+  transition: 0.2s;
 }
 
 #culpapp-player button:hover {
-  background: #7c3aed;
+  background: #7209B7;
+  transform: scale(1.08);
 }
 
-#culpapp-player input[type="range"] {
-  width: 80px;
+#progressBar {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.25);
+}
+
+#progressBar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  background: #FFD60A;
+  cursor: pointer;
+}
+
+#timeDisplay {
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 </style>
-
-
 
 <audio id="player"></audio>
 
