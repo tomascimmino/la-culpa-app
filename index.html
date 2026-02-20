@@ -228,14 +228,20 @@
                 <div class="stat-card"><div class="stat-number" id="totalJuntadas">-</div><div class="stat-label">Juntadas</div></div>
                 <div class="stat-card"><div class="stat-number" id="totalCulposos">-</div><div class="stat-label">Tu Asistencia</div></div>
             </div>
+    
+            <div id="culpapp-player">
 
-           <div id="culpapp-player">
-  <div id="songName" style="font-size:12px; margin-bottom:6px;"></div>
-  
-  <button onclick="prevSong()">⏮</button>
-  <button onclick="togglePlay()" id="playBtn">▶</button>
-  <button onclick="nextSong()">⏭</button>
-  <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+  <div id="songName" style="font-size:12px; margin-bottom:6px; text-align:center;"></div>
+
+  <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+    <button onclick="prevSong()">⏮</button>
+    <button onclick="togglePlay()" id="playBtn">▶</button>
+    <button onclick="nextSong()">⏭</button>
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+  </div>
+
+  <input type="range" id="progressBar" value="0" min="0" step="1" style="width:100%; margin-top:10px;">
+
 </div>
             
             <button onclick="abrirModalProponerJuntada()" style="width:100%;margin:15px 0 10px;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
@@ -1265,6 +1271,11 @@ ${rachaCard}
   gap: 10px;
   z-index: 9999;
   font-family: sans-serif;
+    width: 100%;
+max-width: 420px;
+margin: 15px auto;
+flex-direction: column;
+align-items: stretch;
 }
 
 #culpapp-player button {
@@ -1332,7 +1343,7 @@ function togglePlay() {
 function nextSong() {
   currentIndex = (currentIndex + 1) % songs.length;
   loadSong(currentIndex);
-  player.play();
+  player.play().catch(() => {});
   playBtn.textContent = "⏸";
 }
 
@@ -1343,12 +1354,26 @@ function prevSong() {
   playBtn.textContent = "⏸";
 }
 
-player.addEventListener("ended", nextSong);
+player.onended = nextSong;
 
 volume.addEventListener("input", () => {
   player.volume = volume.value;
 });
 
+const progressBar = document.getElementById("progressBar");
+
+player.addEventListener("loadedmetadata", () => {
+  progressBar.max = Math.floor(player.duration);
+});
+
+player.addEventListener("timeupdate", () => {
+  progressBar.value = Math.floor(player.currentTime);
+});    
+
+    progressBar.addEventListener("input", () => {
+  player.currentTime = progressBar.value;
+});
+    
 loadSong(currentIndex);
 </script>
 
