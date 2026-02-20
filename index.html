@@ -243,10 +243,7 @@
   <input type="range" id="progressBar" value="0" min="0" step="1" style="width:100%; margin-top:10px;">
 
 </div>
-            
-            <button onclick="abrirModalProponerJuntada()" style="width:100%;margin:15px 0 10px;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
-                ➕ Proponer Juntada
-            </button>
+        
             <div id="ultimasJuntadas" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
         </div>
 
@@ -577,15 +574,27 @@ window.juntadasAsistenteActivo = null;
                         ${estadoHTML}${botonesProxima}
                     </div>`;
             }
-        } else if (usuario) {
-            proximaHTML = `
-                <div class="section-title" style="margin-top:10px;">🎯 Próxima Juntada</div>
-                <div class="card" style="background:rgba(139,77,143,0.1);text-align:center;">
-                    <div style="font-size:40px;margin-bottom:10px;">📅</div>
-                    <div class="card-title" style="color:rgba(255,255,255,0.7);">No hay próxima juntada programada</div>
-                </div>`;
-        }
+       } else if (usuario) {
+    proximaHTML = `
+        <div class="section-title" style="margin-top:10px;">🎯 Próxima Juntada</div>
 
+        <div class="card" style="background:rgba(139,77,143,0.1);text-align:center;">
+            <div style="font-size:40px;margin-bottom:10px;">📅</div>
+            <div class="card-title" style="color:rgba(255,255,255,0.7);">
+                No hay próxima juntada programada
+            </div>
+        </div>
+
+        <button onclick="abrirModalProponerJuntada()" 
+            style="width:100%;margin:15px 0 10px;
+                   background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);
+                   border:none;color:#1E1E3F;padding:12px;
+                   border-radius:10px;font-size:14px;
+                   font-weight:bold;cursor:pointer;">
+            ➕ Proponer Juntada
+        </button>
+    `;
+}
         const ultimas = juntadasPasadas.slice(-3).reverse();
         const ultimasHTML = ultimas.map(j => {
             const ri = juntadasData.indexOf(j);
