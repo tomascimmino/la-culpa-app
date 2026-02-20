@@ -227,10 +227,8 @@
                 <div class="stat-card"><div class="stat-number" id="totalCulposos">-</div><div class="stat-label">Tu Asistencia</div></div>
             </div>
 
-            <div id="culpapp-player">
-
+   <div id="culpapp-player">
   <div id="songName" style="font-size:12px; margin-bottom:6px; text-align:center;"></div>
-
   <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
     <button onclick="prevSong()">⏮</button>
     <button onclick="togglePlay()" id="playBtn">▶</button>
@@ -238,16 +236,13 @@
     <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
   </div>
   <input type="range" id="progressBar" value="0" min="0" step="1" style="width:100%; margin-top:10px;">
-                <div id="timeDisplay" 
-     style="display:flex;justify-content:space-between;
-            font-size:11px;margin-top:4px;
-            color:rgba(255,255,255,0.7);">
-  <span id="currentTime">0:00</span>
-  <span id="duration">0:00</span>
+  <div id="timeDisplay" style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px;color:rgba(255,255,255,0.7);">
+    <span id="currentTime">0:00</span>
+    <span id="duration">0:00</span>
+  </div>
 </div>
-       <div id="ultimasJuntadas" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
-        </div>
 
+<div id="ultimasJuntadas" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
         <!-- RANKING -->
         <div id="ranking" class="content">
             <div class="section-title">🏆 Ranking de Culposos</div>
@@ -1329,6 +1324,22 @@ ${rachaCard}
 #timeDisplay {
   font-weight: 500;
   letter-spacing: 0.5px;
+}
+    #volume {
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 5px;
+  background: rgba(200,168,48,0.2);
+  width: 80px;
+}
+
+#volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background: #C8A830;
+  cursor: pointer;
 }
 </style>
 
