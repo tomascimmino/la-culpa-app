@@ -342,13 +342,6 @@
         'Matu':'https://i.imgur.com/gNabdVm.png'
     };
 
-    const DRIVE_MESES = {
-        '2026': {
-            '1': '1PSdks-O-hEuQwSIbM0K0qiyYgmFnWHD5',
-            '2': '1C58pq1fr-bvBX-WNzEBfkXvu5ObInQ6J'
-        }
-    };
-
     const DRIVE_FECHAS = {
         '7-1-2026':             '1P-bt4zhv4cDpT_O1dBlnlGhBUgu1f45e',
         '18-1-2026':            '1W8SDF-xEZ9QI6f0GwEqqpA18LM1opkLy',
@@ -382,9 +375,6 @@
             if (desc.includes(sufijo) || host.includes(sufijo))
                 return `https://drive.google.com/drive/folders/${DRIVE_FECHAS[key]}`;
         }
-
-        const mesId = DRIVE_MESES[y]?.[String(m)];
-        if (mesId) return `https://drive.google.com/drive/folders/${mesId}`;
 
         return null;
     }
