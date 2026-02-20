@@ -1064,11 +1064,12 @@ function editarBio() {
         document.getElementById('perfilData').innerHTML=`
             ${!esMiPerfil?`<div style="text-align:center;margin-bottom:15px;"><button onclick="renderPerfil()" style="background:rgba(139,77,143,0.3);border:2px solid #8B4D8F;color:#FFD700;padding:8px 15px;border-radius:10px;font-size:12px;font-weight:bold;cursor:pointer;">← Volver a mi perfil</button></div>`:''}
             ${fotoUrl?`<div style="text-align:center;margin-bottom:20px;"><img src="${fotoUrl}" style="width:100px;height:100px;border-radius:50%;border:3px solid #C8A830;object-fit:cover;object-position:center top;"></div>`:''}
-        <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};">
+            <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};">
     <div class="card-title" style="font-size:24px;">${usuario.Nombre}</div>
     <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
     ${usuario.Bio ? `<div style="color:rgba(255,255,255,0.7);font-size:13px;font-style:italic;flex:1;">${usuario.Bio}</div>` : ''}
     ${esMiPerfil ? `<button onclick="editarBio()" style="background:none;border:1px solid rgba(200,168,48,0.3);color:rgba(200,168,48,0.6);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;flex-shrink:0;">${usuario.Bio ? '✏️' : '✏️ Agregar descripción'}</button>` : ''}
+    
 </div>
 </div>
             <div class="stats-grid">
@@ -1089,6 +1090,19 @@ ${rachaCard}
            
             ${renderHostPanel(usuario.Nombre)}
             ${premiosHTML}
+           <div class="section-title" style="margin-top:25px;">💬 Comentarios</div>
+            <div id="comentariosSection">
+                <div id="comentariosList_${usuario.Nombre}" style="margin-bottom:15px;"></div>
+                ${esMiPerfil || true ? `
+                <div class="card" style="padding:15px;">
+                    <textarea id="nuevoComentario_${usuario.Nombre}" placeholder="Dejá un comentario culposo..." 
+                        style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;resize:none;height:80px;font-family:inherit;"></textarea>
+                    <button onclick="enviarComentario('${usuario.Nombre}')" 
+                        style="width:100%;margin-top:10px;background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 100%);border:2px solid #C8A830;color:#C8A830;padding:10px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">
+                        💬 Comentar
+                    </button>
+                </div>` : ''}
+            </div>
             ${esMiPerfil?`
             <div class="section-title">📅 Mi Participación</div>
             <div class="card" onclick="showTab('juntadas',document.querySelectorAll('.tab')[2])" style="cursor:pointer;text-align:center;background:linear-gradient(135deg,rgba(139,77,143,0.2) 0%,rgba(139,77,143,0.1) 100%);">
@@ -1099,7 +1113,8 @@ ${rachaCard}
                 <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-bottom:10px;">🔔 Notificaciones de nueva juntada</div>
                 <button id="btnNotif" onclick="activarNotificaciones()" style="background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 100%);border:2px solid #C8A830;color:#C8A830;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">Activar notificaciones</button>
                 <div id="notifStatus" style="margin-top:8px;font-size:12px;color:rgba(255,255,255,0.5);"></div>
-            </div>`:''}`;
+           </div>`:''}`;
+        cargarComentarios(usuario.Nombre);
     }
 
     function renderHostPanel(nombre) {
@@ -1309,6 +1324,73 @@ document.getElementById('awardsList').innerHTML=html;
             if (btn) { btn.disabled=false; btn.textContent='Reintentar'; }
             if (status) status.textContent='❌ ' + e.message;
         }
+    }
+
+    async function cargarComentarios(destinatario) {
+        const el = document.getElementById('comentariosList_' + destinatario);
+        if (!el) return;
+        try {
+            const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
+            const rows = parseCSV(await r.text());
+            const mios = rows.filter(c => c.Destinatario === destinatario);
+            if (!mios.length) {
+                el.innerHTML = '<p style="color:rgba(255,255,255,0.4);font-size:13px;text-align:center;padding:10px;">Nadie comentó todavía. Sean los primeros, culposos.</p>';
+                return;
+            }
+            el.innerHTML = mios.map(c => {
+                const likes = c.Likes ? c.Likes.split(',').filter(Boolean) : [];
+                const yaDiLike = likes.includes(currentUser);
+                const esMio = c.Autor === currentUser;
+                const cu = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
+                const fotoAutor = cu ? (FOTOS[cu.Nombre] || '') : '';
+                const nombreAutor = cu ? cu.Nombre : c.Autor;
+                return `<div style="background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border-radius:12px;padding:14px;margin-bottom:10px;border:1.5px solid rgba(107,45,145,0.35);">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                        <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;${fotoAutor ? `background:url('${fotoAutor}') center top/cover` : 'background:linear-gradient(135deg,#8B4D8F,#6B3870)'};"></div>
+                        <div style="flex:1;">
+                            <div style="color:#C8A830;font-size:12px;font-weight:bold;">${nombreAutor}</div>
+                            <div style="color:rgba(255,255,255,0.35);font-size:10px;">${c.Fecha}</div>
+                        </div>
+                        ${esMio ? `<button onclick="eliminarComentario('${c.ID}','${destinatario}')" style="background:none;border:none;color:rgba(244,67,54,0.6);font-size:16px;cursor:pointer;padding:2px 6px;">🗑</button>` : ''}
+                    </div>
+                    <div style="color:rgba(255,255,255,0.9);font-size:14px;line-height:1.5;margin-bottom:10px;">${c.Texto}</div>
+                    <button onclick="likearComentario('${c.ID}','${destinatario}')"
+                        style="background:${yaDiLike ? 'rgba(255,80,80,0.2)' : 'rgba(255,255,255,0.05)'};border:1.5px solid ${yaDiLike ? '#ff5050' : 'rgba(255,255,255,0.15)'};color:${yaDiLike ? '#ff5050' : 'rgba(255,255,255,0.5)'};padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;">
+                        ❤️ ${likes.length || ''}
+                    </button>
+                </div>`;
+            }).join('');
+        } catch(e) { console.error(e); }
+    }
+
+    async function enviarComentario(destinatario) {
+        const ta = document.getElementById('nuevoComentario_' + destinatario);
+        const texto = ta ? ta.value.trim() : '';
+        if (!texto) return;
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar', destinatario, autor:currentUser, texto }) });
+            const res = await r.json();
+            if (res.success) { ta.value = ''; cargarComentarios(destinatario); }
+            else alert('❌ Error: ' + res.error);
+        } catch { alert('❌ Error de conexión'); }
+    }
+
+    async function likearComentario(id, destinatario) {
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'likear_comentario', id, email:currentUser }) });
+            const res = await r.json();
+            if (res.success) cargarComentarios(destinatario);
+        } catch(e) { console.error(e); }
+    }
+
+    async function eliminarComentario(id, destinatario) {
+        if (!confirm('¿Eliminar este comentario?')) return;
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_comentario', id, email:currentUser }) });
+            const res = await r.json();
+            if (res.success) cargarComentarios(destinatario);
+            else alert('❌ ' + res.error);
+        } catch { alert('❌ Error de conexión'); }
     }
 
     window.onload = function() {
