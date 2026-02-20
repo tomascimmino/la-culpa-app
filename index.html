@@ -1240,5 +1240,99 @@ ${rachaCard}
         if (saved) { document.getElementById('emailInput').value=saved; login(); }
     };
 </script>
+    <!-- ===== CULPAPP REPRODUCTOR ===== -->
+
+<style>
+#culpapp-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #2e1065;
+  color: white;
+  padding: 10px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+  font-family: sans-serif;
+  z-index: 9999;
+}
+
+#culpapp-player button {
+  background: #6d28d9;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  margin: 3px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#culpapp-player button:hover {
+  background: #7c3aed;
+}
+
+#culpapp-player input[type="range"] {
+  width: 100px;
+}
+</style>
+
+<div id="culpapp-player">
+  <audio id="player"></audio>
+
+  <div>
+    <strong>Banda sonora CULPAPP</strong>
+  </div>
+
+  <div>
+    <button onclick="playSong('assets/audio/1 CULPA AWARDS 2024 opening.mp3')">Opening</button>
+    <button onclick="playSong('assets/audio/2 No nos detendrán.mp3')">No nos detendrán</button>
+    <button onclick="playSong('assets/audio/3 Viva la culpa.mp3')">Viva la culpa</button>
+    <button onclick="playSong('assets/audio/4 Puro corazón.mp3')">Puro corazón</button>
+    <button onclick="playSong('assets/audio/5 Ocho reyes.mp3')">Ocho reyes</button>
+    <button onclick="playSong('assets/audio/6 No apto para debiles.mp3')">Trolos abstenerse</button>
+    <button onclick="playSong('assets/audio/7 Siempre juntos feat. Bad Bunny.mp3')">Siempre juntos</button>
+    <button onclick="playSong('assets/audio/8 CULPA AWARDS 2024 ending.mp3')">Ending</button>
+    <button onclick="pauseSong()">Pausar</button>
+  </div>
+
+  <div style="margin-top:6px;">
+    <input type="range" id="progress" value="0" min="0" max="100">
+    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+  </div>
+</div>
+
+<script>
+const player = document.getElementById('player');
+const progress = document.getElementById('progress');
+const volume = document.getElementById('volume');
+
+function playSong(src) {
+  if (!player.src.includes(src)) {
+    player.src = src;
+  }
+  player.play();
+}
+
+function pauseSong() {
+  player.pause();
+}
+
+player.addEventListener('timeupdate', () => {
+  if (player.duration) {
+    progress.value = (player.currentTime / player.duration) * 100;
+  }
+});
+
+progress.addEventListener('input', () => {
+  if (player.duration) {
+    player.currentTime = (progress.value / 100) * player.duration;
+  }
+});
+
+volume.addEventListener('input', () => {
+  player.volume = volume.value;
+});
+</script>
+
 </body>
 </html>
