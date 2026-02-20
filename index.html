@@ -282,13 +282,15 @@
         <!-- AWARDS -->
         <div id="awards" class="content">
             <div class="section-title">🏆 LA CULPA Awards</div>
-            <div style="text-align:center;margin-bottom:20px;">
-                <select id="yearFilter" onchange="renderAwards()" style="background:linear-gradient(135deg,#8B4D8F 0%,#6B3870 100%);border:2px solid #FFD700;color:#FFD700;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
-                    <option value="2025" style="background:#1e1e3f;color:#FFD700;" selected>2025</option>
-                    <option value="2024" style="background:#1e1e3f;color:#FFD700;">2024</option>
-                    <option value="2023" style="background:#1e1e3f;color:#FFD700;">2023</option>
-                </select>
-            </div>
+       <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:20px;">
+    <select id="yearFilter" onchange="renderAwards()" style="background:linear-gradient(135deg,#8B4D8F 0%,#6B3870 100%);border:2px solid #FFD700;color:#FFD700;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
+        <option value="2025" style="background:#1e1e3f;color:#FFD700;" selected>2025</option>
+        <option value="2024" style="background:#1e1e3f;color:#FFD700;">2024</option>
+        <option value="2023" style="background:#1e1e3f;color:#FFD700;">2023</option>
+    </select>
+    <div id="driveLinkInline"></div>
+</div>
+                
             <div id="awardsList" class="loading"><div class="spinner"></div>Cargando premios...</div>
         </div>
 
@@ -1142,13 +1144,15 @@ ${rachaCard}
     '2024': 'https://drive.google.com/drive/folders/1tFNvAYajjXgLRXpnuyMM2oe5M8fA__Wb?usp=sharing',
     '2025': 'https://drive.google.com/drive/folders/1o-b0n-iwafgcYfPq9_r_PzT0lI-eHeXc?usp=sharing'
 };
-const driveHTML = driveLinks[year] ? `
-    <a href="${driveLinks[year]}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:25px;padding:14px;border-radius:12px;background:rgba(66,133,244,0.15);border:2px solid #4285F4;color:#4285F4;font-size:15px;font-weight:bold;text-decoration:none;">
-        📁 Ver fotos de la LCA ${year} en Drive
-    </a>` : '';
+const driveLinks = {
+    '2024': 'https://drive.google.com/drive/folders/1tFNvAYajjXgLRXpnuyMM2oe5M8fA__Wb?usp=sharing',
+    '2025': 'https://drive.google.com/drive/folders/1o-b0n-iwafgcYfPq9_r_PzT0lI-eHeXc?usp=sharing'
+};
+document.getElementById('driveLinkInline').innerHTML = driveLinks[year]
+    ? `<a href="${driveLinks[year]}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:8px;background:rgba(66,133,244,0.15);border:1.5px solid #4285F4;color:#4285F4;font-size:12px;font-weight:bold;text-decoration:none;">📁 Fotos LCA ${year}</a>`
+    : '';
 if(!html) html=`<p style="color:rgba(255,255,255,0.6);text-align:center;padding:40px;">No hay premios registrados para ${year}</p>`;
-document.getElementById('awardsList').innerHTML=html+driveHTML;
-    }
+document.getElementById('awardsList').innerHTML=html;
 
     let gastosArray=[];
     const TODOS_NOMBRES=['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti','Cata','Lola','Sami','Leila','Juli','Manu','Matu'];
