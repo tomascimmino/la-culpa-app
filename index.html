@@ -1001,6 +1001,23 @@ const hora=document.getElementById('propHora').value;
         } catch { msg.innerHTML='<div style="color:#f44336;">❌ Error de conexión</div>'; }
     }
 
+function editarBio() {
+    const usuario = getUsuarioActual();
+    const bioActual = usuario.Bio || '';
+    const nueva = prompt('Tu bio (máx 100 caracteres):', bioActual);
+    if (nueva === null) return; // canceló
+    const bioFinal = nueva.slice(0, 100);
+    fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'guardar_bio', email:currentUser, bio:bioFinal }) })
+        .then(r=>r.json())
+        .then(res => {
+            if (res.success) {
+                usuario.Bio = bioFinal;
+                renderPerfilCulposo(null);
+            } else alert('❌ Error guardando bio');
+        })
+        .catch(() => alert('❌ Error de conexión'));
+}
+    
     function renderPerfil() { renderPerfilCulposo(null); }
 
     function renderPerfilCulposo(nombreCulposo) {
@@ -1023,7 +1040,11 @@ const hora=document.getElementById('propHora').value;
         document.getElementById('perfilData').innerHTML=`
             ${!esMiPerfil?`<div style="text-align:center;margin-bottom:15px;"><button onclick="renderPerfil()" style="background:rgba(139,77,143,0.3);border:2px solid #8B4D8F;color:#FFD700;padding:8px 15px;border-radius:10px;font-size:12px;font-weight:bold;cursor:pointer;">← Volver a mi perfil</button></div>`:''}
             ${fotoUrl?`<div style="text-align:center;margin-bottom:20px;"><img src="${fotoUrl}" style="width:100px;height:100px;border-radius:50%;border:3px solid #C8A830;object-fit:cover;object-position:center top;"></div>`:''}
-            <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};"><div class="card-title" style="font-size:24px;">${usuario.Nombre}</div></div>
+        <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};">
+    <div class="card-title" style="font-size:24px;">${usuario.Nombre}</div>
+    ${usuario.Bio ? `<div style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:8px;font-style:italic;">"${usuario.Bio}"</div>` : ''}
+    ${esMiPerfil ? `<button onclick="editarBio()" style="margin-top:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(200,168,48,0.4);color:#C8A830;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;">✏️ ${usuario.Bio ? 'Editar bio' : 'Agregar bio'}</button>` : ''}
+</div>
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div><div class="stat-label">Asistencias</div></div>
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${pct}%</div><div class="stat-label">Porcentaje</div></div>
