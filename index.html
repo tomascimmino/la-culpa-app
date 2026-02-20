@@ -1056,8 +1056,10 @@ function editarBio() {
             ${fotoUrl?`<div style="text-align:center;margin-bottom:20px;"><img src="${fotoUrl}" style="width:100px;height:100px;border-radius:50%;border:3px solid #C8A830;object-fit:cover;object-position:center top;"></div>`:''}
         <div class="card" style="border-left-color:${isPerfecto?'#FFD700':'#8B4D8F'};">
     <div class="card-title" style="font-size:24px;">${usuario.Nombre}</div>
-    ${usuario.Bio ? `<div style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:8px;font-style:italic;">${usuario.Bio}</div>` : ''}
-    ${esMiPerfil ? `<button onclick="editarBio()" style="margin-top:8px;background:none;border:none;color:rgba(200,168,48,0.4);font-size:12px;cursor:pointer;padding:2px 6px;">${usuario.Bio ? '✏️' : '✏️ Agregar descripción'}</button>` : ''}
+    <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+    ${usuario.Bio ? `<div style="color:rgba(255,255,255,0.7);font-size:13px;font-style:italic;flex:1;">${usuario.Bio}</div>` : ''}
+    ${esMiPerfil ? `<button onclick="editarBio()" style="background:none;border:1px solid rgba(200,168,48,0.3);color:rgba(200,168,48,0.6);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;flex-shrink:0;">${usuario.Bio ? '✏️' : '✏️ Agregar descripción'}</button>` : ''}
+</div>
 </div>
             <div class="stats-grid">
                 <div class="stat-card"><div class="stat-number" style="color:${col};">${usuario.Asistencias}/${usuario['Total Juntadas']}</div><div class="stat-label">Asistencias</div></div>
