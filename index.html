@@ -228,6 +228,16 @@
                 <div class="stat-card"><div class="stat-number" id="totalJuntadas">-</div><div class="stat-label">Juntadas</div></div>
                 <div class="stat-card"><div class="stat-number" id="totalCulposos">-</div><div class="stat-label">Tu Asistencia</div></div>
             </div>
+
+           <div id="culpapp-player">
+  <div id="songName" style="font-size:12px; margin-bottom:6px;"></div>
+  
+  <button onclick="prevSong()">⏮</button>
+  <button onclick="togglePlay()" id="playBtn">▶</button>
+  <button onclick="nextSong()">⏭</button>
+  <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
+</div>
+            
             <button onclick="abrirModalProponerJuntada()" style="width:100%;margin:15px 0 10px;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
                 ➕ Proponer Juntada
             </button>
@@ -1245,10 +1255,7 @@ ${rachaCard}
 
 <style>
 #culpapp-player {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #2e1065;
+   background: #2e1065;
   color: white;
   padding: 12px 16px;
   border-radius: 14px;
@@ -1280,12 +1287,7 @@ ${rachaCard}
 }
 </style>
 
-<div id="culpapp-player">
-  <button onclick="prevSong()">⏮</button>
-  <button onclick="togglePlay()" id="playBtn">▶</button>
-  <button onclick="nextSong()">⏭</button>
-  <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
-</div>
+
 
 <audio id="player"></audio>
 
@@ -1308,6 +1310,13 @@ const volume = document.getElementById("volume");
 
 function loadSong(index) {
   player.src = songs[index];
+
+  const cleanName = songs[index]
+    .split("/")
+    .pop()
+    .replace(".mp3", "");
+
+  document.getElementById("songName").textContent = cleanName;
 }
 
 function togglePlay() {
