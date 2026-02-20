@@ -1075,15 +1075,12 @@ ${rachaCard}
     }
 
     function verPerfilCulposo(nombre) {
-        cerrarDetalle();
-        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-        document.querySelectorAll('.tab')[5].classList.add('active');
-        document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
-const perfil = document.getElementById('perfil');
-perfil.classList.add('active');
-perfil.style.opacity = '1';
-        renderPerfilCulposo(nombre);
-    }
+    cerrarDetalle();
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab')[5].classList.add('active');
+    showTab('perfil', document.querySelectorAll('.tab')[5]);
+    renderPerfilCulposo(nombre);
+}
 
     function renderAwards() {
         const year=document.getElementById('yearFilter').value;
