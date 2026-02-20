@@ -1239,32 +1239,34 @@ ${rachaCard}
         const saved = localStorage.getItem('culpaUserEmail');
         if (saved) { document.getElementById('emailInput').value=saved; login(); }
     };
-</script>
-    <!-- ===== CULPAPP REPRODUCTOR ===== -->
+<!-- ===== CULPAPP PLAYER PRO ===== -->
 
 <style>
 #culpapp-player {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  bottom: 20px;
+  right: 20px;
   background: #2e1065;
   color: white;
-  padding: 10px;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
-  font-family: sans-serif;
+  padding: 12px 16px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
   z-index: 9999;
+  font-family: sans-serif;
 }
 
 #culpapp-player button {
   background: #6d28d9;
   border: none;
   color: white;
-  padding: 6px 10px;
-  margin: 3px;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 #culpapp-player button:hover {
@@ -1272,67 +1274,74 @@ ${rachaCard}
 }
 
 #culpapp-player input[type="range"] {
-  width: 100px;
+  width: 80px;
 }
 </style>
 
 <div id="culpapp-player">
-  <audio id="player"></audio>
-
-  <div>
-    <strong>Banda sonora CULPAPP</strong>
-  </div>
-
-  <div>
-    <button onclick="playSong('assets/audio/1 CULPA AWARDS 2024 opening.mp3')">Opening</button>
-    <button onclick="playSong('assets/audio/2 No nos detendrán.mp3')">No nos detendrán</button>
-    <button onclick="playSong('assets/audio/3 Viva la culpa.mp3')">Viva la culpa</button>
-    <button onclick="playSong('assets/audio/4 Puro corazón.mp3')">Puro corazón</button>
-    <button onclick="playSong('assets/audio/5 Ocho reyes.mp3')">Ocho reyes</button>
-    <button onclick="playSong('assets/audio/6 No apto para debiles.mp3')">Trolos abstenerse</button>
-    <button onclick="playSong('assets/audio/7 Siempre juntos feat. Bad Bunny.mp3')">Siempre juntos</button>
-    <button onclick="playSong('assets/audio/8 CULPA AWARDS 2024 ending.mp3')">Ending</button>
-    <button onclick="pauseSong()">Pausar</button>
-  </div>
-
-  <div style="margin-top:6px;">
-    <input type="range" id="progress" value="0" min="0" max="100">
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
-  </div>
+  <button onclick="prevSong()">⏮</button>
+  <button onclick="togglePlay()" id="playBtn">▶</button>
+  <button onclick="nextSong()">⏭</button>
+  <input type="range" id="volume" min="0" max="1" step="0.01" value="1">
 </div>
 
+<audio id="player"></audio>
+
 <script>
-const player = document.getElementById('player');
-const progress = document.getElementById('progress');
-const volume = document.getElementById('volume');
+const songs = [
+  "assets/audio/1 CULPA AWARDS 2024 opening.mp3",
+  "assets/audio/2 No nos detendrán.mp3",
+  "assets/audio/3 Viva la culpa.mp3",
+  "assets/audio/4 Puro corazón.mp3",
+  "assets/audio/5 Ocho reyes.mp3",
+  "assets/audio/6 No apto para debiles.mp3",
+  "assets/audio/7 Siempre juntos feat. Bad Bunny.mp3",
+  "assets/audio/8 CULPA AWARDS 2024 ending.mp3"
+];
 
-function playSong(src) {
-  if (!player.src.includes(src)) {
-    player.src = src;
+let currentIndex = 0;
+const player = document.getElementById("player");
+const playBtn = document.getElementById("playBtn");
+const volume = document.getElementById("volume");
+
+function loadSong(index) {
+  player.src = songs[index];
+}
+
+function togglePlay() {
+  if (player.paused) {
+    player.play();
+    playBtn.textContent = "⏸";
+  } else {
+    player.pause();
+    playBtn.textContent = "▶";
   }
+}
+
+function nextSong() {
+  currentIndex = (currentIndex + 1) % songs.length;
+  loadSong(currentIndex);
   player.play();
+  playBtn.textContent = "⏸";
 }
 
-function pauseSong() {
-  player.pause();
+function prevSong() {
+  currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+  loadSong(currentIndex);
+  player.play();
+  playBtn.textContent = "⏸";
 }
 
-player.addEventListener('timeupdate', () => {
-  if (player.duration) {
-    progress.value = (player.currentTime / player.duration) * 100;
-  }
-});
+player.addEventListener("ended", nextSong);
 
-progress.addEventListener('input', () => {
-  if (player.duration) {
-    player.currentTime = (progress.value / 100) * player.duration;
-  }
-});
-
-volume.addEventListener('input', () => {
+volume.addEventListener("input", () => {
   player.volume = volume.value;
 });
+
+loadSong(currentIndex);
 </script>
+
+<!-- ===== FIN PLAYER PRO ===== -->
 
 </body>
 </html>
