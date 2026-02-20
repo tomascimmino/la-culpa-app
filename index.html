@@ -837,6 +837,7 @@ window.juntadasAsistenteActivo = null;
                 <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏠 Host</label><select id="editHost" class="form-select">${hostOptions}</select></div>
                 <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📝 Descripción</label><input type="text" id="editDescripcion" value="${j.Descripción||j.Descripcion||''}" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
                 <div style="margin-bottom:20px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏷️ Categoría</label><select id="editCategoria" class="form-select"><option value="">Sin categoría</option>${catOptions}</select></div>
+                <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🕐 Hora (opcional)</label><input type="time" id="editHora" value="${j.Hora||''}" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
                 <button onclick="enviarEdicion()" style="width:100%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">💾 Guardar cambios</button>
                 <div id="mensajeEdicion" style="margin-top:15px;text-align:center;display:none;"></div>
             </div>`;
@@ -850,12 +851,13 @@ window.juntadasAsistenteActivo = null;
         const host = document.getElementById('editHost').value;
         const descripcion = document.getElementById('editDescripcion').value;
         const categoria = document.getElementById('editCategoria').value;
+        const hora = document.getElementById('editHora').value;
         const msg = document.getElementById('mensajeEdicion');
         if (!fecha||!host||!descripcion) { msg.style.display='block'; msg.innerHTML='<div style="color:#f44336;">⚠️ Completá todos los campos</div>'; return; }
         const [y,m,d] = fecha.split('-');
         msg.style.display='block'; msg.innerHTML='<div style="color:#FFD700;">⏳ Guardando...</div>';
         try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'editar_juntada', fila:window.editandoIndex+2, fecha:`${d}/${m}/${y}`, host, descripcion, categoria }) });
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'editar_juntada', fila:window.editandoIndex+2, fecha:`${d}/${m}/${y}`, host, descripcion, categoria, hora }) });
             const res = await r.json();
             if (res.success) { msg.innerHTML='<div style="color:#4CAF50;font-weight:bold;">✅ ¡Juntada actualizada!</div>'; setTimeout(async()=>{ cerrarModalEditarJuntada(); await recargarJuntadas(); renderHome(); renderJuntadas(); }, 1500); }
             else msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`;
@@ -974,6 +976,7 @@ window.juntadasAsistenteActivo = null;
                 <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏠 Host</label><select id="propHost" class="form-select"><option value="">Seleccionar...</option>${hostOptions}</select></div>
                 <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">📝 Descripción</label><input type="text" id="propDescripcion" placeholder="Ej: Asado en lo de..." style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
                 <div style="margin-bottom:20px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🏷️ Categoría</label><select id="propCategoria" class="form-select"><option value="">Sin categoría</option>${catOptions}</select></div>
+                <div style="margin-bottom:15px;"><label style="color:rgba(255,255,255,0.9);font-size:14px;display:block;margin-bottom:8px;">🕐 Hora (opcional)</label><input type="time" id="propHora" style="width:100%;padding:12px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
                 <button onclick="enviarPropuesta()" style="width:100%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">🚀 Proponer</button>
                 <div id="mensajePropuesta" style="margin-top:15px;text-align:center;display:none;"></div>
             </div>`;
@@ -984,13 +987,14 @@ window.juntadasAsistenteActivo = null;
 
     async function enviarPropuesta() {
         const fecha=document.getElementById('propFecha').value, host=document.getElementById('propHost').value;
+const hora=document.getElementById('propHora').value;
         const desc=document.getElementById('propDescripcion').value, cat=document.getElementById('propCategoria').value;
         const msg=document.getElementById('mensajePropuesta');
         if (!fecha||!host||!desc) { msg.style.display='block'; msg.innerHTML='<div style="color:#f44336;">⚠️ Completá fecha, host y descripción</div>'; return; }
         const [y,m,d]=fecha.split('-');
         msg.style.display='block'; msg.innerHTML='<div style="color:#FFD700;">⏳ Creando juntada...</div>';
         try {
-            const r=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify({accion:'crear_juntada',fecha:`${d}/${m}/${y}`,host,descripcion:desc,categoria:cat})});
+            const r=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify({accion:'crear_juntada',fecha:`${d}/${m}/${y}`,host,descripcion:desc,categoria:cat,hora:hora})});
             const res=await r.json();
             if (res.success) { msg.innerHTML='<div style="color:#4CAF50;font-weight:bold;">✅ ¡Juntada propuesta!</div>'; setTimeout(()=>{ cerrarModalProponerJuntada(); location.reload(); },2000); }
             else msg.innerHTML=`<div style="color:#f44336;">❌ Error: ${res.error}</div>`;
