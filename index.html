@@ -1416,14 +1416,6 @@ function loadSong(index) {
   document.getElementById("songName").textContent = cleanName + " - LA CULPA";
 }
 
-  const cleanName = songs[index]
-    .split("/")
-    .pop()
-    .replace(".mp3", "");
-
-  document.getElementById("songName").textContent = cleanName;
-}
-
 function togglePlay() {
   if (player.paused) {
     player.play();
