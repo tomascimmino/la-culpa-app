@@ -1165,11 +1165,21 @@ ${rachaCard}
     }
 
     function showTab(tabName, el) {
-        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-        if(el) el.classList.add('active');
-        document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    if(el) el.classList.add('active');
+    
+    const current = document.querySelector('.content.active');
+    if(current) {
+        current.style.opacity = '0';
+        setTimeout(() => {
+            document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+            const next = document.getElementById(tabName);
+            next.classList.add('active');
+            next.style.opacity = '0';
+            setTimeout(() => { next.style.opacity = '1'; }, 20);
+        }, 150);
     }
+}
 
     const FIREBASE_CONFIG = {
         apiKey:"AIzaSyAamBVJC48CtEd41HtvF5Ek0Bxui5TfsjA",authDomain:"la-culpa.firebaseapp.com",
