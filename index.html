@@ -1360,7 +1360,8 @@ ${rachaCard}
 
 #songName {
   color: #C8A830;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: bold;
   text-align: center;
 }
 
@@ -1390,7 +1391,7 @@ ${rachaCard}
 
 <script>
 const songs = [
-"assets/audio/0 La cola contra la pared.mp3",
+  "assets/audio/0 La cola contra la pared.mp3",
   "assets/audio/1 CULPA AWARDS 2024 opening.mp3",
   "assets/audio/2 No nos detendrán.mp3",
   "assets/audio/3 Viva la culpa.mp3",
@@ -1408,6 +1409,12 @@ const volume = document.getElementById("volume");
 
 function loadSong(index) {
   player.src = songs[index];
+  const cleanName = songs[index]
+    .split("/").pop()
+    .replace(".mp3", "")
+    .replace(/^\d+\s*/, "");
+  document.getElementById("songName").textContent = cleanName + " - LA CULPA";
+}
 
   const cleanName = songs[index]
     .split("/")
