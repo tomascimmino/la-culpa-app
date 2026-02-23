@@ -172,6 +172,17 @@
     0%,100% { opacity: 1; }
     50%      { opacity: 0.5; }
 }
+
+        @keyframes flamePulse {
+    0%   { transform:scale(1) rotate(-3deg);    filter:brightness(1); }
+    50%  { transform:scale(1.18) rotate(2deg);  filter:brightness(1.4) drop-shadow(0 0 4px #FF6600); }
+    100% { transform:scale(0.95) rotate(-1deg); filter:brightness(0.9); }
+}
+@keyframes boltPulse {
+    0%   { opacity:0.7; transform:scale(1); }
+    100% { opacity:1;   transform:scale(1.2); filter:drop-shadow(0 0 3px #FFD700); }
+}
+        
     </style>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
@@ -631,15 +642,22 @@ function parseCSVLine(line) {
             const foto = FOTOS[c.Nombre] || '';
             const r = calcularRacha(c.Nombre);
             const rachaHTML = r>=10
-                ? `<span class="badge" style="background:rgba(180,80,0,0.2);color:#D4845A;border:1px solid rgba(180,80,0,0.35);cursor:default;" title="${r} juntadas seguidas">🔥 ${r}</span>`
-                : r>=5
-                ? `<span class="badge" style="background:rgba(180,150,0,0.15);color:#C4A84A;border:1px solid rgba(180,150,0,0.3);cursor:default;" title="${r} juntadas seguidas">⚡ ${r}</span>`
-                : '';
-            const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800':'#f44336')(parseFloat(pct));
+    ? `<span class="badge" style="background:linear-gradient(135deg,rgba(255,80,0,0.2),rgba(200,60,0,0.1));color:#FF6B2B;border:1px solid rgba(255,100,0,0.4);cursor:default;position:relative;overflow:hidden;" title="${r} juntadas seguidas"><span style="display:inline-block;animation:flamePulse 1.2s ease-in-out infinite alternate;transform-origin:bottom center;">🔥</span> ${r}</span>`
+    : r>=5
+    ? `<span class="badge" style="background:linear-gradient(135deg,rgba(200,168,0,0.2),rgba(160,130,0,0.1));color:#D4A830;border:1px solid rgba(200,168,0,0.35);cursor:default;" title="${r} juntadas seguidas"><span style="display:inline-block;animation:boltPulse 1.8s ease-in-out infinite alternate;">⚡</span> ${r}</span>`
+    : '';
+const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800':'#f44336')(parseFloat(pct));
             return `<div class="ranking-item ${i<3?'top3':''}">
                 <div class="rank-number">${i+1}</div>
-                <div class="rank-avatar" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;${foto?`background-image:url('${foto}');background-size:cover;background-position:center top;`:''}">
-                    ${!foto?'🧔':''}
+                <div class="shield-wrap" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;position:relative;width:48px;height:54px;flex-shrink:0;">
+    ${i===0?`<div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);z-index:10;"><svg width="24" height="15" viewBox="0 0 40 24" fill="none"><path d="M2 20 L2 10 L10 16 L20 4 L30 16 L38 10 L38 20 Z" fill="#C8A830" stroke="#FFE566" stroke-width="1.5" stroke-linejoin="round"/><circle cx="20" cy="4" r="2.5" fill="#FFE566"/><circle cx="2" cy="10" r="2" fill="#C8A830"/><circle cx="38" cy="10" r="2" fill="#C8A830"/><rect x="2" y="19" width="36" height="3" rx="1" fill="#A07820"/></svg></div>`:''}
+    <svg style="position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.6));" viewBox="0 0 48 54" fill="none">
+        <path d="M24 51C24 51 3 39 3 22L3 7L24 3L45 7L45 22C45 39 24 51 24 51Z" fill="${i<3?'#1A0830':'#0D0520'}"/>
+        <path d="M24 51C24 51 3 39 3 22L3 7L24 3L45 7L45 22C45 39 24 51 24 51Z" fill="none" stroke="${i<3?'#C8A830':'rgba(200,168,48,0.2)'}" stroke-width="${i<3?'1.5':'1'}"/>
+        ${i<3?`<line x1="24" y1="4" x2="24" y2="47" stroke="rgba(200,168,48,0.25)" stroke-width="0.8"/><circle cx="3" cy="7" r="1.5" fill="#C8A830" opacity="${i===0?'0.8':i===1?'0.65':'0.5'}"/><circle cx="45" cy="7" r="1.5" fill="#C8A830" opacity="${i===0?'0.8':i===1?'0.65':'0.5'}"/>`:''}
+    </svg>
+    <div style="position:absolute;top:6px;left:6px;width:36px;height:36px;border-radius:50%;background-size:cover;background-position:center top;background-image:url('${foto}');"></div>
+</div>
                 </div>
                 <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
                     <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge" style="background:rgba(255,215,0,0.12);color:#C8A830;border:1px solid rgba(255,215,0,0.25);cursor:default;">👑</span>':''}${rachaHTML}</div>
