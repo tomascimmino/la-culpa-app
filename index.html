@@ -727,7 +727,7 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
     const limite = window.juntadasVerMas ? filtradas.length : 10;
     const mostradas = filtradas.slice(0, limite);
 
-   let cardsHTML = '';
+let cardsHTML = '';
 let i = 0;
 while (i < mostradas.length) {
     const j = mostradas[i];
@@ -739,34 +739,32 @@ while (i < mostradas.length) {
     const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
     const driveLink = getDriveLink(j);
 
-    cardsHTML += '<div class="card" onclick="verDetalleJuntada(' + ri + ')" style="cursor:pointer;transition:transform 0.2s;' + (mismaFecha ? 'border-bottom:none;margin-bottom:0;' : '') + '" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
-        + (foto ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
-        + '<div class="card-date">' + (j.Fecha||'Fecha') + '</div>'
-        + '<div class="card-title">' + (j.Descripción||j.Descripcion||'Juntada') + '</div>'
-        + '<div class="card-details"><span>🏠 ' + (j.Host||'Sin host') + '</span><span style="margin-left:10px;">👥 ' + (j['N° Asist']||'0') + '</span></div>'
-        + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
-        + (driveLink ? '<a href="' + driveLink + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
-        + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
-        + '</div></div>';
-
-   if (mismaFecha) {
-    cardsHTML += `
-    <div style="position:relative;padding-left:22px;margin:0;">
-        <div style="position:absolute;left:0;top:0;bottom:0;width:22px;">
-            <div style="position:absolute;left:6px;top:8px;width:10px;height:2px;background:#C8A830;"></div>
-            <div style="position:absolute;left:6px;top:8px;width:2px;height:calc(50% - 14px);background:linear-gradient(to bottom,#C8A830,#FFE566);"></div>
-            <div style="position:absolute;left:2px;top:50%;transform:translateY(-50%) rotate(45deg);width:10px;height:10px;background:#C8A830;box-shadow:0 0 8px rgba(200,168,48,0.6);"></div>
-            <div style="position:absolute;left:6px;bottom:8px;width:2px;height:calc(50% - 14px);background:linear-gradient(to top,#C8A830,#FFE566);"></div>
-            <div style="position:absolute;left:6px;bottom:8px;width:10px;height:2px;background:#C8A830;"></div>
-        </div>
-    </div>`;
+    if (mismaFecha) {
         i++;
         const j2 = mostradas[i];
         const ri2 = juntadasData.indexOf(j2);
         const asistio2 = esConfirmadoPositivo(j2[nombreUsuario]);
         const foto2 = j2['Foto Juntada'] || j2['Foto juntada'] || '';
         const driveLink2 = getDriveLink(j2);
-        cardsHTML += '<div class="card" onclick="verDetalleJuntada(' + ri2 + ')" style="cursor:pointer;transition:transform 0.2s;border-top:none;margin-top:0;margin-left:22px;" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
+
+        cardsHTML += '<div style="position:relative;padding-left:22px;margin-bottom:15px;">'
+            + '<div style="position:absolute;left:0;top:0;bottom:0;width:22px;">'
+            + '<div style="position:absolute;left:6px;top:10px;width:10px;height:2px;background:#C8A830;"></div>'
+            + '<div style="position:absolute;left:6px;top:10px;width:2px;height:calc(50% - 16px);background:linear-gradient(to bottom,#C8A830,#FFE566);"></div>'
+            + '<div style="position:absolute;left:2px;top:50%;transform:translateY(-50%) rotate(45deg);width:10px;height:10px;background:#C8A830;box-shadow:0 0 8px rgba(200,168,48,0.6);"></div>'
+            + '<div style="position:absolute;left:6px;bottom:10px;width:2px;height:calc(50% - 16px);background:linear-gradient(to top,#C8A830,#FFE566);"></div>'
+            + '<div style="position:absolute;left:6px;bottom:10px;width:10px;height:2px;background:#C8A830;"></div>'
+            + '</div>'
+            + '<div class="card" onclick="verDetalleJuntada(' + ri + ')" style="cursor:pointer;margin-bottom:4px;" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
+            + (foto ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
+            + '<div class="card-date">' + (j.Fecha||'Fecha') + '</div>'
+            + '<div class="card-title">' + (j.Descripción||j.Descripcion||'Juntada') + '</div>'
+            + '<div class="card-details"><span>🏠 ' + (j.Host||'Sin host') + '</span><span style="margin-left:10px;">👥 ' + (j['N° Asist']||'0') + '</span></div>'
+            + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
+            + (driveLink ? '<a href="' + driveLink + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
+            + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
+            + '</div></div>'
+            + '<div class="card" onclick="verDetalleJuntada(' + ri2 + ')" style="cursor:pointer;margin-top:4px;" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
             + (foto2 ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto2 + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
             + '<div class="card-date">' + (j2.Fecha||'Fecha') + '</div>'
             + '<div class="card-title">' + (j2.Descripción||j2.Descripcion||'Juntada') + '</div>'
@@ -774,6 +772,17 @@ while (i < mostradas.length) {
             + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
             + (driveLink2 ? '<a href="' + driveLink2 + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
             + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio2?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio2?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
+            + '</div></div>'
+            + '</div>';
+    } else {
+        cardsHTML += '<div class="card" onclick="verDetalleJuntada(' + ri + ')" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
+            + (foto ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
+            + '<div class="card-date">' + (j.Fecha||'Fecha') + '</div>'
+            + '<div class="card-title">' + (j.Descripción||j.Descripcion||'Juntada') + '</div>'
+            + '<div class="card-details"><span>🏠 ' + (j.Host||'Sin host') + '</span><span style="margin-left:10px;">👥 ' + (j['N° Asist']||'0') + '</span></div>'
+            + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
+            + (driveLink ? '<a href="' + driveLink + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
+            + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
             + '</div></div>';
     }
 
