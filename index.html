@@ -658,8 +658,7 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
     </svg>
     <div style="position:absolute;top:6px;left:6px;width:36px;height:36px;border-radius:50%;background-size:cover;background-position:center top;background-image:url('${foto}');"></div>
 </div>
-                </div>
-                <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
+                     <div class="rank-info" onclick="verPerfilCulposo('${c.Nombre}')" style="cursor:pointer;">
                     <div class="rank-name">${c.Nombre}${pct==100?'<span class="badge" style="background:rgba(255,215,0,0.12);color:#C8A830;border:1px solid rgba(255,215,0,0.25);cursor:default;">👑</span>':''}${rachaHTML}</div>
                     <div class="rank-stats">${c.Asistencias} de ${c['Total Juntadas']} juntadas</div>
                 </div>
