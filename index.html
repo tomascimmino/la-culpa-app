@@ -1326,7 +1326,7 @@ while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.
         const aw=[...new Set(trans.map(t=>t.a))].map(n=>{const a=getAlias(n);return a?`${n}: 💳 ${a}`:null;}).filter(Boolean);
         if(aw.length) txt+=`\n💳 *ALIAS:*\n`+aw.join('\n');
         const waLink = document.createElement('a');
-waLink.href = `https://web.whatsapp.com/send?text=${encodeURIComponent(txt)}`;
+waLink.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`;
 waLink.target = '_blank';
 document.body.appendChild(waLink);
 waLink.click();
