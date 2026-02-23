@@ -1250,10 +1250,33 @@ document.getElementById('awardsList').innerHTML=html;
         const bal={};
         TODOS_NOMBRES.forEach(n=>bal[n]=0);
         gastosArray.forEach(g=>{ const cpp=g.monto/g.consumidores.length; g.consumidores.forEach(c=>bal[c]-=cpp); bal[g.quien]+=g.monto; });
-        const deu=[],acr=[];
-        Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
-        const trans=[],dc=[...deu],ac=[...acr];
-        while(dc.length&&ac.length){ const d=dc[0],a=ac[0],m=Math.min(d.m,a.m); trans.push({de:d.n,a:a.n,monto:m}); d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); }
+        const PAREJAS = {
+    'Toto':'Cata','Cata':'Toto',
+    'Toti':'Leila','Leila':'Toti',
+    'Mateo':'Juli','Juli':'Mateo',
+    'Caamaño':'Manu','Manu':'Caamaño',
+    'Tirri':'Lola','Lola':'Tirri',
+    'Zabala':'Sami','Sami':'Zabala'
+};
+const deu=[],acr=[];
+Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
+const trans=[],dc=[...deu],ac=[...acr];
+// Primero resolver deudas entre parejas
+for(const d of dc){
+    const pareja = PAREJAS[d.n];
+    if(!pareja) continue;
+    const aIdx = ac.findIndex(a=>a.n===pareja);
+    if(aIdx===-1) continue;
+    const a = ac[aIdx];
+    const m = Math.min(d.m, a.m);
+    trans.push({de:d.n, a:a.n, monto:m});
+    d.m-=m; a.m-=m;
+    if(a.m<1) ac.splice(aIdx,1);
+}
+// Luego el resto normal
+const dcRest = dc.filter(d=>d.m>=1);
+const acRest = ac.filter(a=>a.m>=1);
+while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.m,a.m); trans.push({de:d.n,a:a.n,monto:m}); d.m-=m;a.m-=m; if(d.m<1)dcRest.shift();if(a.m<1)acRest.shift(); }
         const total=gastosArray.reduce((s,g)=>s+g.monto,0);
         const acreedores=[...new Set(trans.map(t=>t.a))];
         const aliases=acreedores.map(n=>{const a=getAlias(n);return a?`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.1);"><span style="color:rgba(255,255,255,0.8);font-weight:bold;">${n}</span><span style="color:#FFD700;">💳 ${a}</span></div>`:''}).filter(Boolean).join('');
@@ -1273,11 +1296,33 @@ document.getElementById('awardsList').innerHTML=html;
         txt+=`\n💸 *TRANSFERENCIAS:*\n`;
         const bal={};TODOS_NOMBRES.forEach(n=>bal[n]=0);
         gastosArray.forEach(g=>{ const cpp=g.monto/g.consumidores.length; g.consumidores.forEach(c=>bal[c]-=cpp); bal[g.quien]+=g.monto; });
-        const deu=[],acr=[];
-        Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
-        const dc=[...deu],ac=[...acr],tw=[];
-        while(dc.length&&ac.length){ const d=dc[0],a=ac[0],m=Math.min(d.m,a.m); tw.push({de:d.n,a:a.n,monto:m}); d.m-=m;a.m-=m; if(d.m<1)dc.shift();if(a.m<1)ac.shift(); }
-        tw.forEach(t=>{ txt+=`${t.de} → ${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}\n`; });
+        const PAREJAS = {
+    'Toto':'Cata','Cata':'Toto',
+    'Toti':'Leila','Leila':'Toti',
+    'Mateo':'Juli','Juli':'Mateo',
+    'Caamaño':'Manu','Manu':'Caamaño',
+    'Tirri':'Lola','Lola':'Tirri',
+    'Zabala':'Sami','Sami':'Zabala'
+};
+const deu=[],acr=[];
+Object.entries(bal).forEach(([n,b])=>{ if(Math.abs(b)<1)return; if(b<0)deu.push({n,m:Math.abs(b)}); else acr.push({n,m:b}); });
+const trans=[],dc=[...deu],ac=[...acr];
+// Primero resolver deudas entre parejas
+for(const d of dc){
+    const pareja = PAREJAS[d.n];
+    if(!pareja) continue;
+    const aIdx = ac.findIndex(a=>a.n===pareja);
+    if(aIdx===-1) continue;
+    const a = ac[aIdx];
+    const m = Math.min(d.m, a.m);
+    trans.push({de:d.n, a:a.n, monto:m});
+    d.m-=m; a.m-=m;
+    if(a.m<1) ac.splice(aIdx,1);
+}
+// Luego el resto normal
+const dcRest = dc.filter(d=>d.m>=1);
+const acRest = ac.filter(a=>a.m>=1);
+while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.m,a.m); trans.push({de:d.n,a:a.n,monto:m}); d.m-=m;a.m-=m; if(d.m<1)dcRest.shift();if(a.m<1)acRest.shift(); }        tw.forEach(t=>{ txt+=`${t.de} → ${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}\n`; });
         const aw=[...new Set(tw.map(t=>t.a))].map(n=>{const a=getAlias(n);return a?`${n}: 💳 ${a}`:null;}).filter(Boolean);
         if(aw.length) txt+=`\n💳 *ALIAS:*\n`+aw.join('\n');
         window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`,'_blank');
