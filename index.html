@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,8 +8,6 @@
     <title>LA CULPA - App</title>
     <link rel="icon" type="image/png" href="https://i.imgur.com/czObXpX.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/qJl5bjR.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap" rel="stylesheet">
     <meta name="theme-color" content="#120D1F">
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkxBIENVTFBBIiwgInNob3J0X25hbWUiOiAiTGEgQ3VscGEiLCAiZGVzY3JpcHRpb24iOiAiUmFua2luZyBkZSBBc2lzdGVuY2lhcyIsICJzdGFydF91cmwiOiAiL2xhLWN1bHBhLWFwcC8iLCAic2NvcGUiOiAiL2xhLWN1bHBhLWFwcC8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsICJ0aGVtZV9jb2xvciI6ICIjMTIwRDFGIiwgImljb25zIjogW3sic3JjIjogImh0dHBzOi8vaS5pbWd1ci5jb20vcUpsNWJqUi5wbmciLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9XX0=">
     <style> 
@@ -204,34 +203,30 @@
     </div>
     <!-- MAIN APP -->
     <div id="mainApp" style="display:none;">
-       <div style="position:relative;overflow:hidden;background:linear-gradient(160deg,#150828 0%,#2C1155 45%,#150828 100%);padding:36px 20px 28px;text-align:center;border-radius:20px;margin-bottom:14px;border:1px solid rgba(200,168,48,0.2);box-shadow:0 8px 40px rgba(0,0,0,0.5),inset 0 1px 0 rgba(200,168,48,0.2);">
-    <!-- línea dorada top -->
-    <div style="position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,#C8A830,transparent);"></div>
-    <!-- línea dorada bottom -->
-    <div style="position:absolute;bottom:0;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,48,0.35),transparent);"></div>
-    <!-- glow radial sutil -->
-    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 50% 0%,rgba(200,168,48,0.07) 0%,transparent 65%),radial-gradient(ellipse 60% 40% at 15% 80%,rgba(107,45,145,0.25) 0%,transparent 55%);pointer-events:none;"></div>
-    <button onclick="logout()" style="position:fixed;top:20px;right:20px;z-index:1000;background:rgba(255,255,255,0.1);border:1px solid rgba(200,168,48,0.4);color:rgba(200,168,48,0.8);padding:8px 15px;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;">
+        <div class="header" style="position:relative;overflow:hidden;background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 50%,#3A1555 100%);">
+    <button onclick="logout()" style="position:fixed;top:20px;right:20px;z-index:1000;background:rgba(255,255,255,0.2);border:2px solid #FFD700;color:#FFD700;padding:8px 15px;border-radius:10px;font-size:12px;font-weight:bold;cursor:pointer;">
         🚪 Cerrar sesión
     </button>
-    <div class="logo" style="position:relative;z-index:1;filter:drop-shadow(0 4px 24px rgba(200,168,48,0.38));width:min(200px,56vw);height:min(200px,56vw);"></div>
-    <div style="position:relative;z-index:1;font-family:'Cinzel',serif;font-size:34px;font-weight:900;letter-spacing:10px;margin-bottom:10px;background:linear-gradient(180deg,#FFE566 0%,#C8A830 50%,#9A7820 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">LA CULPA</div>
-    <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:10px;">
-        <div style="height:1px;width:36px;background:linear-gradient(to right,transparent,rgba(200,168,48,0.6));"></div>
-        <div style="font-family:'Cinzel',serif;color:rgba(200,168,48,0.65);font-size:9px;letter-spacing:5px;text-transform:uppercase;">8 Reyes</div>
-        <div style="height:1px;width:36px;background:linear-gradient(to left,transparent,rgba(200,168,48,0.6));"></div>
+    <!-- Fondo con patrón sutil -->
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(200,168,48,0.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(107,45,145,0.4) 0%,transparent 50%);pointer-events:none;"></div>
+    <!-- Líneas decorativas -->
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(200,168,48,0.03) 40px,rgba(200,168,48,0.03) 41px);pointer-events:none;"></div>
+    <div class="logo" style="position:relative;z-index:1;filter:drop-shadow(0 4px 20px rgba(200,168,48,0.4));"></div>
+    <div class="title" style="position:relative;z-index:1;font-family:'Georgia',serif;font-size:38px;letter-spacing:6px;background:linear-gradient(180deg,#FFE566 0%,#C8A830 50%,#A07820 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;">LA CULPA</div>
+    <div style="position:relative;z-index:1;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;">
+        <div style="height:1px;width:40px;background:linear-gradient(to right,transparent,#C8A830);"></div>
+        <div style="font-family:'Georgia',serif;color:#C8A830;font-size:11px;letter-spacing:4px;text-transform:uppercase;opacity:0.85;">8 Reyes</div>
+        <div style="height:1px;width:40px;background:linear-gradient(to left,transparent,#C8A830);"></div>
     </div>
 </div>
 
-    <div style="display:flex;gap:0;margin-bottom:20px;background:rgba(8,3,18,0.95);border:1px solid rgba(200,168,48,0.15);border-radius:12px;overflow:hidden;position:relative;">
-            <!-- línea dorada encima -->
-            <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,168,48,0.5),transparent);z-index:2;pointer-events:none;"></div>
-            <div class="tab active" onclick="showTab('home',this)" style="font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:0.5px;text-transform:uppercase;border-right:1px solid rgba(200,168,48,0.08);">🏠<br>Home</div>
-            <div class="tab" onclick="showTab('ranking',this)" style="font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:0.5px;text-transform:uppercase;border-right:1px solid rgba(200,168,48,0.08);">👑<br>Culposos</div>
-            <div class="tab" onclick="showTab('juntadas',this)" style="font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:0.5px;text-transform:uppercase;border-right:1px solid rgba(200,168,48,0.08);">📅<br>Juntadas</div>
-            <div class="tab" onclick="showTab('awards',this)" style="font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:0.5px;text-transform:uppercase;border-right:1px solid rgba(200,168,48,0.08);">🏆<br>Awards</div>
-            <div class="tab" onclick="showTab('calculadora',this)" style="font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:0.5px;text-transform:uppercase;border-right:1px solid rgba(200,168,48,0.08);">💰<br>Calc</div>
-            <div class="tab" onclick="showTab('perfil',this)" style="font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:0.5px;text-transform:uppercase;">👤<br>Perfil</div>
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('home',this)">🏠<br>Home</div>
+            <div class="tab" onclick="showTab('ranking',this)">👑<br>Culposos</div>
+            <div class="tab" onclick="showTab('juntadas',this)">📅<br>Juntadas</div>
+            <div class="tab" onclick="showTab('awards',this)">🏆<br>Awards</div>
+            <div class="tab" onclick="showTab('calculadora',this)">💰<br>Calc</div>
+            <div class="tab" onclick="showTab('perfil',this)">👤<br>Perfil</div>
         </div>
 
         <!-- HOME -->
