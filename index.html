@@ -572,17 +572,100 @@ function parseCSVLine(line) {
                         <button onclick="abrirModalEditarJuntada(${proximaIndex})" style="flex:1;background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:10px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">✏️ Editar</button>
                         <button onclick="confirmarEliminar(${proximaIndex})" style="flex:1;background:rgba(244,67,54,0.15);border:2px solid #f44336;color:#f44336;padding:10px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
                     </div>` : '';
-                proximaHTML = `
-                    <div class="section-title" style="margin-top:10px;">🎯 Próxima Juntada</div>
-                    <div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.15) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;">
-                        <div class="card-date">${proximaJuntada.Fecha}</div>
-                        <div class="card-title" style="font-size:20px;">${desc}</div>
-                        <div class="card-details" style="margin:10px 0;">
-                            <span>🏠 ${proximaJuntada.Host || 'Sin host'}</span>
-                            ${proximaJuntada.Categoría || proximaJuntada.Categoria ? `<span>🏷️ ${proximaJuntada.Categoría || proximaJuntada.Categoria}</span>` : ''}
-                        </div>
-                        ${estadoHTML}${botonesProxima}
+              proximaHTML = `
+    <div class="section-title" style="margin-top:10px;">🎯 Próxima Juntada</div>
+    <div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,215,0,0.02));border:2px solid rgba(200,168,48,0.35);border-left:4px solid #FFD700;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+            <div>
+                <div class="card-date">${proximaJuntada.Fecha}</div>
+                <div class="card-title" style="font-size:18px;">${desc}</div>
+                <div style="color:rgba(255,255,255,0.45);font-size:12px;margin-top:2px;">🏠 ${proximaJuntada.Host || 'Sin host'}</div>
+            </div>
+            ${proximaJuntada.Hora ? `<div style="text-align:right;"><div style="color:rgba(255,255,255,0.3);font-size:9px;letter-spacing:1px;text-transform:uppercase;">Faltan</div><div style="color:#C8A830;font-size:13px;font-family:Georgia,serif;font-weight:bold;" id="ctHomeProxima"></div></div>` : ''}
+        </div>
+
+        <div style="margin-bottom:6px;">
+            <div style="color:rgba(255,255,255,0.25);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">⚔️ Los 8 Reyes</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;padding:4px 2px;">
+                ${['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'].map(n => {
+                    const conf = esConfirmadoPositivo(proximaJuntada[n]);
+                    const noConf = esConfirmadoNegativo(proximaJuntada[n]);
+                    const foto = FOTOS[n] || '';
+                    const border = conf ? '#4CAF50' : noConf ? '#f44336' : 'rgba(255,255,255,0.12)';
+                    const filtro = conf ? 'none' : 'grayscale(1) brightness(0.4)';
+                    return `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;position:relative;">
+                        <div style="font-size:8px;line-height:1;margin-bottom:1px;">👑</div>
+                        <div style="width:28px;height:28px;border-radius:50%;background:url('${foto}') center top/cover;border:2px solid ${border};filter:${filtro};"></div>
+                        <div style="font-size:8px;color:rgba(255,255,255,${conf?'0.7':'0.3'});max-width:30px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;">${n}</div>
                     </div>`;
+                }).join('')}
+            </div>
+        </div>
+
+        <div style="margin-bottom:10px;">
+            <div style="color:rgba(255,255,255,0.25);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">♛ Reinas & Aliados</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap;padding:2px;">
+                ${['Leila','Sami','Juli','Manu','Matu','Cata','Lola'].map(n => {
+                    const conf = esConfirmadoPositivo(proximaJuntada[n]);
+                    const noConf = esConfirmadoNegativo(proximaJuntada[n]);
+                    const foto = FOTOS[n] || '';
+                    const border = conf ? '#4CAF50' : noConf ? '#f44336' : 'rgba(255,255,255,0.12)';
+                    const filtro = conf ? 'none' : 'grayscale(1) brightness(0.4)';
+                    return `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+                        <div style="width:28px;height:28px;border-radius:50%;background:url('${foto}') center top/cover;border:2px solid ${border};filter:${filtro};"></div>
+                        <div style="font-size:8px;color:rgba(255,255,255,${conf?'0.7':'0.3'});max-width:30px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center;">${n}</div>
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>
+
+        ${(() => {
+            const reyes = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+            const todos = culpososData.map(c => c.Nombre);
+            const reyesConf = reyes.filter(n => esConfirmadoPositivo(proximaJuntada[n])).length;
+            const totalConf = todos.filter(n => esConfirmadoPositivo(proximaJuntada[n])).length;
+            const hayQ = reyesConf >= 4;
+            const pctBarra = (reyesConf / 8) * 100;
+            return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,0.06);overflow:hidden;">
+                    <div style="height:100%;width:${pctBarra}%;border-radius:2px;background:${hayQ?'linear-gradient(90deg,#2e7d32,#4CAF50)':'linear-gradient(90deg,#6B2D91,#C8A830)'};transition:width 0.5s;"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+                    <div style="font-size:11px;font-weight:bold;color:${hayQ?'#4CAF50':'rgba(255,255,255,0.4)'};">⚔️ ${reyesConf}/8 ${hayQ?'hay quorum':'sin quorum'}</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.35);">👥 ${totalConf}/${culpososData.length} confirmados</div>
+                </div>
+            </div>`;
+        })()}
+
+        ${yaConfirme
+            ? `<div style="background:rgba(${positivo?'76,175,80':'244,67,54'},0.15);border:1.5px solid ${positivo?'#4CAF50':'#f44336'};border-radius:9px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">
+                <div style="color:${positivo?'#4CAF50':'#f44336'};font-size:13px;font-weight:bold;">${positivo?'✅ Ya confirmaste':'❌ Me abstuve'}</div>
+                <div onclick="abrirModalConfirmar(${proximaIndex})" style="color:rgba(255,215,0,0.6);font-size:11px;cursor:pointer;">✏️ Editar</div>
+               </div>`
+            : `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <button onclick="abrirModalConfirmar(${proximaIndex})" style="padding:11px;border:none;border-radius:9px;background:linear-gradient(135deg,#4CAF50,#2e7d32);color:white;font-size:14px;font-weight:bold;cursor:pointer;">⚔️ VOY</button>
+                <button onclick="abrirModalConfirmar(${proximaIndex})" style="padding:11px;border:1.5px solid rgba(244,67,54,0.35);border-radius:9px;background:rgba(244,67,54,0.08);color:rgba(244,67,54,0.7);font-size:13px;cursor:pointer;">Me abstengo</button>
+               </div>`
+        }
+        ${botonesProxima}
+    </div>`;
+
+${proximaJuntada.Hora ? `<script>
+(function(){
+    const parts = '${proximaJuntada.Fecha}'.split('/');
+    const timeParts = '${proximaJuntada.Hora}'.split(':');
+    const target = new Date(parts[2], parts[1]-1, parts[0], timeParts[0], timeParts[1]);
+    function upd(){
+        const el = document.getElementById('ctHomeProxima');
+        if(!el) return;
+        const diff = target - new Date();
+        if(diff<=0){el.textContent='¡HOY!';return;}
+        const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+        el.textContent = h>=24 ? Math.floor(h/24)+'d '+(h%24)+'h' : h+'h '+String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
+    }
+    upd(); setInterval(upd,1000);
+})();
+<\/script>` : ''}
             }
        } else if (usuario) {
     proximaHTML = `
