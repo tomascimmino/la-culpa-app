@@ -749,19 +749,24 @@ while (i < mostradas.length) {
         + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
         + '</div></div>';
 
-    if (mismaFecha) {
-        cardsHTML += '<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 0;margin:0;position:relative;">'
-            + '<div style="flex:1;height:2px;background:linear-gradient(to right,transparent,#C8A830);"></div>'
-            + '<div style="color:#C8A830;font-family:\'Cinzel\',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;white-space:nowrap;padding:4px 12px;border:1px solid rgba(200,168,48,0.4);background:rgba(200,168,48,0.08);">⚡ DOBLE JORNADA ⚡</div>'
-            + '<div style="flex:1;height:2px;background:linear-gradient(to left,transparent,#C8A830);"></div>'
-            + '</div>';
+   if (mismaFecha) {
+    cardsHTML += `
+    <div style="position:relative;padding-left:22px;margin:0;">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:22px;">
+            <div style="position:absolute;left:6px;top:8px;width:10px;height:2px;background:#C8A830;"></div>
+            <div style="position:absolute;left:6px;top:8px;width:2px;height:calc(50% - 14px);background:linear-gradient(to bottom,#C8A830,#FFE566);"></div>
+            <div style="position:absolute;left:2px;top:50%;transform:translateY(-50%) rotate(45deg);width:10px;height:10px;background:#C8A830;box-shadow:0 0 8px rgba(200,168,48,0.6);"></div>
+            <div style="position:absolute;left:6px;bottom:8px;width:2px;height:calc(50% - 14px);background:linear-gradient(to top,#C8A830,#FFE566);"></div>
+            <div style="position:absolute;left:6px;bottom:8px;width:10px;height:2px;background:#C8A830;"></div>
+        </div>
+    </div>`;
         i++;
         const j2 = mostradas[i];
         const ri2 = juntadasData.indexOf(j2);
         const asistio2 = esConfirmadoPositivo(j2[nombreUsuario]);
         const foto2 = j2['Foto Juntada'] || j2['Foto juntada'] || '';
         const driveLink2 = getDriveLink(j2);
-        cardsHTML += '<div class="card" onclick="verDetalleJuntada(' + ri2 + ')" style="cursor:pointer;transition:transform 0.2s;border-top:none;margin-top:0;" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
+        cardsHTML += '<div class="card" onclick="verDetalleJuntada(' + ri2 + ')" style="cursor:pointer;transition:transform 0.2s;border-top:none;margin-top:0;margin-left:22px;" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
             + (foto2 ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto2 + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
             + '<div class="card-date">' + (j2.Fecha||'Fecha') + '</div>'
             + '<div class="card-title">' + (j2.Descripción||j2.Descripcion||'Juntada') + '</div>'
