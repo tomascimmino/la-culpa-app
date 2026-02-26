@@ -537,33 +537,32 @@ function renderContadorAsistencia(j) {
         const val = j[nombre];
         const conf = esConfirmadoPositivo(val);
         const noConf = esConfirmadoNegativo(val);
-        const cls = conf ? 'fue' : noConf ? 'nofue' : 'pending';
         const foto = FOTOS[nombre] || '';
-        return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-            <div style="width:30px;height:30px;border-radius:50%;background:url('${foto}') center top/cover;
-                border:2px solid ${conf?'#4CAF50':noConf?'#f44336':'rgba(255,255,255,0.2)'};
+        return `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;flex-shrink:0;">
+            <div style="width:24px;height:24px;border-radius:50%;background:url('${foto}') center top/cover;
+                border:1.5px solid ${conf?'#4CAF50':noConf?'#f44336':'rgba(255,255,255,0.2)'};
                 opacity:${noConf?'0.35':conf?'1':'0.55'};
                 filter:${noConf?'grayscale(60%)':'none'};
                 transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-            <span style="font-size:8px;color:rgba(255,255,255,0.45);max-width:30px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${nombre}</span>
+            <span style="font-size:7px;color:rgba(255,255,255,0.4);max-width:24px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${nombre}</span>
         </div>`;
     }
 
-  const reyesHTML = REYES.map(avHTML).join('');
+    const reyesHTML = REYES.map(avHTML).join('');
     const agHTML = AGREGADOS.filter(n => culpososData.find(c=>c.Nombre===n)).map(avHTML).join('');
 
-    return `<div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:10px 12px;margin-bottom:12px;border:1px solid rgba(200,168,48,0.2);">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <span style="color:rgba(255,255,255,0.45);font-size:10px;letter-spacing:1px;text-transform:uppercase;">Confirmaciones</span>
-            <div style="display:flex;gap:6px;align-items:center;">
-                <div style="display:flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:bold;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.35)':'rgba(255,152,0,0.3)'};">👑 ${reyesConf}/8${hayQ?' ✅':''}</div>
-                <div style="display:flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:bold;background:rgba(200,168,48,0.12);color:#C8A830;border:1px solid rgba(200,168,48,0.3);">👥 ${totalConf}/${culpososData.length}</div>
+    return `<div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:8px 10px;margin-bottom:12px;border:1px solid rgba(200,168,48,0.2);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
+            <span style="color:rgba(255,255,255,0.4);font-size:9px;letter-spacing:1px;text-transform:uppercase;">Confirmaciones</span>
+            <div style="display:flex;gap:5px;align-items:center;">
+                <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.35)':'rgba(255,152,0,0.3)'};">👑 ${reyesConf}/8${hayQ?' ✓':''}</div>
+                <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:rgba(200,168,48,0.12);color:#C8A830;border:1px solid rgba(200,168,48,0.3);">👥 ${totalConf}/${culpososData.length}</div>
             </div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:flex-start;">
-            ${reyesHTML}
-            <div style="width:1px;height:30px;background:rgba(200,168,48,0.25);margin:0 2px;align-self:flex-start;margin-top:4px;"></div>
-            ${agHTML}
+        <div style="display:flex;flex-direction:column;gap:4px;">
+            <div style="display:flex;gap:4px;align-items:flex-start;flex-wrap:nowrap;">${reyesHTML}</div>
+            <div style="height:1px;background:linear-gradient(to right,transparent,rgba(200,168,48,0.25),transparent);"></div>
+            <div style="display:flex;gap:4px;align-items:flex-start;flex-wrap:nowrap;">${agHTML}</div>
         </div>
     </div>`;
 }
