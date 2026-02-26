@@ -549,8 +549,8 @@ function renderContadorAsistencia(j) {
         </div>`;
     }
 
-    const reyesHTML = REYES.map(avHTML).join('');
-    const agHTML = AGREGADOS.map(n => culpososData.find(c=>c.Nombre===n) ? avHTML(n) : '').filter(Boolean).join('');
+  const reyesHTML = REYES.map(avHTML).join('');
+    const agHTML = AGREGADOS.filter(n => culpososData.find(c=>c.Nombre===n)).map(avHTML).join('');
 
     return `<div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:10px 12px;margin-bottom:12px;border:1px solid rgba(200,168,48,0.2);">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
