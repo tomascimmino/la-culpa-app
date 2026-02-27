@@ -879,7 +879,7 @@ while (i < mostradas.length) {
     const maxHostCount = topHosts[0] ? topHosts[0][1] : 1;
     const hostBarsHTML = topHosts.map(([h, c]) =>
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">'
-        + '<span style="color:rgba(255,255,255,0.8);font-size:11px;width:65px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + h.split(' - ')[0] + '</span>'
+        + '<span style="color:rgba(255,255,255,0.8);font-size:11px;width:85px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + h + '</span>'
         + '<div style="flex:1;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">'
         + '<div style="height:100%;width:' + Math.round((c/maxHostCount)*100) + '%;background:linear-gradient(to right,#6B2D91,#C8A830);border-radius:3px;"></div></div>'
         + '<span style="color:#C8A830;font-size:11px;font-weight:bold;width:18px;text-align:right;">' + c + '</span>'
