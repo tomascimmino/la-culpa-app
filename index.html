@@ -761,7 +761,7 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
             mesesVistos.push({ label: NOMBRES_MESES[f.getMonth()], desde, hasta });
         }
     });
-
+        mesesVistos.sort((a, b) => new Date(a.desde) - new Date(b.desde));
     let botonesmes = '<button onclick="window.juntadasDesde=\'\';window.juntadasHasta=\'\';window.juntadasVerMas=false;renderJuntadas()" style="padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ' + ((!window.juntadasDesde&&!window.juntadasHasta)?'#FFD700':'rgba(139,77,143,0.4)') + ';background:' + ((!window.juntadasDesde&&!window.juntadasHasta)?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'rgba(30,16,64,0.6)') + ';color:' + ((!window.juntadasDesde&&!window.juntadasHasta)?'#FFD700':'rgba(255,255,255,0.6)') + ';">Todo</button>';
     mesesVistos.forEach(function(op) {
         const activo = window.juntadasDesde===op.desde && window.juntadasHasta===op.hasta;
@@ -856,13 +856,73 @@ while (i < mostradas.length) {
         motivacionalHTML = '<div class="card" style="background:rgba(139,77,143,0.15);border-left-color:' + col2 + ';margin-top:10px;text-align:center;"><div style="font-size:32px;margin-bottom:8px;">' + emoji2 + '</div><div style="color:' + col2 + ';font-weight:bold;font-size:15px;">Fuiste al ' + pctFilt + '% ' + contexto + '</div></div>';
     }
 
+    // ── RÉCORDS ──
+    const REYES = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+    let masConcurrida = null, menosConcurrida = null, masReyes = null, menosReyes = null;
+    let maxAsist = -1, minAsist = 999, maxReyes = -1, minReyes = 999;
+    pasadas.forEach(j => {
+        const asist = parseInt(j['N° Asist'] || j['N Asist'] || '0');
+        const reyesPresentes = REYES.filter(n => esConfirmadoPositivo(j[n])).length;
+        if (asist > maxAsist) { maxAsist = asist; masConcurrida = j; }
+        if (asist < minAsist) { minAsist = asist; menosConcurrida = j; }
+        if (reyesPresentes > maxReyes) { maxReyes = reyesPresentes; masReyes = j; }
+        if (reyesPresentes < minReyes) { minReyes = reyesPresentes; menosReyes = j; }
+    });
+
+    // Hosts más activos
+    const hostCount = {};
+    pasadas.forEach(j => {
+        const h = (j.Host || 'Sin host').trim();
+        hostCount[h] = (hostCount[h] || 0) + 1;
+    });
+    const topHosts = Object.entries(hostCount).sort((a,b) => b[1]-a[1]).slice(0,3);
+    const maxHostCount = topHosts[0] ? topHosts[0][1] : 1;
+    const hostBarsHTML = topHosts.map(([h, c]) =>
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">'
+        + '<span style="color:rgba(255,255,255,0.8);font-size:11px;width:65px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + h.split(' - ')[0] + '</span>'
+        + '<div style="flex:1;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">'
+        + '<div style="height:100%;width:' + Math.round((c/maxHostCount)*100) + '%;background:linear-gradient(to right,#6B2D91,#C8A830);border-radius:3px;"></div></div>'
+        + '<span style="color:#C8A830;font-size:11px;font-weight:bold;width:18px;text-align:right;">' + c + '</span>'
+        + '</div>'
+    ).join('');
+
+    function recordCard(emoji, label, j, stat, gold) {
+        if (!j) return '';
+        const ri = juntadasData.indexOf(j);
+        const desc = j.Descripción || j.Descripcion || 'Juntada';
+        return '<div onclick="verDetalleJuntada(' + ri + ')" style="background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border:2px solid ' + (gold?'rgba(255,215,0,0.4)':'rgba(107,45,145,0.35)') + ';border-radius:14px;padding:14px 12px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;" onmouseover="this.style.transform=\'translateY(-3px)\';this.style.boxShadow=\'0 8px 25px rgba(200,168,48,0.2)\'" onmouseout="this.style.transform=\'none\';this.style.boxShadow=\'none\'">'
+            + '<div style="font-size:24px;margin-bottom:7px;">' + emoji + '</div>'
+            + '<div style="color:rgba(255,255,255,0.4);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">' + label + '</div>'
+            + '<div style="color:white;font-size:12px;font-weight:bold;line-height:1.3;margin-bottom:4px;">' + desc + '</div>'
+            + '<div style="color:' + (gold?'#FFD700':'#C8A830') + ';font-size:12px;font-weight:bold;">' + stat + '</div>'
+            + '</div>';
+    }
+
+    const recordsHTML = '<div style="margin-bottom:20px;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">'
+        + '<div style="color:#C8A830;font-size:15px;font-weight:bold;">🏅 Récords</div>'
+        + '<div style="color:rgba(255,255,255,0.3);font-size:11px;">' + pasadas.length + ' juntadas</div></div>'
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+        + recordCard('🔥', 'Más concurrida', masConcurrida, maxAsist + ' asistentes', true)
+        + recordCard('😴', 'Menos asistentes', menosConcurrida, minAsist + ' asistentes', false)
+        + recordCard('👑', 'Más reyes', masReyes, maxReyes + '/8 reyes', true)
+        + recordCard('🏳️', 'Menos reyes', menosReyes, minReyes + '/8 reyes', false)
+        + '<div style="grid-column:span 2;background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border:2px solid rgba(107,45,145,0.35);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px;">'
+        + '<div style="font-size:28px;flex-shrink:0;">🏠</div>'
+        + '<div style="flex:1;"><div style="color:rgba(255,255,255,0.4);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Hosts más activos</div>' + hostBarsHTML + '</div>'
+        + '</div>'
+        + '</div>'
+        + '<div style="height:1px;background:linear-gradient(to right,transparent,rgba(200,168,48,0.2),transparent);margin-top:18px;"></div>'
+        + '</div>';
+
     document.getElementById('juntadasList').innerHTML =
         totalBannerHTML +
         '<div style="color:rgba(255,255,255,0.45);font-size:12px;margin-bottom:10px;">' + filtradas.length + ' juntada' + (filtradas.length!==1?'s':'') + ' encontradas</div>' +
         selectorHTML +
         (cardsHTML || '<p style="color:rgba(255,255,255,0.5);text-align:center;padding:30px;">Sin juntadas para este filtro</p>') +
         verMasHTML +
-        motivacionalHTML;
+        motivacionalHTML +
+        recordsHTML;
 }
 
     function cambiarMesJuntadas(key) {
