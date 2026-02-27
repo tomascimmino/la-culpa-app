@@ -248,7 +248,11 @@
             </div>
 
    <div id="culpapp-player">
-  <div id="songName" style="font-size:12px; margin-bottom:6px; text-align:center;"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+  <div id="vinylDisc" style="width:80px;height:80px;border-radius:50%;background:url('https://i.imgur.com/czObXpX.png') center/cover;border:3px solid #C8A830;box-shadow:0 0 15px rgba(200,168,48,0.4);animation:none;transition:animation 0.3s;">
+  </div>
+  <div id="songName" style="font-size:13px;text-align:center;color:#C8A830;font-weight:bold;"></div>
+</div>
   <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
     <button onclick="prevSong()">⏮</button>
     <button onclick="togglePlay()" id="playBtn">▶</button>
@@ -1602,20 +1606,30 @@ document.body.removeChild(waLink);
   background: #C8A830;
   cursor: pointer;
 }
+
+    @keyframes spinVinyl {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+#vinylDisc.playing {
+  animation: spinVinyl 4s linear infinite;
+}
 </style>
 
 <audio id="player"></audio>
 
 <script>
+const BASE = "https://github.com/tomascimmino/la-culpa-app/releases/download/v1.0-music/";
 const songs = [
-  { src: "https://drive.google.com/uc?export=download&id=1ZhZsTInCoxH4YwSHgPs_EFbgvFJmuKX8", name: "CULPA AWARDS 2024 opening" },
-  { src: "https://drive.google.com/uc?export=download&id=1Rz6dn6Y0AN5HvrDl7I6s9d_xHjN2RoLN", name: "No nos detendrán" },
-  { src: "https://drive.google.com/uc?export=download&id=14zrFFIU3sRFfQFoCD1EdWFlXl1hh73S9", name: "Viva la culpa" },
-  { src: "https://drive.google.com/uc?export=download&id=1c5PFUy4pvF1e-hD7P1xzGr4xUjUfdihc", name: "Puro corazón" },
-  { src: "https://drive.google.com/uc?export=download&id=1QvWpZUgQAP71LevMV0Mzkk_V4N3n94ns", name: "Ocho reyes" },
-  { src: "https://drive.google.com/uc?export=download&id=1Ru4IrlMLkksHj0GTQmyCZhdRO6zyQ_ln", name: "No apto para débiles" },
-  { src: "https://drive.google.com/uc?export=download&id=1vMbEf6OgZlxwvMvQksyE-6cHLieo9RUa", name: "Siempre juntos feat. Bad Bunny" },
-  { src: "https://drive.google.com/uc?export=download&id=1dovTKGGkTi15LLkrP4uIPZB-MpWmErkc", name: "CULPA AWARDS 2024 ending" }
+  { src: BASE + "1.CULPA.AWARDS.2024.opening.mp3", name: "CULPA AWARDS 2024 opening" },
+  { src: BASE + "2.No.nos.detendran.mp3", name: "No nos detendrán" },
+  { src: BASE + "3.Viva.la.culpa.mp3", name: "Viva la culpa" },
+  { src: BASE + "4.Puro.corazon.mp3", name: "Puro corazón" },
+  { src: BASE + "5.Ocho.reyes.mp3", name: "Ocho reyes" },
+  { src: BASE + "6.No.apto.para.debiles.mp3", name: "No apto para débiles (trolos abstenerse)" },
+  { src: BASE + "7.Siempre.juntos.feat.Bad.Bunny.mp3", name: "Siempre juntos feat. Bad Bunny" },
+  { src: BASE + "8.CULPA.AWARDS.2024.ending.mp3", name: "CULPA AWARDS 2024 ending" },
+  { src: BASE + "La.cola.contra.la.pared.-.INEDITO.-.LA.CULPA.mp3", name: "La cola contra la pared - INÉDITO" }
 ];
 
 let currentIndex = 0;
@@ -1632,9 +1646,11 @@ function togglePlay() {
   if (player.paused) {
     player.play();
     playBtn.textContent = "⏸";
+    document.getElementById("vinylDisc").classList.add("playing");
   } else {
     player.pause();
     playBtn.textContent = "▶";
+    document.getElementById("vinylDisc").classList.remove("playing");
   }
 }
 
@@ -1643,6 +1659,7 @@ function nextSong() {
   loadSong(currentIndex);
   player.play().catch(() => {});
   playBtn.textContent = "⏸";
+  document.getElementById("vinylDisc").classList.add("playing");
 }
 
 function prevSong() {
@@ -1650,6 +1667,7 @@ function prevSong() {
   loadSong(currentIndex);
   player.play();
   playBtn.textContent = "⏸";
+  document.getElementById("vinylDisc").classList.add("playing");
 }
     function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
