@@ -907,6 +907,11 @@ while (i < mostradas.length) {
         + recordCard('😴', 'Menos asistentes', menosConcurrida, minAsist + ' asistentes', false)
         + recordCard('👑', 'Más reyes', masReyes, maxReyes + '/8 reyes', true)
         + recordCard('🏳️', 'Menos reyes', menosReyes, minReyes + '/8 reyes', false)
+        + (() => {
+    let rachaMax = 0, rachaHolder = '';
+    culpososData.forEach(c => { const r = calcularRacha(c.Nombre); if (r > rachaMax) { rachaMax = r; rachaHolder = c.Nombre; } });
+    return rachaMax >= 3 ? '<div style="grid-column:span 2;background:linear-gradient(135deg,#1E1040 0%,#2A1455 100%);border:2px solid rgba(255,215,0,0.4);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px;"><div style="font-size:28px;flex-shrink:0;">🔥</div><div><div style="color:rgba(255,255,255,0.4);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Racha activa</div><div style="color:white;font-size:14px;font-weight:bold;">' + rachaHolder + '</div><div style="color:#FFD700;font-size:13px;font-weight:bold;margin-top:2px;">' + rachaMax + ' juntadas seguidas</div></div></div>' : '';
+})()
         + '<div style="grid-column:span 2;background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border:2px solid rgba(107,45,145,0.35);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px;">'
         + '<div style="font-size:28px;flex-shrink:0;">🏠</div>'
         + '<div style="flex:1;"><div style="color:rgba(255,255,255,0.4);font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Hosts más activos</div>' + hostBarsHTML + '</div>'
