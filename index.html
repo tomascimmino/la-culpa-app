@@ -1608,15 +1608,14 @@ document.body.removeChild(waLink);
 
 <script>
 const songs = [
-  "assets/audio/0 La cola contra la pared.mp3",
-  "assets/audio/1 CULPA AWARDS 2024 opening.mp3",
-  "assets/audio/2 No nos detendrán.mp3",
-  "assets/audio/3 Viva la culpa.mp3",
-  "assets/audio/4 Puro corazón.mp3",
-  "assets/audio/5 Ocho reyes.mp3",
-  "assets/audio/6 No apto para debiles.mp3",
-  "assets/audio/7 Siempre juntos feat. Bad Bunny.mp3",
-  "assets/audio/8 CULPA AWARDS 2024 ending.mp3"
+  { src: "https://drive.google.com/uc?export=download&id=1ZhZsTInCoxH4YwSHgPs_EFbgvFJmuKX8", name: "CULPA AWARDS 2024 opening" },
+  { src: "https://drive.google.com/uc?export=download&id=1Rz6dn6Y0AN5HvrDl7I6s9d_xHjN2RoLN", name: "No nos detendrán" },
+  { src: "https://drive.google.com/uc?export=download&id=14zrFFIU3sRFfQFoCD1EdWFlXl1hh73S9", name: "Viva la culpa" },
+  { src: "https://drive.google.com/uc?export=download&id=1c5PFUy4pvF1e-hD7P1xzGr4xUjUfdihc", name: "Puro corazón" },
+  { src: "https://drive.google.com/uc?export=download&id=1QvWpZUgQAP71LevMV0Mzkk_V4N3n94ns", name: "Ocho reyes" },
+  { src: "https://drive.google.com/uc?export=download&id=1Ru4IrlMLkksHj0GTQmyCZhdRO6zyQ_ln", name: "No apto para débiles" },
+  { src: "https://drive.google.com/uc?export=download&id=1vMbEf6OgZlxwvMvQksyE-6cHLieo9RUa", name: "Siempre juntos feat. Bad Bunny" },
+  { src: "https://drive.google.com/uc?export=download&id=1dovTKGGkTi15LLkrP4uIPZB-MpWmErkc", name: "CULPA AWARDS 2024 ending" }
 ];
 
 let currentIndex = 0;
@@ -1625,12 +1624,8 @@ const playBtn = document.getElementById("playBtn");
 const volume = document.getElementById("volume");
 
 function loadSong(index) {
-  player.src = songs[index];
-  const cleanName = songs[index]
-    .split("/").pop()
-    .replace(".mp3", "")
-    .replace(/^\d+\s*/, "");
-  document.getElementById("songName").textContent = cleanName + " - LA CULPA";
+  player.src = songs[index].src;
+  document.getElementById("songName").textContent = songs[index].name + " - LA CULPA";
 }
 
 function togglePlay() {
