@@ -825,7 +825,7 @@ function parseCSVLine(line) {
         if (modoDetalle) {
             return `
                 <div style="background:linear-gradient(135deg,#1e1e3f,#2a2a4f);border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);overflow:hidden;">
-                    ${foto ? `<div style="overflow:hidden;border-bottom:2px solid rgba(200,168,48,0.2);"><img src="${foto}" style="width:100%;max-height:380px;object-fit:cover;display:block;"></div>` : ''}
+                    ${foto ? `<div style="overflow:hidden;border-bottom:2px solid rgba(200,168,48,0.2);"><img src="${foto}" style="width:100%;display:block;"></div>` : ''}
                     <div style="padding:24px;">
                         <div style="text-align:center;margin-bottom:16px;">
                             <div style="color:#FFD700;font-size:13px;font-weight:bold;margin-bottom:8px;">${j.Fecha||''}</div>
@@ -854,7 +854,7 @@ function parseCSVLine(line) {
 
         // Modo card (feed home o historial)
         return `<div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(200,168,48,0.22);border-left:3px solid #C8A830;border-radius:16px;margin-bottom:12px;overflow:hidden;">
-            ${foto ? `<div onclick="verDetalleJuntada(${ri})" style="overflow:hidden;cursor:pointer;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>` : ''}
+            ${foto ? `<div onclick="verDetalleJuntada(${ri})" style="overflow:hidden;cursor:pointer;"><img src="${foto}" style="width:100%;display:block;"></div>` : ''}
             <div style="padding:12px 14px 8px;cursor:pointer;" onclick="verDetalleJuntada(${ri})">
                 <div style="color:#FFD700;font-size:11px;font-weight:bold;">📅 ${j.Fecha||''}</div>
                 <div style="color:white;font-size:16px;font-weight:bold;margin:3px 0;">${j.Descripción||j.Descripcion||'Juntada'}</div>
