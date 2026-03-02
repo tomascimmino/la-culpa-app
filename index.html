@@ -972,6 +972,7 @@ function parseCSVLine(line) {
     } catch(e) { console.error(e); }
 }
    function renderPostFeedHTML(p, allRows) {
+       console.log('POST OBJETO COMPLETO:', JSON.stringify(p));
         const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
         const fotoAutor = FOTOS[nombreAutor] || '';
