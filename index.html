@@ -501,7 +501,8 @@ window.juntadasAsistenteActivo = null;
         } catch(e) { console.error(e); alert('Error conectando con Google Sheets.'); }
     }
 
-   function parseCSV(csv) {
+  function parseCSV(csv) {
+    csv = csv.replace(/^\uFEFF/, '').replace(/\r/g, '');
     const lines = csv.split('\n');
     const headers = parseCSVLine(lines[0]);
     const data = [];
@@ -510,7 +511,7 @@ window.juntadasAsistenteActivo = null;
         const values = parseCSVLine(lines[i]);
         if (!values.some(v => v)) continue;
         const row = {};
-        headers.forEach((h, idx) => row[h] = values[idx] || '');
+        headers.forEach((h, idx) => row[h.trim()] = values[idx] || '');
         if (headers.includes('Fecha') && !row.Fecha && !row.Descripción && !row.Descripcion) continue;
         data.push(row);
     }
