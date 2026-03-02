@@ -1038,7 +1038,7 @@ const comentarios = allRows.filter(c => c.Tipo === 'comentario' && String(c.Dest
                     <div style="color:rgba(255,255,255,0.3);font-size:11px;">${p.Fecha||''}</div>
                 </div>
                 <div style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(139,77,143,0.2);color:rgba(200,168,48,0.7);border:1px solid rgba(139,77,143,0.3);">✍️ post</div>
-                ${(esMio||esAdmin) ? `<button onclick="eliminarPost('${p.ID}')" style="background:none;border:1px solid rgba(244,67,54,0.2);color:rgba(244,67,54,0.5);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;margin-left:4px;">🗑</button>` : ''}
+                ${(esMio||esAdmin) ? `<button onclick="eliminarPost('${postIdLimpio}')" style="background:none;border:1px solid rgba(244,67,54,0.2);color:rgba(244,67,54,0.5);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;margin-left:4px;">🗑</button>` : ''}
             </div>
             <div style="color:rgba(255,255,255,0.88);font-size:14px;line-height:1.55;padding:0 14px 12px;">${p.Texto}</div>
             <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);">
