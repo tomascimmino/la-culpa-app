@@ -743,15 +743,26 @@ function parseCSVLine(line) {
                 <button onclick="confirmarEliminar(${ri})" style="flex:1;background:rgba(244,67,54,0.15);border:2px solid #f44336;color:#f44336;padding:10px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
             </div>` : '';
 
-        const driveFolderId = driveLink ? (driveLink.match(/folders\/([^?]+)/)||[])[1] : null;
+      const driveFolderId = driveLink ? (driveLink.match(/folders\/([^?]+)/)||[])[1] : null;
         const driveBtn = modoDetalle ? (driveLink
-            ? `<div style="margin-top:16px;">
-                <iframe src="https://drive.google.com/embeddedfolderview?id=${driveFolderId}#grid"
-                    style="width:100%;height:320px;border:none;border-radius:12px;background:#0a0614;"
-                    allowfullscreen></iframe>
+            ? `<div style="margin-top:16px;" id="carrusel_${ri}">
+                <div style="position:relative;border-radius:14px;overflow:hidden;background:#0a0614;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;">
+                    <div id="carruselSlides_${ri}" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                        <div style="color:rgba(255,255,255,0.3);font-size:13px;">⏳ Cargando fotos...</div>
+                    </div>
+                    <button onclick="moverCarrusel(${ri},-1)" style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.55);border:none;color:white;font-size:22px;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;line-height:1;">‹</button>
+                    <button onclick="moverCarrusel(${ri},1)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.55);border:none;color:white;font-size:22px;width:36px;height:36px;border-radius:50%;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;line-height:1;">›</button>
+                    <div id="carruselDots_${ri}" style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;"></div>
+                    <div id="carruselCount_${ri}" style="position:absolute;top:8px;right:10px;background:rgba(0,0,0,0.5);color:white;font-size:11px;padding:2px 7px;border-radius:10px;"></div>
+                </div>
                 <a href="${driveLink}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;padding:11px;border-radius:10px;background:rgba(66,133,244,0.15);border:2px solid #4285F4;color:#4285F4;font-size:13px;font-weight:bold;text-decoration:none;">📁 Abrir en Google Drive</a>
                </div>`
             : `<div style="margin-top:16px;padding:13px;border-radius:12px;background:rgba(244,67,54,0.1);border:2px solid rgba(244,67,54,0.4);color:#f44336;font-size:13px;text-align:center;">Ni una puta foto sacamos 🤦.</div>`) : '';
+
+        // Cargar fotos del carrusel después de que se renderice el DOM
+        if (modoDetalle && driveFolderId) {
+            setTimeout(() => cargarCarruselDrive(ri, driveFolderId), 100);
+        }
 
         const comentariosHTML = comentarios.map(c => {
             const cu = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
@@ -956,7 +967,7 @@ function parseCSVLine(line) {
         } catch(e) { console.error(e); }
     }
 
-    function renderPostFeedHTML(p, allRows) {
+   function renderPostFeedHTML(p, allRows) {
         const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
         const fotoAutor = FOTOS[nombreAutor] || '';
@@ -974,11 +985,18 @@ function parseCSVLine(line) {
             const cuC = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
             const nomC = cuC ? cuC.Nombre : c.Autor;
             const fotoC = FOTOS[nomC] || '';
+            const cLikes = c.Likes ? c.Likes.split(',').filter(Boolean) : [];
+            const yoClike = cLikes.includes(currentUser);
+            const esMioC = c.Autor === currentUser;
             return `<div style="display:flex;gap:8px;margin:8px 0;">
                 <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoC}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
                 <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
                     <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nomC}</div>
-                    <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;">${c.Texto}</div>
+                    <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;margin-bottom:6px;">${c.Texto}</div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <button onclick="likearComentarioMuro('${c.ID}')" style="background:${yoClike?'rgba(255,80,80,0.18)':'none'};border:1px solid ${yoClike?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.12)'};color:${yoClike?'#ff6b6b':'rgba(255,255,255,0.4)'};padding:2px 9px;border-radius:20px;font-size:11px;cursor:pointer;">❤️ ${cLikes.length||''}</button>
+                        ${esMioC ? `<button onclick="eliminarComentarioMuro('${c.ID}','${p.ID}')" style="background:none;border:none;color:rgba(244,67,54,0.45);font-size:12px;cursor:pointer;">🗑</button>` : ''}
+                    </div>
                 </div>
             </div>`;
         }).join('');
@@ -1000,7 +1018,7 @@ function parseCSVLine(line) {
                 <button onclick="toggleComentariosMuro('feed_${p.ID}')" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 ${comentarios.length} comentario${comentarios.length!==1?'s':''}</button>
             </div>
             <div id="feed_${p.ID}" style="display:none;padding:0 14px 12px;border-top:1px solid rgba(255,255,255,0.04);">
-                ${comentariosHTML}
+                <div id="feedComList_${p.ID}">${comentariosHTML}</div>
                 <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
                     <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoYo}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div>
                     <input id="feedComInput_${p.ID}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
@@ -1038,6 +1056,25 @@ function parseCSVLine(line) {
             if (res.success) cargarMuroHome();
         } catch(e) { console.error(e); }
     }
+
+    async function likearComentarioMuro(id) {
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'likear_comentario', id, email:currentUser }) });
+            const res = await r.json();
+            if (res.success) cargarMuroHome();
+        } catch(e) { console.error(e); }
+    }
+
+    async function eliminarComentarioMuro(id, postId) {
+        if (!confirm('¿Eliminar comentario?')) return;
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_comentario', id, email:currentUser }) });
+            const res = await r.json();
+            if (res.success) cargarMuroHome();
+            else alert('❌ ' + res.error);
+        } catch(e) { console.error(e); }
+    }
+
 
     async function comentarPost(postId, seccionId, inputId) {
         const input = document.getElementById(inputId);
@@ -2101,6 +2138,93 @@ player.addEventListener("timeupdate", () => {
 });
     
 loadSong(currentIndex);
+
+     // ── CARRUSEL DRIVE ────────────────────────────────────────
+    window._carruselData = {}; // { ri: { fotos:[], idx:0 } }
+
+    async function cargarCarruselDrive(ri, folderId) {
+        const slidesEl = document.getElementById('carruselSlides_' + ri);
+        const dotsEl   = document.getElementById('carruselDots_' + ri);
+        const countEl  = document.getElementById('carruselCount_' + ri);
+        if (!slidesEl) return;
+
+        try {
+            // Usamos el RSS público de Drive para listar imágenes sin API key
+            const url = `https://drive.google.com/drive/folders/${folderId}`;
+            // Fallback: construimos thumbnails directamente desde el folder embed
+            // Técnica: feed público de Drive
+            const feedUrl = `https://drive.google.com/embeddedfolderview?id=${folderId}#list`;
+            const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name,thumbnailLink,webContentLink)&key=AIzaSyBtqBg0uCiOjzMDRZAX5pxHGuVWZc0ul6U`)}`);
+            
+            let fotos = [];
+            if (resp.ok) {
+                const raw = await resp.json();
+                const data = JSON.parse(raw.contents);
+                fotos = (data.files || []).map(f => ({
+                    id: f.id,
+                    thumb: `https://lh3.googleusercontent.com/d/${f.id}=w800`,
+                    full: `https://drive.google.com/file/d/${f.id}/view`
+                }));
+            }
+
+            // Si no hay fotos via API, mostrar placeholder con link
+            if (!fotos.length) {
+                slidesEl.innerHTML = `<div style="text-align:center;padding:20px;">
+                    <div style="font-size:32px;margin-bottom:8px;">📷</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:13px;">Las fotos están en Drive</div>
+                </div>`;
+                if (countEl) countEl.textContent = '';
+                return;
+            }
+
+            window._carruselData[ri] = { fotos, idx: 0 };
+            renderCarruselSlide(ri);
+
+        } catch(e) {
+            console.error('Error carrusel:', e);
+            if (slidesEl) slidesEl.innerHTML = `<div style="text-align:center;padding:20px;">
+                <div style="font-size:32px;margin-bottom:8px;">📷</div>
+                <div style="color:rgba(255,255,255,0.5);font-size:13px;">Abrí Drive para ver las fotos</div>
+            </div>`;
+        }
+    }
+
+    function renderCarruselSlide(ri) {
+        const { fotos, idx } = window._carruselData[ri];
+        const slidesEl = document.getElementById('carruselSlides_' + ri);
+        const dotsEl   = document.getElementById('carruselDots_' + ri);
+        const countEl  = document.getElementById('carruselCount_' + ri);
+        if (!slidesEl) return;
+
+        const foto = fotos[idx];
+        slidesEl.innerHTML = `<a href="${foto.full}" target="_blank" style="display:block;width:100%;height:100%;">
+            <img src="${foto.thumb}" 
+                style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.25s;"
+                onerror="this.style.display='none';this.parentElement.parentElement.querySelector('div').style.display='flex'">
+        </a>`;
+
+        if (countEl) countEl.textContent = `${idx+1} / ${fotos.length}`;
+
+        if (dotsEl) {
+            dotsEl.innerHTML = fotos.map((_, i) =>
+                `<div onclick="irASlide(${ri},${i})" style="width:${i===idx?'18px':'7px'};height:7px;border-radius:10px;background:${i===idx?'white':'rgba(255,255,255,0.4)'};cursor:pointer;transition:all 0.2s;"></div>`
+            ).join('');
+        }
+    }
+
+    function moverCarrusel(ri, dir) {
+        if (!window._carruselData[ri]) return;
+        const d = window._carruselData[ri];
+        d.idx = (d.idx + dir + d.fotos.length) % d.fotos.length;
+        renderCarruselSlide(ri);
+    }
+
+    function irASlide(ri, idx) {
+        if (!window._carruselData[ri]) return;
+        window._carruselData[ri].idx = idx;
+        renderCarruselSlide(ri);
+    }
+    
 </script>
 
 <!-- ===== FIN PLAYER PRO ===== -->
