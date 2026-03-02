@@ -825,7 +825,7 @@ function parseCSVLine(line) {
         if (modoDetalle) {
             return `
                 <div style="background:linear-gradient(135deg,#1e1e3f,#2a2a4f);border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);overflow:hidden;">
-                    ${foto ? `<div style="overflow:hidden;border-bottom:2px solid rgba(200,168,48,0.2);"><img src="${foto}" style="width:100%;display:block;"></div>` : ''}
+                    ${foto ? `<div style="overflow:hidden;border-bottom:2px solid rgba(200,168,48,0.2);"><img src="${foto}" style="width:100%;max-height:380px;object-fit:cover;display:block;"></div>` : ''}
                     <div style="padding:24px;">
                         <div style="text-align:center;margin-bottom:16px;">
                             <div style="color:#FFD700;font-size:13px;font-weight:bold;margin-bottom:8px;">${j.Fecha||''}</div>
@@ -854,7 +854,7 @@ function parseCSVLine(line) {
 
         // Modo card (feed home o historial)
         return `<div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(200,168,48,0.22);border-left:3px solid #C8A830;border-radius:16px;margin-bottom:12px;overflow:hidden;">
-            ${foto ? `<div onclick="verDetalleJuntada(${ri})" style="overflow:hidden;cursor:pointer;"><img src="${foto}" style="width:100%;display:block;"></div>` : ''}
+            ${foto ? `<div onclick="verDetalleJuntada(${ri})" style="overflow:hidden;cursor:pointer;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>` : ''}
             <div style="padding:12px 14px 8px;cursor:pointer;" onclick="verDetalleJuntada(${ri})">
                 <div style="color:#FFD700;font-size:11px;font-weight:bold;">📅 ${j.Fecha||''}</div>
                 <div style="color:white;font-size:16px;font-weight:bold;margin:3px 0;">${j.Descripción||j.Descripcion||'Juntada'}</div>
@@ -997,19 +997,17 @@ function parseCSVLine(line) {
             muroPostsCache = rows;
             const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
             if (!posts.length) { el.innerHTML = ''; return; }
-            el.innerHTML = posts.map((p, idx) => renderPostFeedHTML(p, rows, idx)).join('');
+            el.innerHTML = posts.map(p => renderPostFeedHTML(p, rows)).join('');
         } catch(e) { console.error(e); }
     }
 
-   function renderPostFeedHTML(p, allRows, idx) {
-        const safeId = idx;
+   function renderPostFeedHTML(p, allRows) {
         const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
         const fotoAutor = FOTOS[nombreAutor] || '';
         const esMio = p.Autor === currentUser;
         const esAdmin = currentUser === ADMIN_EMAIL;
-        const postIdLimpio = String(p.ID).replace(/^'+/, '');
-const comentarios = allRows.filter(c => c.Tipo === 'comentario' && String(c.Destinatario).replace(/^'+/, '') === postIdLimpio);
+        const comentarios = allRows.filter(c => c.Tipo === 'comentario' && c.Destinatario === p.ID);
         const usuario = getUsuarioActual();
         const fotoYo = usuario ? (FOTOS[usuario.Nombre] || '') : '';
 
@@ -1030,7 +1028,7 @@ const comentarios = allRows.filter(c => c.Tipo === 'comentario' && String(c.Dest
             </div>`;
         }).join('');
 
-        return `<div id="post_${safeId}" style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(107,45,145,0.3);border-radius:16px;margin-bottom:12px;overflow:hidden;">
+        return `<div id="post_${p.ID}" style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(107,45,145,0.3);border-radius:16px;margin-bottom:12px;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:10px;padding:12px 14px 9px;">
                 <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${fotoAutor}') center top/cover;cursor:pointer;" onclick="verPerfilCulposo('${nombreAutor}')"></div>
                 <div style="flex:1;">
@@ -1038,18 +1036,18 @@ const comentarios = allRows.filter(c => c.Tipo === 'comentario' && String(c.Dest
                     <div style="color:rgba(255,255,255,0.3);font-size:11px;">${p.Fecha||''}</div>
                 </div>
                 <div style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(139,77,143,0.2);color:rgba(200,168,48,0.7);border:1px solid rgba(139,77,143,0.3);">✍️ post</div>
-                ${(esMio||esAdmin) ? `<button onclick="eliminarPost('${postIdLimpio}')" style="background:none;border:1px solid rgba(244,67,54,0.2);color:rgba(244,67,54,0.5);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;margin-left:4px;">🗑</button>` : ''}
+                ${(esMio||esAdmin) ? `<button onclick="eliminarPost('${p.ID}')" style="background:none;border:1px solid rgba(244,67,54,0.2);color:rgba(244,67,54,0.5);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;margin-left:4px;">🗑</button>` : ''}
             </div>
             <div style="color:rgba(255,255,255,0.88);font-size:14px;line-height:1.55;padding:0 14px 12px;">${p.Texto}</div>
             <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);">
-                <button onclick="toggleComentariosMuro('feed_${safeId}')" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 ${comentarios.length} comentario${comentarios.length!==1?'s':''}</button>
+                <button onclick="toggleComentariosMuro('feed_${p.ID}')" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 ${comentarios.length} comentario${comentarios.length!==1?'s':''}</button>
             </div>
-            <div id="feed_${safeId}" style="display:none;padding:0 14px 12px;border-top:1px solid rgba(255,255,255,0.04);">
-                <div id="feedComList_${safeId}">${comentariosHTML}</div>
+            <div id="feed_${p.ID}" style="display:none;padding:0 14px 12px;border-top:1px solid rgba(255,255,255,0.04);">
+                <div id="feedComList_${p.ID}">${comentariosHTML}</div>
                 <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
                     <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoYo}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div>
-                    <input id="feedComInput_${safeId}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
-                    <button onclick="comentarPost('${postIdLimpio}','feed_${safeId}','feedComInput_${safeId}')" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
+                    <input id="feedComInput_${p.ID}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
+                    <button onclick="comentarPost('${p.ID}','feed_${p.ID}','feedComInput_${p.ID}')" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
                 </div>
             </div>
         </div>`;
@@ -1108,7 +1106,7 @@ const comentarios = allRows.filter(c => c.Tipo === 'comentario' && String(c.Dest
         const texto = input ? input.value.trim() : '';
         if (!texto) return;
         try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar_post', postId: String(postId), autor:currentUser, texto }) });
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar_post', postId, autor:currentUser, texto }) });
             const res = await r.json();
             if (res.success) { if (input) input.value = ''; cargarMuroHome(); }
             else alert('❌ ' + res.error);
