@@ -997,6 +997,7 @@ function parseCSVLine(line) {
     }
 
     async function cargarMuroHome() {
+        const safeId = idx;
         const el = document.getElementById('muroPostsHome');
         if (!el) return;
         try {
@@ -1005,7 +1006,7 @@ function parseCSVLine(line) {
             muroPostsCache = rows;
             const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
             if (!posts.length) { el.innerHTML = ''; return; }
-            el.innerHTML = posts.map(p => renderPostFeedHTML(p, rows)).join('');
+            el.innerHTML = posts.map((p, idx) => renderPostFeedHTML(p, rows, idx)).join('');
         } catch(e) { console.error(e); }
     }
 
