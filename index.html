@@ -671,23 +671,252 @@ function parseCSVLine(line) {
         </button>
     `;
 }
-        const ultimas = juntadasPasadas.slice(-3).reverse();
-        const ultimasHTML = ultimas.map(j => {
+        // Feed mezclado: últimas 5 juntadas + posts del muro
+        const ultimasJuntadas = juntadasPasadas.slice(-5).reverse();
+
+        // Caja nuevo post
+        const fotoUsuario = usuario ? (FOTOS[usuario.Nombre] || '') : '';
+        const nuevoPosHTML = `
+        <div onclick="abrirModalNuevoPost()" style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(200,168,48,0.2);border-radius:14px;padding:13px;margin-bottom:14px;display:flex;gap:10px;align-items:center;cursor:pointer;">
+            <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${fotoUsuario}') center top/cover;"></div>
+            <div style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.25);border-radius:20px;color:rgba(255,255,255,0.4);font-size:13px;padding:9px 14px;">¿Qué onda, culposo?</div>
+        </div>`;
+
+        const feedLabel = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div><div style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:2px;text-transform:uppercase;">feed reciente</div><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div></div>`;
+
+        // Renderizar juntadas del feed
+        const juntadasFeedHTML = ultimasJuntadas.map(j => {
             const ri = juntadasData.indexOf(j);
             const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
-            return `<div class="card" onclick="verDetalleJuntada(${ri})" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                ${foto ? `<div style="width:100%;border-radius:10px;margin-bottom:12px;overflow:hidden;"><img src="${foto}" style="width:100%;max-height:180px;object-fit:cover;display:block;"></div>` : ''}
-                <div class="card-date">${j.Fecha||''}</div>
-                <div class="card-title">${j.Descripción||j.Descripcion||'Juntada'}</div>
-                <div class="card-details"><span>🏠 ${j.Host||'Sin host'}</span><span>👥 ${j['N° Asist']||'0'} asistentes</span></div>
+            const asistio = usuario ? esConfirmadoPositivo(j[usuario.Nombre]) : false;
+            const REYES_F = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+            const REINAS_F = ['Cata','Lola','Sami','Leila','Juli','Manu'];
+            const reyesC = REYES_F.filter(n => esConfirmadoPositivo(j[n])).length;
+            const reinasC = REINAS_F.filter(n => esConfirmadoPositivo(j[n])).length;
+            const totalC = parseInt(j['N° Asist'] || '0');
+            const hayQ = reyesC >= 4;
+            const juntadaLikes = (window.juntadaLikes && window.juntadaLikes[ri]) || [];
+            const juntadaCoronas = (window.juntadaCoronas && window.juntadaCoronas[ri]) || [];
+            const yoLikeJ = juntadaLikes.includes(currentUser);
+            const yoCoronaJ = juntadaCoronas.includes(currentUser);
+            return `<div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(200,168,48,0.22);border-left:3px solid #C8A830;border-radius:16px;margin-bottom:12px;overflow:hidden;">
+                ${foto ? `<div style="overflow:hidden;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>` : ''}
+                <div style="padding:12px 14px 8px;">
+                    <div style="color:#FFD700;font-size:11px;font-weight:bold;">📅 ${j.Fecha||''}</div>
+                    <div style="color:white;font-size:16px;font-weight:bold;margin:3px 0;">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                    <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-bottom:8px;">🏠 ${j.Host||'Sin host'}</div>
+                    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+                        <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.3)':'rgba(255,152,0,0.3)'};">👑 ${reyesC}/8${hayQ?' ✓':''}</div>
+                        <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.2);">💎 ${reinasC}/6</div>
+                        <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(200,168,48,0.1);color:#C8A830;border:1px solid rgba(200,168,48,0.25);">👥 ${totalC}</div>
+                        ${usuario ? `<span style="padding:2px 8px;border-radius:8px;font-size:10px;font-weight:bold;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.18);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
+                    </div>
+                    <button onclick="verDetalleJuntada(${ri})" style="background:rgba(200,168,48,0.1);border:1.5px solid rgba(200,168,48,0.3);color:#C8A830;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;margin-bottom:10px;">👀 Ver detalle</button>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);">
+                    <button onclick="reaccionarJuntada(${ri},'like',this)" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLikeJ?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.1)'};background:${yoLikeJ?'rgba(255,80,80,0.15)':'rgba(255,255,255,0.05)'};color:${yoLikeJ?'#ff6b6b':'rgba(255,255,255,0.45)'};">❤️ ${juntadaLikes.length}</button>
+                    <button onclick="reaccionarJuntada(${ri},'corona',this)" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCoronaJ?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.1)'};background:${yoCoronaJ?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCoronaJ?'#FFD700':'rgba(255,255,255,0.45)'};">👑 ${juntadaCoronas.length}</button>
+                    <button onclick="toggleComentariosJuntada('cj_${ri}')" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 comentar</button>
+                </div>
+                <div id="cj_${ri}" style="display:none;padding:0 14px 12px;">
+                    <div id="cjList_${ri}"></div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+                        <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoUsuario}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div>
+                        <input id="cjInput_${ri}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
+                        <button onclick="comentarJuntadaFeed(${ri})" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
+                    </div>
+                </div>
             </div>`;
-        }).join('') || '<p style="color:rgba(255,255,255,0.6);">No hay juntadas registradas</p>';
+        }).join('');
 
         document.getElementById('ultimasJuntadas').innerHTML =
             proximaHTML +
-            (juntadasPasadas.length > 0 ? `<div class="section-title" style="margin-top:25px;">🔥 Últimas Juntadas</div>` : '') +
-            ultimasHTML;
+            (usuario ? nuevoPosHTML : '') +
+            feedLabel +
+            `<div id="muroPostsHome"></div>` +
+            juntadasFeedHTML;
+
+        // Cargar posts del muro en el home
+        cargarMuroHome();
     }
+
+    // Reacciones locales a juntadas en el feed (no persisten, son decorativas por ahora)
+    window.juntadaLikes = window.juntadaLikes || {};
+    window.juntadaCoronas = window.juntadaCoronas || {};
+    function reaccionarJuntada(ri, tipo, btn) {
+        const key = tipo === 'like' ? 'juntadaLikes' : 'juntadaCoronas';
+        if (!window[key][ri]) window[key][ri] = [];
+        const arr = window[key][ri];
+        const idx = arr.indexOf(currentUser);
+        if (idx > -1) arr.splice(idx, 1); else arr.push(currentUser);
+        renderHome();
+    }
+    function toggleComentariosJuntada(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+    function comentarJuntadaFeed(ri) {
+        const input = document.getElementById('cjInput_' + ri);
+        const texto = input ? input.value.trim() : '';
+        if (!texto) return;
+        const list = document.getElementById('cjList_' + ri);
+        const usuario = getUsuarioActual();
+        const foto = usuario ? (FOTOS[usuario.Nombre] || '') : '';
+        const nombre = usuario ? usuario.Nombre : 'Vos';
+        if (list) list.innerHTML += `<div style="display:flex;gap:8px;margin:8px 0;"><div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${foto}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div><div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;"><div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nombre}</div><div style="color:rgba(255,255,255,0.85);font-size:13px;">${texto}</div></div></div>`;
+        input.value = '';
+    }
+
+    // ═══════════════════════════════════════
+    // MURO
+    // ═══════════════════════════════════════
+    let muroPostsCache = [];
+
+    function abrirModalNuevoPost() {
+        const usuario = getUsuarioActual();
+        if (!usuario) return;
+        const foto = FOTOS[usuario.Nombre] || '';
+        const modal = document.createElement('div');
+        modal.id = 'modalNuevoPost';
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;';
+        modal.innerHTML = `<div style="background:linear-gradient(135deg,#1E1040,#2A1455);border:1.5px solid rgba(200,168,48,0.3);border-radius:20px;padding:24px;width:100%;max-width:420px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div style="color:#C8A830;font-size:16px;font-weight:bold;">✍️ Nueva publicación</div>
+                <button onclick="document.getElementById('modalNuevoPost').remove()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;">✕</button>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${foto}') center top/cover;"></div>
+                <textarea id="nuevoPostTexto" placeholder="¿Qué onda, culposo?" style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:10px;color:white;font-size:14px;padding:10px;resize:none;height:100px;font-family:inherit;width:100%;"></textarea>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:14px;gap:10px;">
+                <div id="nuevoPostMsg" style="flex:1;font-size:13px;align-self:center;"></div>
+                <button onclick="publicarPost()" style="background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#1E1E3F;padding:10px 24px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">✉️ Publicar</button>
+            </div>
+        </div>`;
+        document.body.appendChild(modal);
+    }
+
+    async function cargarMuroHome() {
+        const el = document.getElementById('muroPostsHome');
+        if (!el) return;
+        try {
+            const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
+            const rows = parseCSV(await r.text());
+            muroPostsCache = rows;
+            const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
+            if (!posts.length) { el.innerHTML = ''; return; }
+            el.innerHTML = posts.map(p => renderPostFeedHTML(p, rows)).join('');
+        } catch(e) { console.error(e); }
+    }
+
+    function renderPostFeedHTML(p, allRows) {
+        const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
+        const nombreAutor = cu ? cu.Nombre : p.Autor;
+        const fotoAutor = FOTOS[nombreAutor] || '';
+        const likes = p.Likes ? p.Likes.split(',').filter(Boolean) : [];
+        const coronas = p.Coronas ? p.Coronas.split(',').filter(Boolean) : [];
+        const yoLike = likes.includes(currentUser);
+        const yoCorona = coronas.includes(currentUser);
+        const esMio = p.Autor === currentUser;
+        const esAdmin = currentUser === ADMIN_EMAIL;
+        const comentarios = allRows.filter(c => c.Tipo === 'comentario' && c.Destinatario === p.ID);
+        const usuario = getUsuarioActual();
+        const fotoYo = usuario ? (FOTOS[usuario.Nombre] || '') : '';
+
+        const comentariosHTML = comentarios.map(c => {
+            const cuC = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
+            const nomC = cuC ? cuC.Nombre : c.Autor;
+            const fotoC = FOTOS[nomC] || '';
+            return `<div style="display:flex;gap:8px;margin:8px 0;">
+                <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoC}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
+                <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
+                    <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nomC}</div>
+                    <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;">${c.Texto}</div>
+                </div>
+            </div>`;
+        }).join('');
+
+        return `<div id="post_${p.ID}" style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(107,45,145,0.3);border-radius:16px;margin-bottom:12px;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 14px 9px;">
+                <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${fotoAutor}') center top/cover;cursor:pointer;" onclick="verPerfilCulposo('${nombreAutor}')"></div>
+                <div style="flex:1;">
+                    <div style="color:#C8A830;font-size:13px;font-weight:bold;cursor:pointer;" onclick="verPerfilCulposo('${nombreAutor}')">${nombreAutor}</div>
+                    <div style="color:rgba(255,255,255,0.3);font-size:11px;">${p.Fecha||''}</div>
+                </div>
+                <div style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(139,77,143,0.2);color:rgba(200,168,48,0.7);border:1px solid rgba(139,77,143,0.3);">✍️ post</div>
+                ${(esMio||esAdmin) ? `<button onclick="eliminarPost('${p.ID}')" style="background:none;border:1px solid rgba(244,67,54,0.2);color:rgba(244,67,54,0.5);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;margin-left:4px;">🗑</button>` : ''}
+            </div>
+            <div style="color:rgba(255,255,255,0.88);font-size:14px;line-height:1.55;padding:0 14px 12px;">${p.Texto}</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);">
+                <button onclick="reaccionarPost('${p.ID}','like')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.1)'};background:${yoLike?'rgba(255,80,80,0.15)':'rgba(255,255,255,0.05)'};color:${yoLike?'#ff6b6b':'rgba(255,255,255,0.45)'};">❤️ ${likes.length}</button>
+                <button onclick="reaccionarPost('${p.ID}','corona')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCorona?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.1)'};background:${yoCorona?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCorona?'#FFD700':'rgba(255,255,255,0.45)'};">👑 ${coronas.length}</button>
+                <button onclick="toggleComentariosMuro('feed_${p.ID}')" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 ${comentarios.length} comentario${comentarios.length!==1?'s':''}</button>
+            </div>
+            <div id="feed_${p.ID}" style="display:none;padding:0 14px 12px;border-top:1px solid rgba(255,255,255,0.04);">
+                ${comentariosHTML}
+                <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+                    <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoYo}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div>
+                    <input id="feedComInput_${p.ID}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
+                    <button onclick="comentarPost('${p.ID}','feed_${p.ID}','feedComInput_${p.ID}')" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function toggleComentariosMuro(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    async function publicarPost() {
+        const texto = document.getElementById('nuevoPostTexto') ? document.getElementById('nuevoPostTexto').value.trim() : '';
+        const msg = document.getElementById('nuevoPostMsg');
+        if (!texto) return;
+        if (msg) { msg.style.color = '#FFD700'; msg.textContent = '⏳ Publicando...'; }
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'crear_post', autor:currentUser, texto }) });
+            const res = await r.json();
+            if (res.success) {
+                if (msg) { msg.style.color = '#4CAF50'; msg.textContent = '✅ Publicado'; }
+                setTimeout(() => { document.getElementById('modalNuevoPost')?.remove(); renderHome(); }, 800);
+            } else { if (msg) { msg.style.color = '#f44336'; msg.textContent = '❌ ' + res.error; } }
+        } catch { if (msg) { msg.style.color = '#f44336'; msg.textContent = '❌ Error de conexión'; } }
+    }
+
+    async function reaccionarPost(postId, tipo) {
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'reaccionar_post', id:postId, tipo, email:currentUser }) });
+            const res = await r.json();
+            if (res.success) cargarMuroHome();
+        } catch(e) { console.error(e); }
+    }
+
+    async function comentarPost(postId, seccionId, inputId) {
+        const input = document.getElementById(inputId);
+        const texto = input ? input.value.trim() : '';
+        if (!texto) return;
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar_post', postId, autor:currentUser, texto }) });
+            const res = await r.json();
+            if (res.success) { if (input) input.value = ''; cargarMuroHome(); }
+            else alert('❌ ' + res.error);
+        } catch { alert('❌ Error de conexión'); }
+    }
+
+    async function eliminarPost(postId) {
+        if (!confirm('¿Eliminar este post?')) return;
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_post', id:postId, email:currentUser }) });
+            const res = await r.json();
+            if (res.success) cargarMuroHome();
+            else alert('❌ ' + res.error);
+        } catch { alert('❌ Error de conexión'); }
+    }
+    // ═══════════════════════════════════════
+    // FIN MURO
+    // ═══════════════════════════════════════
 
     function renderRanking() {
         const sorted = [...culpososData].sort((a,b) => parseFloat(b.Porcentaje)-parseFloat(a.Porcentaje));
@@ -781,6 +1010,19 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
     const limite = window.juntadasVerMas ? filtradas.length : 10;
     const mostradas = filtradas.slice(0, limite);
 
+const RH_REYES = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+const RH_REINAS = ['Cata','Lola','Sami','Leila','Juli','Manu'];
+function badgesContador(jj) {
+    const rc = RH_REYES.filter(n => esConfirmadoPositivo(jj[n])).length;
+    const ric = RH_REINAS.filter(n => esConfirmadoPositivo(jj[n])).length;
+    const hayQ = rc >= 4;
+    return `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">
+        <div style="padding:2px 7px;border-radius:20px;font-size:10px;font-weight:bold;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.3)':'rgba(255,152,0,0.3)'};">👑 ${rc}/8${hayQ?' ✓':''}</div>
+        <div style="padding:2px 7px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.2);">💎 ${ric}/6</div>
+        <div style="padding:2px 7px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(200,168,48,0.1);color:#C8A830;border:1px solid rgba(200,168,48,0.25);">👥 ${jj['N° Asist']||'0'}</div>
+    </div>`;
+}
+
 let cardsHTML = '';
 let i = 0;
 while (i < mostradas.length) {
@@ -818,7 +1060,8 @@ while (i < mostradas.length) {
             + (foto ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
             + '<div class="card-date">' + (j.Fecha||'Fecha') + '</div>'
             + '<div class="card-title">' + (j.Descripción||j.Descripcion||'Juntada') + '</div>'
-            + '<div class="card-details"><span>🏠 ' + (j.Host||'Sin host') + '</span><span style="margin-left:10px;">👥 ' + (j['N° Asist']||'0') + '</span></div>'
+            + '<div class="card-details"><span>🏠 ' + (j.Host||'Sin host') + '</span></div>'
+            + badgesContador(j)
             + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
             + (driveLink ? '<a href="' + driveLink + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
             + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
@@ -827,7 +1070,8 @@ while (i < mostradas.length) {
             + (foto2 ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto2 + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
             + '<div class="card-date">' + (j2.Fecha||'Fecha') + '</div>'
             + '<div class="card-title">' + (j2.Descripción||j2.Descripcion||'Juntada') + '</div>'
-            + '<div class="card-details"><span>🏠 ' + (j2.Host||'Sin host') + '</span><span style="margin-left:10px;">👥 ' + (j2['N° Asist']||'0') + '</span></div>'
+            + '<div class="card-details"><span>🏠 ' + (j2.Host||'Sin host') + '</span></div>'
+            + badgesContador(j2)
             + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
             + (driveLink2 ? '<a href="' + driveLink2 + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
             + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio2?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio2?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
@@ -838,7 +1082,8 @@ while (i < mostradas.length) {
             + (foto ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
             + '<div class="card-date">' + (j.Fecha||'Fecha') + '</div>'
             + '<div class="card-title">' + (j.Descripción||j.Descripcion||'Juntada') + '</div>'
-            + '<div class="card-details"><span>🏠 ' + (j.Host||'Sin host') + '</span><span style="margin-left:10px;">👥 ' + (j['N° Asist']||'0') + '</span></div>'
+            + '<div class="card-details"><span>🏠 ' + (j.Host||'Sin host') + '</span></div>'
+            + badgesContador(j)
             + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
             + (driveLink ? '<a href="' + driveLink + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
             + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
@@ -1418,6 +1663,21 @@ const acRest = ac.filter(a=>a.m>=1);
 while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.m,a.m); trans.push({de:d.n,a:a.n,monto:m}); d.m-=m;a.m-=m; if(d.m<1)dcRest.shift();if(a.m<1)acRest.shift(); }        trans.forEach(t=>{ txt+=`${t.de} → ${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}\n`; });
         const aw=[...new Set(trans.map(t=>t.a))].map(n=>{const a=getAlias(n);return a?`${n}: 💳 ${a}`:null;}).filter(Boolean);
         if(aw.length) txt+=`\n💳 *ALIAS:*\n`+aw.join('\n');
+
+        // Cálculo por pareja
+        const PAREJAS_WA = {'Toto':'Cata','Toti':'Leila','Mateo':'Juli','Caamaño':'Manu','Tirri':'Lola','Zabala':'Sami'};
+        const parejasTxt = [];
+        const procesadas = new Set();
+        trans.forEach(t => {
+            const pareja1 = PAREJAS_WA[t.de];
+            const pareja2 = PAREJAS_WA[t.a];
+            const key = [t.de,t.a].sort().join('-');
+            if (!procesadas.has(key) && (pareja1 === t.a || pareja2 === t.de)) {
+                procesadas.add(key);
+                parejasTxt.push(`${t.de}/${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}`);
+            }
+        });
+        if (parejasTxt.length) txt += `\n\n👫 *POR PAREJA:*\n` + parejasTxt.join('\n') + `\n_(pagá solo la tuya y listo)_`;
         const waLink = document.createElement('a');
 waLink.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`;
 waLink.target = '_blank';
