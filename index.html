@@ -535,8 +535,16 @@ window.juntadasAsistenteActivo = null;
         } catch(e) { console.error(e); alert('Error conectando con Google Sheets.'); }
     }
 
-   function parseCSV(csv) {
-    const lines = csv.split('\n');
+  function parseCSV(csv) {
+    const lines = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < csv.length; i++) {
+        const ch = csv[i];
+        if (ch === '"') inQ = !inQ;
+        if (ch === '\n' && !inQ) { lines.push(cur); cur = ''; }
+        else cur += ch;
+    }
+    if (cur.trim()) lines.push(cur);
     const headers = parseCSVLine(lines[0]);
     const data = [];
     for (let i = 1; i < lines.length; i++) {
@@ -1108,7 +1116,7 @@ function parseCSVLine(line) {
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar_post', postId, autor:currentUser, texto }) });
             const res = await r.json();
-            if (res.success) { if (input) input.value = ''; cargarMuroHome(); }
+            if (res.success) {      if (input) input.value = '';      await cargarMuroHome();      const sec = document.getElementById(seccionId);     if (sec) sec.style.display = 'block'; }
             else alert('❌ ' + res.error);
         } catch { alert('❌ Error de conexión'); }
     }
