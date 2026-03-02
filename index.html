@@ -1701,6 +1701,7 @@ while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.
             <div style="text-align:center;margin-bottom:20px;"><div style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:5px;">TOTAL GASTADO</div><div style="font-size:32px;font-weight:bold;color:#4CAF50;">$${total.toLocaleString('es-AR')}</div></div>
             <div style="border-top:1px solid rgba(255,255,255,0.2);padding-top:15px;"><div style="color:#FFD700;font-weight:bold;margin-bottom:15px;text-align:center;">💸 TRANSFERENCIAS A REALIZAR</div>
             ${trans.map(t=>`<div style="background:rgba(139,77,143,0.2);padding:12px;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;"><div style="color:white;font-size:14px;"><span style="font-weight:bold;">${t.de}</span> → <span style="font-weight:bold;color:#4CAF50;">${t.a}</span></div><div style="color:#FFD700;font-weight:bold;font-size:16px;">$${Math.round(t.monto).toLocaleString('es-AR')}</div></div>`).join('')}</div>
+            ${(()=>{ const consumidoresUnicos=[...new Set(gastosArray.flatMap(g=>g.consumidores))]; const n=consumidoresUnicos.length; const montoPorPersona = n>0 ? Math.round(total/n) : 0; const montoPollera = montoPorPersona*2; return montoPollera>0 ? `<div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0;padding:10px 12px;background:rgba(255,192,203,0.08);border-radius:8px;border:1px solid rgba(255,192,203,0.25);"><span style="color:rgba(255,255,255,0.75);font-size:13px;">👗👫 ¿Juega pollera?</span><span style="color:#FFD700;font-weight:bold;">$${montoPollera.toLocaleString('es-AR')} por pareja</span></div>` : ''; })()}
             ${aliases?`<div style="margin-top:15px;padding:12px;background:rgba(255,215,0,0.08);border-radius:8px;border:1px solid rgba(255,215,0,0.3);"><div style="color:#FFD700;font-size:12px;font-weight:bold;text-transform:uppercase;margin-bottom:8px;">Alias para transferir</div>${aliases}</div>`:''}
             <button onclick="compartirResultado()" style="width:100%;margin-top:15px;background:rgba(37,211,102,0.2);border:2px solid #25D366;color:#25D366;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">📱 Compartir por WhatsApp</button>
         </div>`;
@@ -1759,8 +1760,11 @@ while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.
             const totalPareja = deudaN + deudaPareja;
             if (totalPareja >= 1) parejasTotales[key] = { nombres: `${n}/${pareja}`, total: totalPareja };
         });
-        const parejasTxt = Object.values(parejasTotales).map(p => `${p.nombres}: $${Math.round(p.total).toLocaleString('es-AR')}`);
-        if (parejasTxt.length) txt += `\n\n👫 *POR PAREJA:*\n` + parejasTxt.join('\n') + `\n_(por si le querés pagar a tu marido/mujer)_`;
+       const valoresPollera = Object.values(parejasTotales).map(p => Math.round(p.total));
+        if (valoresPollera.length) {
+            const montoPollera = valoresPollera[0];
+            txt += `\n\n👗👫 *¿JUEGA POLLERA?*\n$${montoPollera.toLocaleString('es-AR')} por pareja\n_(por si le querés pagar a tu marido/mujer)_`;
+        }
         const waLink = document.createElement('a');
 waLink.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`;
 waLink.target = '_blank';
