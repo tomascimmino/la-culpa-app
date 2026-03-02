@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -847,7 +848,7 @@ function parseCSVLine(line) {
     async function cargarInteraccionesJuntadas() {
         try {
             const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-            const rows = parseCSV((await r.text()).replace(/^\uFEFF/, ''));
+            const rows = parseCSV(await r.text());
             window.juntadasInteracciones = {};
             window._comentariosCache = rows; // cache global para muro y detalle
             rows.forEach(row => {
@@ -954,19 +955,21 @@ function parseCSVLine(line) {
         document.body.appendChild(modal);
     }
 
-  async function cargarMuroHome() {
+   async function cargarMuroHome() {
     const el = document.getElementById('muroPostsHome');
     if (!el) return;
     try {
         const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-        const rows = parseCSV(await r.text());
+        const text = await r.text();
+        const rows = parseCSV(text);
+        console.log('PRIMERA FILA RAW:', text.split('\n')[1]);
         muroPostsCache = rows;
-        window._comentariosCache = rows;
-        const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
-        if (!posts.length) { el.innerHTML = ''; return; }
-        el.innerHTML = posts.map(p => renderPostFeedHTML(p, rows)).join('');
-    } catch(e) { console.error(e); }
-}
+            const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
+            if (!posts.length) { el.innerHTML = ''; return; }
+            el.innerHTML = posts.map(p => renderPostFeedHTML(p, rows)).join('');
+        } catch(e) { console.error(e); }
+    }
+
    function renderPostFeedHTML(p, allRows) {
         const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
