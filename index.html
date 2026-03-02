@@ -530,12 +530,20 @@ function parseCSVLine(line) {
     }
     result.push(current.trim());
     return result;
-}
-function renderContadorAsistencia(j) {
+    }
+
+    function renderContadorAsistencia(j) {
     const REYES = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+    const REINAS = ['Cata','Lola','Sami','Leila','Juli','Manu'];
     const AGREGADOS = ['Cata','Lola','Sami','Leila','Juli','Manu','Matu'];
-    let totalConf = 0, reyesConf = 0;
-    culpososData.forEach(c => { if (esConfirmadoPositivo(j[c.Nombre])) { totalConf++; if (REYES.includes(c.Nombre)) reyesConf++; } });
+    let totalConf = 0, reyesConf = 0, reinasConf = 0;
+    culpososData.forEach(c => {
+        if (esConfirmadoPositivo(j[c.Nombre])) {
+            totalConf++;
+            if (REYES.includes(c.Nombre)) reyesConf++;
+            if (REINAS.includes(c.Nombre)) reinasConf++;
+        }
+    });
     const hayQ = reyesConf >= 4;
 
     function avHTML(nombre) {
@@ -561,6 +569,7 @@ function renderContadorAsistencia(j) {
             <span style="color:rgba(255,255,255,0.4);font-size:9px;letter-spacing:1px;text-transform:uppercase;">Confirmaciones</span>
             <div style="display:flex;gap:5px;align-items:center;">
                 <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.35)':'rgba(255,152,0,0.3)'};">👑 ${reyesConf}/8${hayQ?' ✓':''}</div>
+                <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.25);">💎 ${reinasConf}/6</div>
                 <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:rgba(200,168,48,0.12);color:#C8A830;border:1px solid rgba(200,168,48,0.3);">👥 ${totalConf}/${culpososData.length}</div>
             </div>
         </div>
@@ -570,7 +579,7 @@ function renderContadorAsistencia(j) {
             <div style="display:flex;gap:4px;align-items:flex-start;flex-wrap:nowrap;">${agHTML}</div>
         </div>
     </div>`;
-}
+    }
     function renderHome() {
         const hoy = new Date(); hoy.setHours(0,0,0,0);
         let proximaJuntada = null, proximaIndex = -1;
