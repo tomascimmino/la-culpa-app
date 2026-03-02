@@ -745,8 +745,14 @@ function parseCSVLine(line) {
                 <button onclick="confirmarEliminar(${ri})" style="flex:1;background:rgba(244,67,54,0.15);border:2px solid #f44336;color:#f44336;padding:10px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
             </div>` : '';
 
+        const driveFolderId = driveLink ? (driveLink.match(/folders\/([^?]+)/)||[])[1] : null;
         const driveBtn = modoDetalle ? (driveLink
-            ? `<a href="${driveLink}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;padding:13px;border-radius:12px;background:rgba(66,133,244,0.15);border:2px solid #4285F4;color:#4285F4;font-size:14px;font-weight:bold;text-decoration:none;">📁 Ver o subir fotos en Google Drive</a>`
+            ? `<div style="margin-top:16px;">
+                <iframe src="https://drive.google.com/embeddedfolderview?id=${driveFolderId}#grid"
+                    style="width:100%;height:320px;border:none;border-radius:12px;background:#0a0614;"
+                    allowfullscreen></iframe>
+                <a href="${driveLink}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;padding:11px;border-radius:10px;background:rgba(66,133,244,0.15);border:2px solid #4285F4;color:#4285F4;font-size:13px;font-weight:bold;text-decoration:none;">📁 Abrir en Google Drive</a>
+               </div>`
             : `<div style="margin-top:16px;padding:13px;border-radius:12px;background:rgba(244,67,54,0.1);border:2px solid rgba(244,67,54,0.4);color:#f44336;font-size:13px;text-align:center;">Ni una puta foto sacamos 🤦.</div>`) : '';
 
         const comentariosHTML = comentarios.map(c => {
@@ -814,19 +820,17 @@ function parseCSVLine(line) {
                     <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.3)':'rgba(255,152,0,0.3)'};">👑 ${reyesC}/8${hayQ?' ✓':''}</div>
                     <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.2);">💎 ${reinasC}/6</div>
                     <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(200,168,48,0.1);color:#C8A830;border:1px solid rgba(200,168,48,0.25);">👥 ${totalC}</div>
-                    ${usuario ? `<span style="padding:2px 8px;border-radius:8px;font-size:10px;font-weight:bold;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.18);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid rgba(255,255,255,0.06);">
                 <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.1)'};background:${yoLike?'rgba(255,80,80,0.15)':'rgba(255,255,255,0.05)'};color:${yoLike?'#ff6b6b':'rgba(255,255,255,0.45)'};">❤️ ${likes.length}</button>
                 <button onclick="reaccionarJuntada(${ri},'corona')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCorona?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.1)'};background:${yoCorona?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCorona?'#FFD700':'rgba(255,255,255,0.45)'};">👑 ${coronas.length}</button>
-                <button onclick="toggleComentariosJuntada('cj_${ri}_feed')" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 ${comentarios.length||''} ${comentarios.length===1?'comentario':'comentarios'}</button>
+                <button onclick="toggleComentariosJuntada('cj_${ri}_feed')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.45);">💬 ${comentarios.length}</button>
+                ${usuario ? `<span style="margin-left:auto;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.18);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
             </div>
             ${seccionComentarios}
         </div>`;
     }
-
-    // Cache de interacciones de juntadas (cargado desde COMENTARIOS)
     window.juntadasInteracciones = {}; // key: 'juntada_RI' → {likes:[], coronas:[], comentarios:[]}
 
     function getJuntadaId(ri) { return 'juntada_' + (ri + 2); } // fila en sheet = ri+2
@@ -1713,20 +1717,24 @@ while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.
         const aw=[...new Set(trans.map(t=>t.a))].map(n=>{const a=getAlias(n);return a?`${n}: 💳 ${a}`:null;}).filter(Boolean);
         if(aw.length) txt+=`\n💳 *ALIAS:*\n`+aw.join('\n');
 
-        // Cálculo por pareja
-        const PAREJAS_WA = {'Toto':'Cata','Toti':'Leila','Mateo':'Juli','Caamaño':'Manu','Tirri':'Lola','Zabala':'Sami'};
-        const parejasTxt = [];
-        const procesadas = new Set();
-        trans.forEach(t => {
-            const pareja1 = PAREJAS_WA[t.de];
-            const pareja2 = PAREJAS_WA[t.a];
-            const key = [t.de,t.a].sort().join('-');
-            if (!procesadas.has(key) && (pareja1 === t.a || pareja2 === t.de)) {
-                procesadas.add(key);
-                parejasTxt.push(`${t.de}/${t.a}: $${Math.round(t.monto).toLocaleString('es-AR')}`);
-            }
+        // Cálculo por pareja: sumar lo que debe cada integrante de la pareja
+        const PAREJAS_WA = {'Toto':'Cata','Cata':'Toto','Toti':'Leila','Leila':'Toti','Mateo':'Juli','Juli':'Mateo','Caamaño':'Manu','Manu':'Caamaño','Tirri':'Lola','Lola':'Tirri','Zabala':'Sami','Sami':'Zabala'};
+        const parejasTotales = {};
+        const parejasVistas = new Set();
+        Object.entries(bal).forEach(([n, b]) => {
+            const pareja = PAREJAS_WA[n];
+            if (!pareja) return;
+            const key = [n, pareja].sort().join('-');
+            if (parejasVistas.has(key)) return;
+            parejasVistas.add(key);
+            // Deuda neta de la pareja: suma de lo que deben ambos (negativo = deben)
+            const deudaN = b < 0 ? Math.abs(b) : 0;
+            const deudaPareja = (bal[pareja] || 0) < 0 ? Math.abs(bal[pareja]) : 0;
+            const totalPareja = deudaN + deudaPareja;
+            if (totalPareja >= 1) parejasTotales[key] = { nombres: `${n}/${pareja}`, total: totalPareja };
         });
-        if (parejasTxt.length) txt += `\n\n👫 *POR PAREJA:*\n` + parejasTxt.join('\n') + `\n_(pagá solo la tuya y listo)_`;
+        const parejasTxt = Object.values(parejasTotales).map(p => `${p.nombres}: $${Math.round(p.total).toLocaleString('es-AR')}`);
+        if (parejasTxt.length) txt += `\n\n👫 *POR PAREJA:*\n` + parejasTxt.join('\n') + `\n_(entre los dos juntan eso)_`;
         const waLink = document.createElement('a');
 waLink.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`;
 waLink.target = '_blank';
