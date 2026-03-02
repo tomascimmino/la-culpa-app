@@ -1108,7 +1108,7 @@ const comentarios = allRows.filter(c => c.Tipo === 'comentario' && String(c.Dest
         const texto = input ? input.value.trim() : '';
         if (!texto) return;
         try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar_post', postId, autor:currentUser, texto }) });
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar_post', postId: String(postId), autor:currentUser, texto }) });
             const res = await r.json();
             if (res.success) { if (input) input.value = ''; cargarMuroHome(); }
             else alert('❌ ' + res.error);
