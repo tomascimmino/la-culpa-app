@@ -963,7 +963,7 @@ function parseCSVLine(line) {
     if (!el) return;
     try {
         const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-        const rows = parseCSV(await r.text());
+        const rows = parseCSV((await r.text()).replace(/^\uFEFF/, ''));
         muroPostsCache = rows;
         window._comentariosCache = rows;
         const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
@@ -1883,7 +1883,7 @@ document.body.removeChild(waLink);
         if (!el) return;
         try {
             const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-            const rows = parseCSV(await r.text());
+            const rows = parseCSV((await r.text()).replace(/^\uFEFF/, ''));
             const mios = rows.filter(c => c.Destinatario === destinatario);
             if (!mios.length) {
                 el.innerHTML = '<p style="color:rgba(255,255,255,0.4);font-size:13px;text-align:center;padding:10px;">Nadie comentó todavía. Sean los primeros, culposos.</p>';
