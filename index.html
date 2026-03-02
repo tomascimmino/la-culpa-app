@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="https://i.imgur.com/czObXpX.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/qJl5bjR.png">
     <meta name="theme-color" content="#120D1F">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkxBIENVTFBBIiwgInNob3J0X25hbWUiOiAiTGEgQ3VscGEiLCAiZGVzY3JpcHRpb24iOiAiUmFua2luZyBkZSBBc2lzdGVuY2lhcyIsICJzdGFydF91cmwiOiAiL2xhLWN1bHBhLWFwcC8iLCAic2NvcGUiOiAiL2xhLWN1bHBhLWFwcC8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsICJ0aGVtZV9jb2xvciI6ICIjMTIwRDFGIiwgImljb25zIjogW3sic3JjIjogImh0dHBzOi8vaS5pbWd1ci5jb20vcUpsNWJqUi5wbmciLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9XX0=">
     <style> 
            * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -162,6 +163,18 @@
     color: #FFD700;
     border-color: #FFD700;
 }
+        @keyframes splashReveal {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes splashStar {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50%       { opacity: 1;   transform: scale(2.5); }
+}
+@keyframes splashGlow {
+    from { transform: translate(-50%,-50%) scale(0.9); opacity: 0.5; }
+    to   { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
+}
        @keyframes splaShPulse {
     0%   { transform: scale(0.7); filter: drop-shadow(0 0 5px rgba(107,45,145,0.3)); opacity: 0.6; }
     100% { transform: scale(1.15); filter: drop-shadow(0 0 30px rgba(200,168,48,0.9)); opacity: 1; }
@@ -189,10 +202,30 @@
 <div class="container" id="app">
     
     <!-- PANTALLA DE CARGA -->
-<div id="splashScreen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#120D1F;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.6s ease;">
-    <div style="width:140px;height:140px;background:url('https://i.imgur.com/czObXpX.png') center/contain no-repeat;animation:splaShPulse 1.8s ease-out forwards;"></div>
-    <div style="color:#FFD700;font-size:28px;font-weight:bold;letter-spacing:3px;margin-top:25px;animation:splashFade 1.2s ease-in-out infinite;">LA CULPA</div>
-    <div style="color:rgba(255,255,255,0.4);font-size:13px;margin-top:8px;letter-spacing:1px;">👑 8 REYES 👑</div>
+<div id="splashScreen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#120D1F;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 0.6s ease;overflow:hidden;">
+    <!-- Partículas de fondo -->
+    <div style="position:absolute;inset:0;pointer-events:none;">
+        <div style="position:absolute;top:15%;left:10%;width:2px;height:2px;background:#FFD700;border-radius:50%;animation:splashStar 2.5s ease-in-out infinite;opacity:0.6;"></div>
+        <div style="position:absolute;top:25%;right:15%;width:1px;height:1px;background:#C8A830;border-radius:50%;animation:splashStar 1.8s ease-in-out infinite 0.4s;opacity:0.5;"></div>
+        <div style="position:absolute;top:70%;left:20%;width:2px;height:2px;background:#FFD700;border-radius:50%;animation:splashStar 2.2s ease-in-out infinite 0.8s;opacity:0.4;"></div>
+        <div style="position:absolute;top:60%;right:12%;width:1px;height:1px;background:#C8A830;border-radius:50%;animation:splashStar 3s ease-in-out infinite 0.2s;opacity:0.5;"></div>
+        <div style="position:absolute;top:40%;left:5%;width:1px;height:1px;background:#FFE566;border-radius:50%;animation:splashStar 2s ease-in-out infinite 1s;opacity:0.4;"></div>
+        <div style="position:absolute;top:80%;right:25%;width:2px;height:2px;background:#FFD700;border-radius:50%;animation:splashStar 1.6s ease-in-out infinite 0.6s;opacity:0.5;"></div>
+        <!-- Resplandor central -->
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:300px;height:300px;background:radial-gradient(ellipse,rgba(107,45,145,0.35) 0%,transparent 70%);animation:splashGlow 2s ease-in-out infinite alternate;"></div>
+    </div>
+    <!-- Logo -->
+    <div style="position:relative;z-index:1;width:150px;height:150px;background:url('https://i.imgur.com/czObXpX.png') center/contain no-repeat;animation:splaShPulse 1.8s ease-out forwards;filter:drop-shadow(0 0 30px rgba(200,168,48,0.5));"></div>
+    <!-- Línea separadora -->
+    <div style="position:relative;z-index:1;display:flex;align-items:center;gap:12px;margin-top:22px;animation:splashReveal 0.8s ease-out 0.4s both;">
+        <div style="width:50px;height:1px;background:linear-gradient(to right,transparent,#C8A830);"></div>
+        <div style="width:5px;height:5px;background:#C8A830;transform:rotate(45deg);box-shadow:0 0 8px #C8A830;"></div>
+        <div style="width:50px;height:1px;background:linear-gradient(to left,transparent,#C8A830);"></div>
+    </div>
+    <!-- Título LA CULPA -->
+    <div style="position:relative;z-index:1;font-family:'Cinzel',Georgia,serif;font-size:34px;font-weight:900;letter-spacing:8px;margin-top:14px;background:linear-gradient(180deg,#FFE566 0%,#C8A830 50%,#A07820 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;animation:splashReveal 0.8s ease-out 0.6s both;filter:drop-shadow(0 2px 12px rgba(200,168,48,0.4));">LA CULPA</div>
+    <!-- 8 Reyes -->
+    <div style="position:relative;z-index:1;font-family:'Cinzel',Georgia,serif;color:#C8A830;font-size:11px;letter-spacing:5px;text-transform:uppercase;margin-top:10px;opacity:0.85;animation:splashReveal 0.8s ease-out 0.9s both;">8 &nbsp; R E Y E S</div>
 </div>
 
     <!-- LOGIN -->
