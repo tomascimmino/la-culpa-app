@@ -524,13 +524,16 @@ function parseCSVLine(line) {
     let inQuotes = false;
     for (let i = 0; i < line.length; i++) {
         const ch = line[i];
-        if (ch === '"') { inQuotes = !inQuotes; }
+        if (ch === '"') {
+            if (inQuotes && line[i+1] === '"') { current += '"'; i++; }
+            else { inQuotes = !inQuotes; }
+        }
         else if (ch === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
         else { current += ch; }
     }
     result.push(current.trim());
     return result;
-    }
+}
 
     function renderContadorAsistencia(j) {
     const REYES = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
