@@ -954,12 +954,14 @@ function parseCSVLine(line) {
         document.body.appendChild(modal);
     }
 
-   async function cargarMuroHome() {
+  async function cargarMuroHome() {
     const el = document.getElementById('muroPostsHome');
     if (!el) return;
     try {
-        const rows = window._comentariosCache || [];
+        const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
+        const rows = parseCSV(await r.text());
         muroPostsCache = rows;
+        window._comentariosCache = rows;
         const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
         if (!posts.length) { el.innerHTML = ''; return; }
         el.innerHTML = posts.map(p => renderPostFeedHTML(p, rows)).join('');
