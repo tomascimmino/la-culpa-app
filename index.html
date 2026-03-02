@@ -997,12 +997,12 @@ function parseCSVLine(line) {
             muroPostsCache = rows;
             const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
             if (!posts.length) { el.innerHTML = ''; return; }
-            el.innerHTML = posts.map(p => renderPostFeedHTML(p, rows)).join('');
+            el.innerHTML = posts.map((p, idx) => renderPostFeedHTML(p, rows, idx)).join('');
         } catch(e) { console.error(e); }
     }
 
-   function renderPostFeedHTML(p, allRows) {
-        const safeId = p.ID.replace(/'/g, '');
+   function renderPostFeedHTML(p, allRows, idx) {
+        const safeId = idx;
         const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
         const fotoAutor = FOTOS[nombreAutor] || '';
