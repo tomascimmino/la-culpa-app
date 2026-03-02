@@ -501,8 +501,7 @@ window.juntadasAsistenteActivo = null;
         } catch(e) { console.error(e); alert('Error conectando con Google Sheets.'); }
     }
 
-  function parseCSV(csv) {
-    csv = csv.replace(/^\uFEFF/, '').replace(/\r/g, '');
+   function parseCSV(csv) {
     const lines = csv.split('\n');
     const headers = parseCSVLine(lines[0]);
     const data = [];
@@ -511,7 +510,7 @@ window.juntadasAsistenteActivo = null;
         const values = parseCSVLine(lines[i]);
         if (!values.some(v => v)) continue;
         const row = {};
-        headers.forEach((h, idx) => row[h.trim()] = values[idx] || '');
+        headers.forEach((h, idx) => row[h] = values[idx] || '');
         if (headers.includes('Fecha') && !row.Fecha && !row.Descripción && !row.Descripcion) continue;
         data.push(row);
     }
@@ -524,16 +523,13 @@ function parseCSVLine(line) {
     let inQuotes = false;
     for (let i = 0; i < line.length; i++) {
         const ch = line[i];
-        if (ch === '"') {
-            if (inQuotes && line[i+1] === '"') { current += '"'; i++; }
-            else { inQuotes = !inQuotes; }
-        }
+        if (ch === '"') { inQuotes = !inQuotes; }
         else if (ch === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
         else { current += ch; }
     }
     result.push(current.trim());
     return result;
-}
+    }
 
     function renderContadorAsistencia(j) {
     const REYES = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
@@ -963,7 +959,7 @@ function parseCSVLine(line) {
     if (!el) return;
     try {
         const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-        const rows = parseCSV((await r.text()).replace(/^\uFEFF/, ''));
+        const rows = parseCSV(await r.text());
         muroPostsCache = rows;
         window._comentariosCache = rows;
         const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
@@ -972,7 +968,6 @@ function parseCSVLine(line) {
     } catch(e) { console.error(e); }
 }
    function renderPostFeedHTML(p, allRows) {
-       console.log('POST OBJETO COMPLETO:', JSON.stringify(p));
         const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
         const fotoAutor = FOTOS[nombreAutor] || '';
@@ -1884,7 +1879,7 @@ document.body.removeChild(waLink);
         if (!el) return;
         try {
             const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-            const rows = parseCSV((await r.text()).replace(/^\uFEFF/, ''));
+            const rows = parseCSV(await r.text());
             const mios = rows.filter(c => c.Destinatario === destinatario);
             if (!mios.length) {
                 el.innerHTML = '<p style="color:rgba(255,255,255,0.4);font-size:13px;text-align:center;padding:10px;">Nadie comentó todavía. Sean los primeros, culposos.</p>';
