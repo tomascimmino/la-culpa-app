@@ -1008,7 +1008,8 @@ function parseCSVLine(line) {
         const fotoAutor = FOTOS[nombreAutor] || '';
         const esMio = p.Autor === currentUser;
         const esAdmin = currentUser === ADMIN_EMAIL;
-        const comentarios = allRows.filter(c => c.Tipo === 'comentario' && c.Destinatario === p.ID);
+        const postIdLimpio = String(p.ID).replace(/^'+/, '');
+const comentarios = allRows.filter(c => c.Tipo === 'comentario' && String(c.Destinatario).replace(/^'+/, '') === postIdLimpio);
         const usuario = getUsuarioActual();
         const fotoYo = usuario ? (FOTOS[usuario.Nombre] || '') : '';
 
@@ -1048,7 +1049,7 @@ function parseCSVLine(line) {
                 <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
                     <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoYo}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div>
                     <input id="feedComInput_${safeId}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
-                    <button onclick="comentarPost('${p.ID}','feed_${safeId}','feedComInput_${safeId}')" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
+                    <button onclick="comentarPost('${postIdLimpio}','feed_${safeId}','feedComInput_${safeId}')" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
                 </div>
             </div>
         </div>`;
