@@ -536,6 +536,7 @@ window.juntadasAsistenteActivo = null;
     }
 
   function parseCSV(csv) {
+    csv = csv.replace(/^\ufeff/, '');
     const lines = [];
     let cur = '', inQ = false;
     for (let i = 0; i < csv.length; i++) {
