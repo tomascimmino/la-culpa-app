@@ -494,6 +494,7 @@ window.juntadasAsistenteActivo = null;
             juntadasData = parseCSV(await jR.text());
             culpososData = parseCSV(await cR.text());
             premiosData  = parseCSV(await pR.text());
+            await cargarInteraccionesJuntadas();
             window.juntadasMesActivo = null;
             window.juntadasVerMas = false;
             window.juntadasHostActivo = null;
@@ -684,50 +685,8 @@ function parseCSVLine(line) {
 
         const feedLabel = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div><div style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:2px;text-transform:uppercase;">feed reciente</div><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div></div>`;
 
-        // Renderizar juntadas del feed
-        const juntadasFeedHTML = ultimasJuntadas.map(j => {
-            const ri = juntadasData.indexOf(j);
-            const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
-            const asistio = usuario ? esConfirmadoPositivo(j[usuario.Nombre]) : false;
-            const REYES_F = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
-            const REINAS_F = ['Cata','Lola','Sami','Leila','Juli','Manu'];
-            const reyesC = REYES_F.filter(n => esConfirmadoPositivo(j[n])).length;
-            const reinasC = REINAS_F.filter(n => esConfirmadoPositivo(j[n])).length;
-            const totalC = parseInt(j['N° Asist'] || '0');
-            const hayQ = reyesC >= 4;
-            const juntadaLikes = (window.juntadaLikes && window.juntadaLikes[ri]) || [];
-            const juntadaCoronas = (window.juntadaCoronas && window.juntadaCoronas[ri]) || [];
-            const yoLikeJ = juntadaLikes.includes(currentUser);
-            const yoCoronaJ = juntadaCoronas.includes(currentUser);
-            return `<div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(200,168,48,0.22);border-left:3px solid #C8A830;border-radius:16px;margin-bottom:12px;overflow:hidden;">
-                ${foto ? `<div style="overflow:hidden;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>` : ''}
-                <div style="padding:12px 14px 8px;">
-                    <div style="color:#FFD700;font-size:11px;font-weight:bold;">📅 ${j.Fecha||''}</div>
-                    <div style="color:white;font-size:16px;font-weight:bold;margin:3px 0;">${j.Descripción||j.Descripcion||'Juntada'}</div>
-                    <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-bottom:8px;">🏠 ${j.Host||'Sin host'}</div>
-                    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
-                        <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.3)':'rgba(255,152,0,0.3)'};">👑 ${reyesC}/8${hayQ?' ✓':''}</div>
-                        <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.2);">💎 ${reinasC}/6</div>
-                        <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(200,168,48,0.1);color:#C8A830;border:1px solid rgba(200,168,48,0.25);">👥 ${totalC}</div>
-                        ${usuario ? `<span style="padding:2px 8px;border-radius:8px;font-size:10px;font-weight:bold;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.18);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
-                    </div>
-                    <button onclick="verDetalleJuntada(${ri})" style="background:rgba(200,168,48,0.1);border:1.5px solid rgba(200,168,48,0.3);color:#C8A830;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;margin-bottom:10px;">👀 Ver detalle</button>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);">
-                    <button onclick="reaccionarJuntada(${ri},'like',this)" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLikeJ?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.1)'};background:${yoLikeJ?'rgba(255,80,80,0.15)':'rgba(255,255,255,0.05)'};color:${yoLikeJ?'#ff6b6b':'rgba(255,255,255,0.45)'};">❤️ ${juntadaLikes.length}</button>
-                    <button onclick="reaccionarJuntada(${ri},'corona',this)" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCoronaJ?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.1)'};background:${yoCoronaJ?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCoronaJ?'#FFD700':'rgba(255,255,255,0.45)'};">👑 ${juntadaCoronas.length}</button>
-                    <button onclick="toggleComentariosJuntada('cj_${ri}')" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 comentar</button>
-                </div>
-                <div id="cj_${ri}" style="display:none;padding:0 14px 12px;">
-                    <div id="cjList_${ri}"></div>
-                    <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
-                        <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoUsuario}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div>
-                        <input id="cjInput_${ri}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
-                        <button onclick="comentarJuntadaFeed(${ri})" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
+        // Renderizar juntadas del feed usando función unificada
+        const juntadasFeedHTML = ultimasJuntadas.map(j => renderJuntadaCardHTML(juntadasData.indexOf(j), usuario, fotoUsuario, false)).join('');
 
         document.getElementById('ultimasJuntadas').innerHTML =
             proximaHTML +
@@ -740,32 +699,217 @@ function parseCSVLine(line) {
         cargarMuroHome();
     }
 
-    // Reacciones locales a juntadas en el feed (no persisten, son decorativas por ahora)
-    window.juntadaLikes = window.juntadaLikes || {};
-    window.juntadaCoronas = window.juntadaCoronas || {};
-    function reaccionarJuntada(ri, tipo, btn) {
-        const key = tipo === 'like' ? 'juntadaLikes' : 'juntadaCoronas';
-        if (!window[key][ri]) window[key][ri] = [];
-        const arr = window[key][ri];
-        const idx = arr.indexOf(currentUser);
-        if (idx > -1) arr.splice(idx, 1); else arr.push(currentUser);
-        renderHome();
+    // ═══════════════════════════════════════
+    // FUNCIÓN UNIFICADA DE CARD JUNTADA
+    // Usada en Home feed, Historial y Detalle
+    // ═══════════════════════════════════════
+    function renderJuntadaCardHTML(ri, usuario, fotoUsuario, modoDetalle) {
+        const j = juntadasData[ri];
+        if (!j) return '';
+        const jid = getJuntadaId(ri);
+        const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
+        const asistio = usuario ? esConfirmadoPositivo(j[usuario.Nombre]) : false;
+        const REYES_F = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+        const REINAS_F = ['Cata','Lola','Sami','Leila','Juli','Manu'];
+        const reyesC = REYES_F.filter(n => esConfirmadoPositivo(j[n])).length;
+        const reinasC = REINAS_F.filter(n => esConfirmadoPositivo(j[n])).length;
+        const totalC = parseInt(j['N° Asist'] || '0');
+        const hayQ = reyesC >= 4;
+        const inter = window.juntadasInteracciones[jid] || {};
+        const likes = inter.likes || [];
+        const coronas = inter.coronas || [];
+        const comentarios = inter.comentarios || [];
+        const yoLike = likes.includes(currentUser);
+        const yoCorona = coronas.includes(currentUser);
+        const asistentes = Object.keys(FOTOS).filter(n => esConfirmadoPositivo(j[n]));
+        const driveLink = getDriveLink(j);
+
+        const asistentesHTML = modoDetalle ? `
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:12px;margin:20px 0;">
+                ${asistentes.map(n=>`
+                    <div style="text-align:center;cursor:pointer;" onclick="cerrarDetalle();verPerfilCulposo('${n}')">
+                        <div style="width:60px;height:60px;border-radius:50%;background-image:url('${FOTOS[n]}');background-size:cover;background-position:center top;margin:0 auto 6px;border:2px solid #FFD700;"></div>
+                        <div style="color:white;font-size:11px;font-weight:bold;">${n}</div>
+                    </div>`).join('')}
+            </div>` : '';
+
+        const hoy = new Date(); hoy.setHours(0,0,0,0);
+        const fechaJ = j.Fecha ? parseFecha(j.Fecha) : null;
+        const esFutura = fechaJ && fechaJ >= hoy;
+        const esAdmin = currentUser === ADMIN_EMAIL;
+        const esHostJ = usuario && esHostDe(j.Host, usuario.Nombre);
+        const puedeEditar = esFutura ? esHostJ : esAdmin;
+        const botonesAdmin = modoDetalle && puedeEditar ? `
+            <div style="display:flex;gap:10px;margin-top:12px;">
+                <button onclick="abrirModalEditarJuntada(${ri})" style="flex:1;background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:10px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">✏️ Editar</button>
+                <button onclick="confirmarEliminar(${ri})" style="flex:1;background:rgba(244,67,54,0.15);border:2px solid #f44336;color:#f44336;padding:10px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
+            </div>` : '';
+
+        const driveBtn = modoDetalle ? (driveLink
+            ? `<a href="${driveLink}" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;padding:13px;border-radius:12px;background:rgba(66,133,244,0.15);border:2px solid #4285F4;color:#4285F4;font-size:14px;font-weight:bold;text-decoration:none;">📁 Ver o subir fotos en Google Drive</a>`
+            : `<div style="margin-top:16px;padding:13px;border-radius:12px;background:rgba(244,67,54,0.1);border:2px solid rgba(244,67,54,0.4);color:#f44336;font-size:13px;text-align:center;">Ni una puta foto sacamos 🤦.</div>`) : '';
+
+        const comentariosHTML = comentarios.map(c => {
+            const cu = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
+            const nom = cu ? cu.Nombre : c.Autor;
+            const fotoC = FOTOS[nom] || '';
+            return `<div style="display:flex;gap:8px;margin:8px 0;">
+                <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoC}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
+                <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
+                    <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nom}</div>
+                    <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;">${c.Texto}</div>
+                </div>
+            </div>`;
+        }).join('') || (modoDetalle ? '<p style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0 4px;">Sin comentarios todavía.</p>' : '');
+
+        const fotoYo = fotoUsuario || (usuario ? (FOTOS[usuario.Nombre] || '') : '');
+        const seccionComentarios = `
+            <div id="cj_${ri}_${modoDetalle?'det':'feed'}" style="${modoDetalle?'':'display:none;'}padding:${modoDetalle?'0':'0 14px'} 12px;${modoDetalle?'border-top:1px solid rgba(255,255,255,0.06);margin-top:4px;padding-top:12px;':''}">
+                <div id="cjList_${ri}_${modoDetalle?'det':'feed'}">${comentariosHTML}</div>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+                    <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoYo}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div>
+                    <input id="cjInput_${ri}_${modoDetalle?'det':'feed'}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
+                    <button onclick="comentarJuntadaFeed(${ri},'cjInput_${ri}_${modoDetalle?'det':'feed'}','cjList_${ri}_${modoDetalle?'det':'feed'}')" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
+                </div>
+            </div>`;
+
+        if (modoDetalle) {
+            return `
+                <div style="background:linear-gradient(135deg,#1e1e3f,#2a2a4f);border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);overflow:hidden;">
+                    ${foto ? `<div style="overflow:hidden;border-bottom:2px solid rgba(200,168,48,0.2);"><img src="${foto}" style="width:100%;max-height:380px;object-fit:cover;display:block;"></div>` : ''}
+                    <div style="padding:24px;">
+                        <div style="text-align:center;margin-bottom:16px;">
+                            <div style="color:#FFD700;font-size:13px;font-weight:bold;margin-bottom:8px;">${j.Fecha||''}</div>
+                            <div style="color:white;font-size:22px;font-weight:bold;margin-bottom:8px;">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                            <div style="color:rgba(255,255,255,0.6);font-size:13px;">🏠 ${j.Host||'Sin host'}${j.Categoría||j.Categoria?' · 🏷️ '+(j.Categoría||j.Categoria):''}</div>
+                        </div>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:16px;">
+                            <div style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.3)':'rgba(255,152,0,0.3)'};">👑 ${reyesC}/8${hayQ?' ✓':''}</div>
+                            <div style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.2);">💎 ${reinasC}/6</div>
+                            <div style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold;background:rgba(200,168,48,0.1);color:#C8A830;border:1px solid rgba(200,168,48,0.25);">👥 ${totalC} asistentes</div>
+                        </div>
+                        ${asistentesHTML}
+                        ${driveBtn}
+                        ${botonesAdmin}
+                        <div style="display:flex;gap:8px;margin:18px 0 4px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.07);">
+                            <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.12)'};background:${yoLike?'rgba(255,80,80,0.15)':'rgba(255,255,255,0.05)'};color:${yoLike?'#ff6b6b':'rgba(255,255,255,0.5)'};">❤️ ${likes.length}</button>
+                            <button onclick="reaccionarJuntada(${ri},'corona')" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCorona?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.12)'};background:${yoCorona?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCorona?'#FFD700':'rgba(255,255,255,0.5)'};">👑 ${coronas.length}</button>
+                        </div>
+                        <div style="margin-top:16px;">
+                            <div style="color:#C8A830;font-size:13px;font-weight:bold;margin-bottom:8px;">💬 Comentarios</div>
+                            ${seccionComentarios}
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // Modo card (feed home o historial)
+        return `<div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(200,168,48,0.22);border-left:3px solid #C8A830;border-radius:16px;margin-bottom:12px;overflow:hidden;">
+            ${foto ? `<div onclick="verDetalleJuntada(${ri})" style="overflow:hidden;cursor:pointer;"><img src="${foto}" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>` : ''}
+            <div style="padding:12px 14px 8px;cursor:pointer;" onclick="verDetalleJuntada(${ri})">
+                <div style="color:#FFD700;font-size:11px;font-weight:bold;">📅 ${j.Fecha||''}</div>
+                <div style="color:white;font-size:16px;font-weight:bold;margin:3px 0;">${j.Descripción||j.Descripcion||'Juntada'}</div>
+                <div style="color:rgba(255,255,255,0.5);font-size:12px;margin-bottom:8px;">🏠 ${j.Host||'Sin host'}</div>
+                <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;">
+                    <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.3)':'rgba(255,152,0,0.3)'};">👑 ${reyesC}/8${hayQ?' ✓':''}</div>
+                    <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.2);">💎 ${reinasC}/6</div>
+                    <div style="padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(200,168,48,0.1);color:#C8A830;border:1px solid rgba(200,168,48,0.25);">👥 ${totalC}</div>
+                    ${usuario ? `<span style="padding:2px 8px;border-radius:8px;font-size:10px;font-weight:bold;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.18);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid rgba(255,255,255,0.06);">
+                <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.1)'};background:${yoLike?'rgba(255,80,80,0.15)':'rgba(255,255,255,0.05)'};color:${yoLike?'#ff6b6b':'rgba(255,255,255,0.45)'};">❤️ ${likes.length}</button>
+                <button onclick="reaccionarJuntada(${ri},'corona')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCorona?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.1)'};background:${yoCorona?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCorona?'#FFD700':'rgba(255,255,255,0.45)'};">👑 ${coronas.length}</button>
+                <button onclick="toggleComentariosJuntada('cj_${ri}_feed')" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 ${comentarios.length||''} ${comentarios.length===1?'comentario':'comentarios'}</button>
+            </div>
+            ${seccionComentarios}
+        </div>`;
     }
-    function toggleComentariosJuntada(id) {
-        const el = document.getElementById(id);
+
+    // Cache de interacciones de juntadas (cargado desde COMENTARIOS)
+    window.juntadasInteracciones = {}; // key: 'juntada_RI' → {likes:[], coronas:[], comentarios:[]}
+
+    function getJuntadaId(ri) { return 'juntada_' + (ri + 2); } // fila en sheet = ri+2
+
+    async function cargarInteraccionesJuntadas() {
+        try {
+            const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
+            const rows = parseCSV(await r.text());
+            window.juntadasInteracciones = {};
+            window._comentariosCache = rows; // cache global para muro y detalle
+            rows.forEach(row => {
+                if (!row.Destinatario || !row.Destinatario.startsWith('juntada_')) return;
+                const jid = row.Destinatario;
+                if (!window.juntadasInteracciones[jid]) window.juntadasInteracciones[jid] = {likes:[],coronas:[],comentarios:[]};
+                if (row.Tipo === 'juntada') {
+                    window.juntadasInteracciones[jid].likes = row.Likes ? row.Likes.split(',').filter(Boolean) : [];
+                    window.juntadasInteracciones[jid].coronas = row.Coronas ? row.Coronas.split(',').filter(Boolean) : [];
+                    window.juntadasInteracciones[jid].interaccionID = row.ID;
+                } else if (row.Tipo === 'comentario') {
+                    window.juntadasInteracciones[jid].comentarios.push(row);
+                }
+            });
+        } catch(e) { console.error(e); }
+    }
+
+    async function reaccionarJuntada(ri, tipo) {
+        const jid = getJuntadaId(ri);
+        const data = window.juntadasInteracciones[jid] || {};
+        try {
+            if (data.interaccionID) {
+                // Ya existe registro → toggle
+                await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'reaccionar_post', id:data.interaccionID, tipo, email:currentUser }) });
+            } else {
+                // Primera reacción → crear registro tipo 'juntada'
+                await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'crear_interaccion_juntada', juntadaId:jid, tipo, email:currentUser }) });
+            }
+            await cargarInteraccionesJuntadas();
+            renderJuntadas();
+            // Refrescar detalle si está abierto
+            const det = document.getElementById('juntadaDetalle');
+            if (det && det.style.display !== 'none') verDetalleJuntada(ri);
+        } catch(e) { console.error(e); }
+    }
+
+    function toggleComentariosJuntada(elId) {
+        const el = document.getElementById(elId);
         if (!el) return;
         el.style.display = el.style.display === 'none' ? 'block' : 'none';
     }
-    function comentarJuntadaFeed(ri) {
-        const input = document.getElementById('cjInput_' + ri);
+
+    async function comentarJuntadaFeed(ri, inputId, listId) {
+        const input = document.getElementById(inputId);
         const texto = input ? input.value.trim() : '';
         if (!texto) return;
-        const list = document.getElementById('cjList_' + ri);
-        const usuario = getUsuarioActual();
-        const foto = usuario ? (FOTOS[usuario.Nombre] || '') : '';
-        const nombre = usuario ? usuario.Nombre : 'Vos';
-        if (list) list.innerHTML += `<div style="display:flex;gap:8px;margin:8px 0;"><div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${foto}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div><div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;"><div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nombre}</div><div style="color:rgba(255,255,255,0.85);font-size:13px;">${texto}</div></div></div>`;
-        input.value = '';
+        const jid = getJuntadaId(ri);
+        try {
+            await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar_post', postId:jid, autor:currentUser, texto }) });
+            if (input) input.value = '';
+            await cargarInteraccionesJuntadas();
+            // Re-renderizar el área de comentarios en la card
+            const list = document.getElementById(listId);
+            if (list) renderComentariosJuntadaEnEl(list, jid);
+            // Refrescar detalle si está abierto
+            const det = document.getElementById('juntadaDetalle');
+            if (det && det.style.display !== 'none') verDetalleJuntada(ri);
+        } catch(e) { alert('❌ Error de conexión'); }
+    }
+
+    function renderComentariosJuntadaEnEl(el, jid) {
+        const data = window.juntadasInteracciones[jid] || {};
+        const comentarios = data.comentarios || [];
+        el.innerHTML = comentarios.map(c => {
+            const cu = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
+            const nom = cu ? cu.Nombre : c.Autor;
+            const foto = FOTOS[nom] || '';
+            return `<div style="display:flex;gap:8px;margin:8px 0;">
+                <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${foto}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
+                <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
+                    <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nom}</div>
+                    <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;">${c.Texto}</div>
+                </div>
+            </div>`;
+        }).join('') || '<p style="color:rgba(255,255,255,0.35);font-size:12px;padding:8px 0;">Sin comentarios todavía.</p>';
     }
 
     // ═══════════════════════════════════════
@@ -1010,88 +1154,37 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
     const limite = window.juntadasVerMas ? filtradas.length : 10;
     const mostradas = filtradas.slice(0, limite);
 
-const RH_REYES = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
-const RH_REINAS = ['Cata','Lola','Sami','Leila','Juli','Manu'];
-function badgesContador(jj) {
-    const rc = RH_REYES.filter(n => esConfirmadoPositivo(jj[n])).length;
-    const ric = RH_REINAS.filter(n => esConfirmadoPositivo(jj[n])).length;
-    const hayQ = rc >= 4;
-    return `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">
-        <div style="padding:2px 7px;border-radius:20px;font-size:10px;font-weight:bold;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.3)':'rgba(255,152,0,0.3)'};">👑 ${rc}/8${hayQ?' ✓':''}</div>
-        <div style="padding:2px 7px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.2);">💎 ${ric}/6</div>
-        <div style="padding:2px 7px;border-radius:20px;font-size:10px;font-weight:bold;background:rgba(200,168,48,0.1);color:#C8A830;border:1px solid rgba(200,168,48,0.25);">👥 ${jj['N° Asist']||'0'}</div>
-    </div>`;
-}
+    const fotoUsuario = usuario ? (FOTOS[usuario.Nombre] || '') : '';
+    let cardsHTML = '';
+    let i = 0;
+    while (i < mostradas.length) {
+        const j = mostradas[i];
+        const jSig = mostradas[i + 1];
+        const mismaFecha = jSig && j.Fecha && jSig.Fecha && j.Fecha === jSig.Fecha;
+        const ri = juntadasData.indexOf(j);
 
-let cardsHTML = '';
-let i = 0;
-while (i < mostradas.length) {
-    const j = mostradas[i];
-    const jSig = mostradas[i + 1];
-    const mismaFecha = jSig && j.Fecha && jSig.Fecha && j.Fecha === jSig.Fecha;
-
-    const ri = juntadasData.indexOf(j);
-    const asistio = esConfirmadoPositivo(j[nombreUsuario]);
-    const foto = j['Foto Juntada'] || j['Foto juntada'] || '';
-    const driveLink = getDriveLink(j);
-
-    if (mismaFecha) {
+        if (mismaFecha) {
+            i++;
+            const j2 = mostradas[i];
+            const ri2 = juntadasData.indexOf(j2);
+            cardsHTML += '<div style="position:relative;padding-left:22px;margin-bottom:15px;">'
+                + '<div style="position:absolute;left:0;top:0;bottom:0;width:22px;">'
+                + '<div style="position:absolute;left:2px;top:50%;transform:translateY(-50%) rotate(45deg);width:10px;height:10px;background:#C8A830;box-shadow:0 0 8px rgba(200,168,48,0.6);"></div>'
+                + '</div>'
+                + '<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 0;">'
+                + '<div style="flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(200,168,48,0.4));"></div>'
+                + '<div style="color:#C8A830;font-size:9px;letter-spacing:3px;text-transform:uppercase;white-space:nowrap;padding:4px 12px;border:1px solid rgba(200,168,48,0.3);background:rgba(200,168,48,0.06);">⚔ DOBLE JORNADA ⚔</div>'
+                + '<div style="flex:1;height:1px;background:linear-gradient(to left,transparent,rgba(200,168,48,0.4));"></div>'
+                + '</div>'
+                + renderJuntadaCardHTML(ri, usuario, fotoUsuario, false)
+                + renderJuntadaCardHTML(ri2, usuario, fotoUsuario, false)
+                + '</div>';
+        } else {
+            cardsHTML += renderJuntadaCardHTML(ri, usuario, fotoUsuario, false);
+        }
         i++;
-        const j2 = mostradas[i];
-        const ri2 = juntadasData.indexOf(j2);
-        const asistio2 = esConfirmadoPositivo(j2[nombreUsuario]);
-        const foto2 = j2['Foto Juntada'] || j2['Foto juntada'] || '';
-        const driveLink2 = getDriveLink(j2);
-
-        cardsHTML += '<div style="position:relative;padding-left:22px;margin-bottom:15px;">'
-            + '<div style="position:absolute;left:0;top:0;bottom:0;width:22px;">'
-            + '<div style="position:absolute;left:6px;top:10px;width:10px;height:2px;background:#C8A830;"></div>'
-            + '<div style="position:absolute;left:6px;top:10px;width:2px;height:calc(50% - 16px);background:linear-gradient(to bottom,#C8A830,#FFE566);"></div>'
-            + '<div style="position:absolute;left:2px;top:50%;transform:translateY(-50%) rotate(45deg);width:10px;height:10px;background:#C8A830;box-shadow:0 0 8px rgba(200,168,48,0.6);"></div>'
-            + '<div style="position:absolute;left:6px;bottom:10px;width:2px;height:calc(50% - 16px);background:linear-gradient(to top,#C8A830,#FFE566);"></div>'
-            + '<div style="position:absolute;left:6px;bottom:10px;width:10px;height:2px;background:#C8A830;"></div>'
-            + '</div>'
-            + '<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:6px 0;">'
-            + '<div style="flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(200,168,48,0.4));"></div>'
-            + '<div style="color:#C8A830;font-size:9px;letter-spacing:3px;text-transform:uppercase;white-space:nowrap;padding:4px 12px;border:1px solid rgba(200,168,48,0.3);background:rgba(200,168,48,0.06);">⚔ DOBLE JORNADA ⚔</div>'
-            + '<div style="flex:1;height:1px;background:linear-gradient(to left,transparent,rgba(200,168,48,0.4));"></div>'
-            + '</div>'
-            + '<div class="card" onclick="verDetalleJuntada(' + ri + ')" style="cursor:pointer;margin-bottom:4px;" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
-            + (foto ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
-            + '<div class="card-date">' + (j.Fecha||'Fecha') + '</div>'
-            + '<div class="card-title">' + (j.Descripción||j.Descripcion||'Juntada') + '</div>'
-            + '<div class="card-details"><span>🏠 ' + (j.Host||'Sin host') + '</span></div>'
-            + badgesContador(j)
-            + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
-            + (driveLink ? '<a href="' + driveLink + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
-            + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
-            + '</div></div>'
-            + '<div class="card" onclick="verDetalleJuntada(' + ri2 + ')" style="cursor:pointer;margin-top:4px;" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
-            + (foto2 ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto2 + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
-            + '<div class="card-date">' + (j2.Fecha||'Fecha') + '</div>'
-            + '<div class="card-title">' + (j2.Descripción||j2.Descripcion||'Juntada') + '</div>'
-            + '<div class="card-details"><span>🏠 ' + (j2.Host||'Sin host') + '</span></div>'
-            + badgesContador(j2)
-            + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
-            + (driveLink2 ? '<a href="' + driveLink2 + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
-            + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio2?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio2?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
-            + '</div></div>'
-            + '</div>';
-    } else {
-        cardsHTML += '<div class="card" onclick="verDetalleJuntada(' + ri + ')" style="cursor:pointer;transition:transform 0.2s;" onmouseover="this.style.transform=\'scale(1.02)\'" onmouseout="this.style.transform=\'scale(1)\'">'
-            + (foto ? '<div style="width:100%;border-radius:10px;margin-bottom:15px;overflow:hidden;"><img src="' + foto + '" style="width:100%;max-height:200px;object-fit:cover;display:block;"></div>' : '')
-            + '<div class="card-date">' + (j.Fecha||'Fecha') + '</div>'
-            + '<div class="card-title">' + (j.Descripción||j.Descripcion||'Juntada') + '</div>'
-            + '<div class="card-details"><span>🏠 ' + (j.Host||'Sin host') + '</span></div>'
-            + badgesContador(j)
-            + '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">'
-            + (driveLink ? '<a href="' + driveLink + '" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;background:rgba(66,133,244,0.2);border:1.5px solid #4285F4;color:#4285F4;font-size:11px;font-weight:bold;text-decoration:none;white-space:nowrap;">📁 Fotos</a>' : '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;background:rgba(244,67,54,0.15);color:#f44336;white-space:nowrap;">🤦 Sin fotos</span>')
-            + (nombreUsuario ? '<span style="display:inline-block;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;' + (asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.2);color:#f44336;') + '">' + (asistio?'✅ FUISTE':'❌ NO FUISTE') + '</span>' : '')
-            + '</div></div>';
     }
 
-    i++;
-}
 
     const verMasHTML = filtradas.length > 10 && !window.juntadasVerMas
         ? '<button onclick="window.juntadasVerMas=true;renderJuntadas()" style="width:100%;margin:5px 0 20px;background:rgba(139,77,143,0.2);border:2px solid rgba(139,77,143,0.5);color:#C8A830;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">Ver ' + (filtradas.length - 10) + ' juntadas más ↓</button>'
@@ -1195,53 +1288,9 @@ while (i < mostradas.length) {
     }
 
     function verDetalleJuntada(index) {
-        const j = juntadasData[index];
         const usuario = getUsuarioActual();
-        const asistentes = Object.keys(FOTOS).filter(n => esConfirmadoPositivo(j[n]));
-        const hoy = new Date(); hoy.setHours(0,0,0,0);
-        const fechaJ = j.Fecha ? parseFecha(j.Fecha) : null;
-        const esFutura = fechaJ && fechaJ >= hoy;
-        const esAdmin = currentUser === ADMIN_EMAIL;
-        const esHostJuntada = usuario && esHostDe(j.Host, usuario.Nombre);
-        const puedeEditar = esFutura ? esHostJuntada : esAdmin;
-
-        const driveLink = getDriveLink(j);
-       const driveBtn = driveLink ? `
-    <a href="${driveLink}" target="_blank"
-       style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;padding:14px;border-radius:12px;background:rgba(66,133,244,0.15);border:2px solid #4285F4;color:#4285F4;font-size:15px;font-weight:bold;text-decoration:none;">
-        📁 Ver o subir fotos en Google Drive
-    </a>` 
-    : `<div style="margin-top:20px;padding:14px;border-radius:12px;background:rgba(244,67,54,0.1);border:2px solid rgba(244,67,54,0.4);color:#f44336;font-size:13px;text-align:center;">
-         Ni una puta foto sacamos 🤦.
-    </div>`;
-
-        const botonesAdmin = puedeEditar ? `
-            <div style="display:flex;gap:10px;margin-top:15px;">
-                <button onclick="abrirModalEditarJuntada(${index})" style="flex:1;background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">✏️ Editar</button>
-                <button onclick="confirmarEliminar(${index})" style="flex:1;background:rgba(244,67,54,0.15);border:2px solid #f44336;color:#f44336;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
-            </div>` : '';
-
-        document.getElementById('juntadaDetalleContent').innerHTML = `
-            <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:30px;border-radius:20px;margin-top:60px;border:2px solid rgba(139,77,143,0.5);">
-                ${j['Foto Juntada']||j['Foto']?`<div style="width:100%;margin:0 auto 25px;border-radius:15px;overflow:hidden;border:3px solid #C8A830;"><img src="${j['Foto Juntada']||j['Foto']}" style="width:100%;max-height:400px;object-fit:contain;background:#0a0614;display:block;"></div>`:''}
-                <div style="text-align:center;margin-bottom:25px;">
-                    <div style="color:#FFD700;font-size:14px;font-weight:bold;margin-bottom:10px;">${j.Fecha||'Fecha'}</div>
-                    <div style="color:white;font-size:24px;font-weight:bold;margin-bottom:10px;">${j.Descripción||j.Descripcion||'Juntada'}</div>
-                    <div style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:5px;">🏠 Host: ${j.Host||'Sin host'}</div>
-                    ${j.Categoría||j.Categoria?`<div style="color:rgba(255,255,255,0.7);font-size:14px;margin-bottom:5px;">🏷️ ${j.Categoría||j.Categoria}</div>`:''}
-                    <div style="color:#FFD700;font-size:18px;font-weight:bold;margin-top:10px;">👥 ${asistentes.length} Asistentes</div>
-                </div>
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:15px;margin-top:25px;">
-                    ${asistentes.map(n=>`
-                        <div style="text-align:center;cursor:pointer;" onclick="verPerfilCulposo('${n}')">
-                            <div style="width:70px;height:70px;border-radius:50%;background-image:url('${FOTOS[n]}');background-size:cover;background-position:center;margin:0 auto 8px;border:3px solid #FFD700;"></div>
-                            <div style="color:white;font-size:12px;font-weight:bold;">${n}</div>
-                        </div>`).join('')}
-                </div>
-                ${driveBtn}
-                ${botonesAdmin}
-            </div>`;
-
+        const fotoUsuario = usuario ? (FOTOS[usuario.Nombre] || '') : '';
+        document.getElementById('juntadaDetalleContent').innerHTML = renderJuntadaCardHTML(index, usuario, fotoUsuario, true);
         document.getElementById('juntadaDetalle').style.display = 'block';
     }
 
