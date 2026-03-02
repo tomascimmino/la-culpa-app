@@ -954,13 +954,15 @@ function parseCSVLine(line) {
         document.body.appendChild(modal);
     }
 
-    async function cargarMuroHome() {
-        const el = document.getElementById('muroPostsHome');
-        if (!el) return;
-        try {
-            const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-            const rows = parseCSV(await r.text());
-            muroPostsCache = rows;
+   async function cargarMuroHome() {
+    const el = document.getElementById('muroPostsHome');
+    if (!el) return;
+    try {
+        const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
+        const text = await r.text();
+        const rows = parseCSV(text);
+        console.log('PRIMERA FILA RAW:', text.split('\n')[1]);
+        muroPostsCache = rows;
             const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
             if (!posts.length) { el.innerHTML = ''; return; }
             el.innerHTML = posts.map(p => renderPostFeedHTML(p, rows)).join('');
