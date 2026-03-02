@@ -1732,7 +1732,7 @@ while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.
             if (totalPareja >= 1) parejasTotales[key] = { nombres: `${n}/${pareja}`, total: totalPareja };
         });
         const parejasTxt = Object.values(parejasTotales).map(p => `${p.nombres}: $${Math.round(p.total).toLocaleString('es-AR')}`);
-        if (parejasTxt.length) txt += `\n\n👫 *POR PAREJA:*\n` + parejasTxt.join('\n') + `\n_(entre los dos juntan eso)_`;
+        if (parejasTxt.length) txt += `\n\n👫 *POR PAREJA:*\n` + parejasTxt.join('\n') + `\n_(por si le querés pagar a tu marido/mujer)_`;
         const waLink = document.createElement('a');
 waLink.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`;
 waLink.target = '_blank';
