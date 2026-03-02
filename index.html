@@ -847,7 +847,7 @@ function parseCSVLine(line) {
     async function cargarInteraccionesJuntadas() {
         try {
             const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-            const rows = parseCSV(await r.text());
+            const rows = parseCSV((await r.text()).replace(/^\uFEFF/, ''));
             window.juntadasInteracciones = {};
             window._comentariosCache = rows; // cache global para muro y detalle
             rows.forEach(row => {
@@ -960,7 +960,7 @@ function parseCSVLine(line) {
     try {
         const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
         const text = await r.text();
-        const rows = parseCSV(text);
+        const rows = parseCSV(text.replace(/^\uFEFF/, ''));
         console.log('PRIMERA FILA RAW:', text.split('\n')[1]);
         muroPostsCache = rows;
             const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
