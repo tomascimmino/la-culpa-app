@@ -971,10 +971,6 @@ function parseCSVLine(line) {
         const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
         const fotoAutor = FOTOS[nombreAutor] || '';
-        const likes = p.Likes ? p.Likes.split(',').filter(Boolean) : [];
-        const coronas = p.Coronas ? p.Coronas.split(',').filter(Boolean) : [];
-        const yoLike = likes.includes(currentUser);
-        const yoCorona = coronas.includes(currentUser);
         const esMio = p.Autor === currentUser;
         const esAdmin = currentUser === ADMIN_EMAIL;
         const comentarios = allRows.filter(c => c.Tipo === 'comentario' && c.Destinatario === p.ID);
@@ -985,8 +981,6 @@ function parseCSVLine(line) {
             const cuC = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
             const nomC = cuC ? cuC.Nombre : c.Autor;
             const fotoC = FOTOS[nomC] || '';
-            const cLikes = c.Likes ? c.Likes.split(',').filter(Boolean) : [];
-            const yoClike = cLikes.includes(currentUser);
             const esMioC = c.Autor === currentUser;
             return `<div style="display:flex;gap:8px;margin:8px 0;">
                 <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoC}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
@@ -994,7 +988,6 @@ function parseCSVLine(line) {
                     <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nomC}</div>
                     <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;margin-bottom:6px;">${c.Texto}</div>
                     <div style="display:flex;align-items:center;gap:8px;">
-                        <button onclick="likearComentarioMuro('${c.ID}')" style="background:${yoClike?'rgba(255,80,80,0.18)':'none'};border:1px solid ${yoClike?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.12)'};color:${yoClike?'#ff6b6b':'rgba(255,255,255,0.4)'};padding:2px 9px;border-radius:20px;font-size:11px;cursor:pointer;">❤️ ${cLikes.length||''}</button>
                         ${esMioC ? `<button onclick="eliminarComentarioMuro('${c.ID}','${p.ID}')" style="background:none;border:none;color:rgba(244,67,54,0.45);font-size:12px;cursor:pointer;">🗑</button>` : ''}
                     </div>
                 </div>
@@ -1013,9 +1006,7 @@ function parseCSVLine(line) {
             </div>
             <div style="color:rgba(255,255,255,0.88);font-size:14px;line-height:1.55;padding:0 14px 12px;">${p.Texto}</div>
             <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);">
-                <button onclick="reaccionarPost('${p.ID}','like')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.1)'};background:${yoLike?'rgba(255,80,80,0.15)':'rgba(255,255,255,0.05)'};color:${yoLike?'#ff6b6b':'rgba(255,255,255,0.45)'};">❤️ ${likes.length}</button>
-                <button onclick="reaccionarPost('${p.ID}','corona')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCorona?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.1)'};background:${yoCorona?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCorona?'#FFD700':'rgba(255,255,255,0.45)'};">👑 ${coronas.length}</button>
-                <button onclick="toggleComentariosMuro('feed_${p.ID}')" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 ${comentarios.length} comentario${comentarios.length!==1?'s':''}</button>
+                <button onclick="toggleComentariosMuro('feed_${p.ID}')" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 ${comentarios.length} comentario${comentarios.length!==1?'s':''}</button>
             </div>
             <div id="feed_${p.ID}" style="display:none;padding:0 14px 12px;border-top:1px solid rgba(255,255,255,0.04);">
                 <div id="feedComList_${p.ID}">${comentariosHTML}</div>
