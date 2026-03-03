@@ -734,12 +734,13 @@ function parseCSVLine(line) {
         const juntadasFeedHTML = ultimasJuntadas.map(j => renderJuntadaCardHTML(juntadasData.indexOf(j), usuario, fotoUsuario, false)).join('');
 
         document.getElementById('ultimasJuntadas').innerHTML =
+            initBdayWidget() +
             proximaHTML +
             (usuario ? nuevoPosHTML : '') +
             feedLabel +
             `<div id="muroPostsHome"><div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:20px;">⏳ Cargando...</div></div>` +
             juntadasFeedHTML;
-
+        
         // Cargar posts del muro en el home
         await cargarMuroHome();
     }
@@ -2298,13 +2299,12 @@ loadSong(currentIndex);
 // ── WIDGET CUMPLEAÑOS ─────────────────────────────────────
 const CUMPLES = [
     {n:'Sami',   d:17, m:1},  {n:'Santi',  d:3,  m:2},
-    {n:'Juli',   d:14, m:3},  {n:'Rama',   d:18, m:3},
+    {n:'Juli',   d:12, m:3},  {n:'Rama',   d:18, m:3},
     {n:'Caamaño',d:21, m:3},  {n:'Manu',   d:14, m:5},
     {n:'Cata',   d:5,  m:7},  {n:'Mateo',  d:18, m:7},
     {n:'Tirri',  d:9,  m:8},  {n:'Toti',   d:8,  m:9},
     {n:'Leila',  d:24, m:9},  {n:'Matu',   d:1,  m:10},
-    {n:'Toto',   d:18, m:11}, {n:'Zabala', d:20, m:11},
-    {n:'Lola',   d:23, m:11}
+    {n:'Toto',   d:18, m:11}, {n:'Zabala', d:20, m:11}
 ];
 
 function diasHasta(d, m) {
