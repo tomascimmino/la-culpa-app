@@ -2294,10 +2294,94 @@ loadSong(currentIndex);
         window._carruselData[ri].idx = idx;
         renderCarruselSlide(ri);
     }
+
+// ── WIDGET CUMPLEAÑOS ─────────────────────────────────────
+const CUMPLES = [
+    {n:'Sami',   d:17, m:1},  {n:'Santi',  d:3,  m:2},
+    {n:'Juli',   d:12, m:3},  {n:'Rama',   d:18, m:3},
+    {n:'Caamaño',d:21, m:3},  {n:'Manu',   d:14, m:5},
+    {n:'Cata',   d:5,  m:7},  {n:'Mateo',  d:18, m:7},
+    {n:'Tirri',  d:9,  m:8},  {n:'Toti',   d:8,  m:9},
+    {n:'Leila',  d:24, m:9},  {n:'Matu',   d:1,  m:10},
+    {n:'Toto',   d:18, m:11}, {n:'Zabala', d:20, m:11}
+];
+
+function diasHasta(d, m) {
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    let fecha = new Date(hoy.getFullYear(), m-1, d);
+    if (fecha < hoy) fecha = new Date(hoy.getFullYear()+1, m-1, d);
+    return Math.round((fecha - hoy) / 86400000);
+}
+
+function initBdayWidget() {
+    const ordenados = [...CUMPLES]
+        .map(c => ({ ...c, dias: diasHasta(c.d, c.m) }))
+        .sort((a,b) => a.dias - b.dias);
+
+    const proximo = ordenados[0];
+
+    // Chip principal
+    const nameEl = document.getElementById('bdayName');
+    const daysEl = document.getElementById('bdayDays');
+    if (!nameEl || !daysEl) return;
+
+    if (proximo.dias === 0) {
+        nameEl.textContent = '¡Hoy ' + proximo.n + '! 🎉';
+        daysEl.textContent = '¡Feliz cumple!';
+    } else {
+        nameEl.textContent = proximo.n;
+        daysEl.textContent = 'en ' + proximo.dias + ' día' + (proximo.dias===1?'':'s');
+    }
+
+    // Lista expandida — próximos 5
+    const listEl = document.getElementById('bdayList');
+    if (listEl) {
+        listEl.innerHTML = ordenados.slice(0, 5).map((c, i) => {
+            const foto = FOTOS[c.n] || '';
+            const esHoy = c.dias === 0;
+            return `<div style="display:flex;align-items:center;gap:9px;padding:5px 0;${i<4?'border-bottom:1px solid rgba(255,255,255,0.05);':''}">
+                <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;background:url('${foto}') center top/cover;border:1.5px solid ${esHoy?'#FFD700':'rgba(200,168,48,0.3)'};" ></div>
+                <div style="flex:1;">
+                    <div style="color:${esHoy?'#FFD700':'white'};font-size:12px;font-weight:bold;">${c.n}${esHoy?' 🎉':''}</div>
+                    <div style="color:rgba(255,255,255,0.4);font-size:10px;">${c.d}/${c.m}</div>
+                </div>
+                <div style="color:${esHoy?'#FFD700':'rgba(255,255,255,0.5)'};font-size:11px;font-weight:bold;">${esHoy?'¡HOY!':c.dias+'d'}</div>
+            </div>`;
+        }).join('');
+    }
+}
+
+function toggleBday() {
+    const panel = document.getElementById('bdayPanel');
+    if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+// Iniciar cuando carguen los datos
+const _origLoadData = loadData;
+loadData = async function() {
+    await _origLoadData.apply(this, arguments);
+    initBdayWidget();
+};
+initBdayWidget();
     
 </script>
 
 <!-- ===== FIN PLAYER PRO ===== -->
 
+<!-- WIDGET CUMPLEAÑOS -->
+<div id="bdayWidget" onclick="toggleBday()" style="position:fixed;bottom:80px;right:14px;z-index:1500;cursor:pointer;user-select:none;">
+    <div id="bdayChip" style="background:linear-gradient(135deg,#2a1455,#1a0830);border:1.5px solid rgba(200,168,48,0.4);border-radius:20px;padding:7px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 15px rgba(0,0,0,0.5);min-width:140px;">
+        <span style="font-size:18px;">🎂</span>
+        <div>
+            <div id="bdayName" style="color:#FFD700;font-size:12px;font-weight:bold;line-height:1.2;"></div>
+            <div id="bdayDays" style="color:rgba(255,255,255,0.55);font-size:10px;"></div>
+        </div>
+    </div>
+    <div id="bdayPanel" style="display:none;margin-top:6px;background:linear-gradient(135deg,#1e1040,#2a1455);border:1.5px solid rgba(200,168,48,0.3);border-radius:14px;padding:12px;min-width:190px;box-shadow:0 4px 20px rgba(0,0,0,0.6);">
+        <div style="color:#C8A830;font-size:11px;font-weight:bold;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">🎂 Próximos cumples</div>
+        <div id="bdayList"></div>
+    </div>
+</div>
+    
 </body>
 </html>
