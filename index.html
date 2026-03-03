@@ -1051,7 +1051,7 @@ function renderPostFeedHTML(p, allRows, idx) {
                 <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${fotoAutor}') center top/cover;cursor:pointer;" onclick="verPerfilCulposo('${nombreAutor}')"></div>
                 <div style="flex:1;">
                     <div style="color:#C8A830;font-size:13px;font-weight:bold;cursor:pointer;" onclick="verPerfilCulposo('${nombreAutor}')">${nombreAutor}</div>
-                    <div style="color:rgba(255,255,255,0.3);font-size:11px;">${p.Fecha||''}</div>
+                    <div style="color:rgba(255,255,255,0.3);font-size:11px;">${formatFechaPost(p.Fecha)}</div>
                 </div>
                 <div style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(139,77,143,0.2);color:rgba(200,168,48,0.7);border:1px solid rgba(139,77,143,0.3);">✍️ post</div>
                 ${(esMio||esAdmin) ? `<button onclick="eliminarPost('${postId}')" style="background:none;border:1px solid rgba(244,67,54,0.2);color:rgba(244,67,54,0.5);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;margin-left:4px;">🗑</button>` : ''}
@@ -1071,6 +1071,21 @@ function renderPostFeedHTML(p, allRows, idx) {
         </div>`;
     }
 
+function formatFechaPost(fechaStr) {
+    if (!fechaStr) return '';
+    const ahora = new Date();
+    const fecha = new Date(fechaStr);
+    if (isNaN(fecha)) return fechaStr;
+    const hoy = new Date(ahora); hoy.setHours(0,0,0,0);
+    const ayer = new Date(hoy); ayer.setDate(ayer.getDate()-1);
+    const fSolo = new Date(fecha); fSolo.setHours(0,0,0,0);
+    const hhmm = fecha.toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+    if (fSolo.getTime() === hoy.getTime()) return `hoy ${hhmm}`;
+    if (fSolo.getTime() === ayer.getTime()) return `ayer ${hhmm}`;
+    const d = fecha.getDate(), m = fecha.getMonth()+1, y = String(fecha.getFullYear()).slice(2);
+    return `${d}/${m}/${y}`;
+}
+    
     function toggleComentariosMuro(id) {
         const el = document.getElementById(id);
         if (!el) return;
