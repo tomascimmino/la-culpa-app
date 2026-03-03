@@ -626,7 +626,7 @@ function parseCSVLine(line) {
         </div>
     </div>`;
     }
-    function renderHome() {
+    async function renderHome() {
         const hoy = new Date(); hoy.setHours(0,0,0,0);
         let proximaJuntada = null, proximaIndex = -1;
         const juntadasPasadas = [];
@@ -737,11 +737,11 @@ function parseCSVLine(line) {
             proximaHTML +
             (usuario ? nuevoPosHTML : '') +
             feedLabel +
-            `<div id="muroPostsHome"></div>` +
+            `<div id="muroPostsHome"><div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:20px;">⏳ Cargando...</div></div>` +
             juntadasFeedHTML;
 
         // Cargar posts del muro en el home
-        cargarMuroHome();
+        await cargarMuroHome();
     }
 
     // ═══════════════════════════════════════
