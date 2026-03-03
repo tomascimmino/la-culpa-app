@@ -891,10 +891,11 @@ function parseCSVLine(line) {
 
     function getJuntadaId(ri) { return 'juntada_' + (ri + 2); } // fila en sheet = ri+2
 
-    async function cargarInteraccionesJuntadas() {
+   async function cargarInteraccionesJuntadas() {
         try {
-            const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-            const rows = parseCSV(await r.text());
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'get_muro' }) });
+            const res = await r.json();
+            const rows = res.rows || [];
             window.juntadasInteracciones = {};
             window._comentariosCache = rows; // cache global para muro y detalle
             rows.forEach(row => {
@@ -1002,17 +1003,19 @@ function parseCSVLine(line) {
     }
 
     async function cargarMuroHome() {
-        const el = document.getElementById('muroPostsHome');
-        if (!el) return;
-        try {
-            const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-            const rows = parseCSV(await r.text());
-            muroPostsCache = rows;
-            const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
-            if (!posts.length) { el.innerHTML = ''; return; }
-            el.innerHTML = posts.map((p, idx) => renderPostFeedHTML(p, rows, idx)).join('');
-        } catch(e) { console.error(e); }
-    }
+    const el = document.getElementById('muroPostsHome');
+    if (!el) return;
+    try {
+        const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'get_muro' }) });
+        const res = await r.json();
+        if (!res.success) { console.error(res.error); return; }
+        const rows = res.rows;
+        muroPostsCache = rows;
+        const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
+        if (!posts.length) { el.innerHTML = ''; return; }
+        el.innerHTML = posts.map((p, idx) => renderPostFeedHTML(p, rows, idx)).join('');
+    } catch(e) { console.error(e); }
+}
 
 function renderPostFeedHTML(p, allRows, idx) {
         const safeId = idx;
