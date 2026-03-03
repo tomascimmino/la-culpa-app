@@ -921,9 +921,15 @@ function parseCSVLine(line) {
                 // Ya existe registro → toggle
                 await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'reaccionar_post', id:data.interaccionID, tipo, email:currentUser }) });
             } else {
-                // Primera reacción → crear registro tipo 'juntada'
-                await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'crear_interaccion_juntada', juntadaId:jid, tipo, email:currentUser }) });
-            }
+    // Primera reacción → crear registro y aplicar reacción en dos pasos
+    await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'crear_interaccion_juntada', juntadaId:jid, tipo, email:currentUser }) });
+    // Recargar para obtener el interaccionID recién creado y aplicar la reacción
+    await cargarInteraccionesJuntadas();
+    const dataActualizada = window.juntadasInteracciones[jid] || {};
+    if (dataActualizada.interaccionID) {
+        await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'reaccionar_post', id:dataActualizada.interaccionID, tipo, email:currentUser }) });
+    }
+}
             await cargarInteraccionesJuntadas();
             renderJuntadas();
             // Refrescar detalle si está abierto
