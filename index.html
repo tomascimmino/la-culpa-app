@@ -867,7 +867,7 @@ function parseCSVLine(line) {
 
         // Modo card (feed home o historial)
         return `<div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(200,168,48,0.22);border-left:3px solid #C8A830;border-radius:16px;margin-bottom:12px;overflow:hidden;">
-            ${foto ? `<div onclick="verDetalleJuntada(${ri})" style="overflow:hidden;cursor:pointer;"><img src="${foto}" style="width:100%;max-height:260px;object-fit:cover;object-position:center top;display:block;"></div>` : ''}
+            ${foto ? `<div onclick="verDetalleJuntada(${ri})" style="overflow:hidden;cursor:pointer;"><img src="${foto}" style="width:100%;max-height:260px;object-fit:cover;object-position:center center;display:block;"></div>` : ''}
             <div style="padding:12px 14px 8px;cursor:pointer;" onclick="verDetalleJuntada(${ri})">
                 <div style="color:#FFD700;font-size:11px;font-weight:bold;">📅 ${j.Fecha||''}</div>
                 <div style="color:white;font-size:16px;font-weight:bold;margin:3px 0;">${j.Descripción||j.Descripcion||'Juntada'}</div>
@@ -2264,7 +2264,7 @@ loadSong(currentIndex);
         const foto = fotos[idx];
         slidesEl.innerHTML = `<a href="${foto.full}" target="_blank" style="display:block;width:100%;height:100%;">
             <img src="${foto.thumb}" 
-                style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.25s;"
+                style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;transition:opacity 0.25s;"
                 onerror="this.style.display='none';this.parentElement.parentElement.querySelector('div').style.display='flex'">
         </a>`;
 
