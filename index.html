@@ -1016,7 +1016,7 @@ function parseCSVLine(line) {
 
 function renderPostFeedHTML(p, allRows, idx) {
         const safeId = idx;
-        const postId = p.ID || p.id || Object.values(p)[0] || '';
+        const postId = p.ID2 || p.ID || p.id || '';
         const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
         const fotoAutor = FOTOS[nombreAutor] || '';
