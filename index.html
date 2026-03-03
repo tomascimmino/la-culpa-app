@@ -1921,12 +1921,13 @@ document.body.removeChild(waLink);
         }
     }
 
-    async function cargarComentarios(destinatario) {
+ async function cargarComentarios(destinatario) {
         const el = document.getElementById('comentariosList_' + destinatario);
         if (!el) return;
         try {
-            const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=COMENTARIOS`);
-            const rows = parseCSV(await r.text());
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'get_muro' }) });
+            const res = await r.json();
+            const rows = res.rows || [];
             const mios = rows.filter(c => c.Destinatario === destinatario);
             if (!mios.length) {
                 el.innerHTML = '<p style="color:rgba(255,255,255,0.4);font-size:13px;text-align:center;padding:10px;">Nadie comentó todavía. Sean los primeros, culposos.</p>';
