@@ -2228,9 +2228,8 @@ loadSong(currentIndex);
             const resp = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name)&key=AIzaSyBtqBg0uCiOjzMDRZAX5pxHGuVWZc0ul6U`);
             
             let fotos = [];
-            if (resp.ok) {
-                const raw = await resp.json();
-                const data = JSON.parse(raw.contents);
+           if (resp.ok) {
+                const data = await resp.json();
                 fotos = (data.files || []).map(f => ({
                     id: f.id,
                     thumb: `https://lh3.googleusercontent.com/d/${f.id}=w800`,
