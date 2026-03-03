@@ -998,7 +998,6 @@ function parseCSVLine(line) {
     }
 
     async function cargarMuroHome() {
-        const safeId = idx;
         const el = document.getElementById('muroPostsHome');
         if (!el) return;
         try {
@@ -1011,8 +1010,9 @@ function parseCSVLine(line) {
         } catch(e) { console.error(e); }
     }
 
-   function renderPostFeedHTML(p, allRows) {
-        const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
+   function renderPostFeedHTML(p, allRows, idx) {
+        const safeId = idx;
+        const cu = culpososData.find((c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
         const fotoAutor = FOTOS[nombreAutor] || '';
         const esMio = p.Autor === currentUser;
