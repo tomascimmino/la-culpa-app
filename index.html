@@ -2303,7 +2303,8 @@ const CUMPLES = [
     {n:'Cata',   d:5,  m:7},  {n:'Mateo',  d:18, m:7},
     {n:'Tirri',  d:9,  m:8},  {n:'Toti',   d:8,  m:9},
     {n:'Leila',  d:24, m:9},  {n:'Matu',   d:1,  m:10},
-    {n:'Toto',   d:18, m:11}, {n:'Zabala', d:20, m:11}
+    {n:'Toto',   d:18, m:11}, {n:'Zabala', d:20, m:11},
+    {n:'Lola',   d:23, m:11}
 ];
 
 function diasHasta(d, m) {
@@ -2320,11 +2321,14 @@ function initBdayWidget() {
 
     const proximo = ordenados[0];
 
-    // Chip principal
+   // Mover el widget al lugar correcto en el home si existe
+    const widgetHome = document.getElementById('bdayWidgetHome');
+    const widget = document.getElementById('bdayWidget');
+    if (widgetHome && widget && !widgetHome.contains(widget)) widgetHome.appendChild(widget);
+
     const nameEl = document.getElementById('bdayName');
     const daysEl = document.getElementById('bdayDays');
     if (!nameEl || !daysEl) return;
-
     if (proximo.dias === 0) {
         nameEl.textContent = '¡Hoy ' + proximo.n + '! 🎉';
         daysEl.textContent = '¡Feliz cumple!';
@@ -2369,7 +2373,7 @@ initBdayWidget();
 <!-- ===== FIN PLAYER PRO ===== -->
 
 <!-- WIDGET CUMPLEAÑOS -->
-<div id="bdayWidget" onclick="toggleBday()" style="position:fixed;bottom:80px;right:14px;z-index:1500;cursor:pointer;user-select:none;">
+<div id="bdayWidget" onclick="toggleBday()" style="cursor:pointer;user-select:none;margin-bottom:15px;">
     <div id="bdayChip" style="background:linear-gradient(135deg,#2a1455,#1a0830);border:1.5px solid rgba(200,168,48,0.4);border-radius:20px;padding:7px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 15px rgba(0,0,0,0.5);min-width:140px;">
         <span style="font-size:18px;">🎂</span>
         <div>
