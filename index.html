@@ -2225,7 +2225,7 @@ loadSong(currentIndex);
             // Fallback: construimos thumbnails directamente desde el folder embed
             // Técnica: feed público de Drive
             const feedUrl = `https://drive.google.com/embeddedfolderview?id=${folderId}#list`;
-            const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name,thumbnailLink,webContentLink)&key=AIzaSyBtqBg0uCiOjzMDRZAX5pxHGuVWZc0ul6U`)}`);
+            const resp = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name)&key=AIzaSyBtqBg0uCiOjzMDRZAX5pxHGuVWZc0ul6U`);
             
             let fotos = [];
             if (resp.ok) {
