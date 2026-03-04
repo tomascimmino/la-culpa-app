@@ -738,6 +738,10 @@ function parseCSVLine(line) {
         const feedItems = [];
         ultimasJuntadas.forEach(j => {
             const f = parseFecha(j.Fecha);
+            if (f && j.Hora) {
+                const [hh, mm] = j.Hora.split(':').map(Number);
+                f.setHours(hh, mm || 0, 0, 0);
+            }
             feedItems.push({ tipo: 'juntada', fecha: f ? f.getTime() : 0, data: j });
         });
         posts.forEach((p, idx) => {
