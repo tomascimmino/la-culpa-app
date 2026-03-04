@@ -730,18 +730,36 @@ function parseCSVLine(line) {
 
         const feedLabel = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div><div style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:2px;text-transform:uppercase;">feed reciente</div><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div></div>`;
 
-        // Renderizar juntadas del feed usando función unificada
-        const juntadasFeedHTML = ultimasJuntadas.map(j => renderJuntadaCardHTML(juntadasData.indexOf(j), usuario, fotoUsuario, false)).join('');
+      // Cargar posts del muro
+        const allRows = await cargarMuroHome();
+        const posts = allRows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO');
+
+        // Mezclar posts y juntadas por fecha, más reciente primero
+        const feedItems = [];
+        ultimasJuntadas.forEach(j => {
+            const f = parseFecha(j.Fecha);
+            feedItems.push({ tipo: 'juntada', fecha: f ? f.getTime() : 0, data: j });
+        });
+        posts.forEach((p, idx) => {
+            const f = p.Fecha ? new Date(p.Fecha).getTime() : 0;
+            feedItems.push({ tipo: 'post', fecha: f, data: p, idx });
+        });
+        feedItems.sort((a, b) => b.fecha - a.fecha);
+
+        let feedIdx = 0;
+        const feedHTML = feedItems.map(item => {
+            if (item.tipo === 'juntada') {
+                return renderJuntadaCardHTML(juntadasData.indexOf(item.data), usuario, fotoUsuario, false);
+            } else {
+                return renderPostFeedHTML(item.data, allRows, feedIdx++);
+            }
+        }).join('');
 
         document.getElementById('ultimasJuntadas').innerHTML =
             proximaHTML +
             (usuario ? nuevoPosHTML : '') +
             feedLabel +
-            `<div id="muroPostsHome"><div style="color:rgba(255,255,255,0.3);font-size:13px;text-align:center;padding:20px;">⏳ Cargando...</div></div>` +
-            juntadasFeedHTML;
-
-        // Cargar posts del muro en el home
-        await cargarMuroHome();
+            feedHTML;
     }
 
     // ═══════════════════════════════════════
@@ -1009,20 +1027,14 @@ function parseCSVLine(line) {
     }
 
     async function cargarMuroHome() {
-    const el = document.getElementById('muroPostsHome');
-    if (!el) return;
     try {
         const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'get_muro' }) });
         const res = await r.json();
-        if (!res.success) { console.error(res.error); return; }
-        const rows = res.rows;
-        muroPostsCache = rows;
-        const posts = rows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO').reverse();
-        if (!posts.length) { el.innerHTML = ''; return; }
-        el.innerHTML = posts.map((p, idx) => renderPostFeedHTML(p, rows, idx)).join('');
-    } catch(e) { console.error(e); }
+        if (!res.success) { console.error(res.error); return []; }
+        muroPostsCache = res.rows;
+        return res.rows;
+    } catch(e) { console.error(e); return []; }
 }
-
 function renderPostFeedHTML(p, allRows, idx) {
         const safeId = idx;
         const postId = p.ID2 || p.ID || p.id || Object.values(p).find(v => v && (v.startsWith('post_') || v.startsWith('com_'))) || '';
@@ -1966,7 +1978,7 @@ document.body.removeChild(waLink);
                         <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;${fotoAutor ? `background:url('${fotoAutor}') center top/cover` : 'background:linear-gradient(135deg,#8B4D8F,#6B3870)'};"></div>
                         <div style="flex:1;">
                             <div style="color:#C8A830;font-size:12px;font-weight:bold;">${nombreAutor}</div>
-                            <div style="color:rgba(255,255,255,0.35);font-size:10px;">${c.Fecha}</div>
+                            <div style="color:rgba(255,255,255,0.35);font-size:10px;">${formatFechaPost(c.Fecha)}</div>
                         </div>
                         ${esMio ? `<button onclick="eliminarComentario('${c.ID}','${destinatario}')" style="background:none;border:none;color:rgba(244,67,54,0.6);font-size:16px;cursor:pointer;padding:2px 6px;">🗑</button>` : ''}
                     </div>
