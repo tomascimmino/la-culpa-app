@@ -1041,7 +1041,7 @@ function parseCSVLine(line) {
 }
 function renderPostFeedHTML(p, allRows, idx) {
         const safeId = idx;
-        const postId = p.ID2 || p.ID || p.id || Object.values(p).find(v => v && (v.startsWith('post_') || v.startsWith('com_'))) || '';
+        const postId = p.ID2 || p.ID || p.Id || p.id ||      Object.values(p).find(v => typeof v === 'string' && v.startsWith('post_')) || '';
         const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
         const nombreAutor = cu ? cu.Nombre : p.Autor;
         const fotoAutor = FOTOS[nombreAutor] || '';
