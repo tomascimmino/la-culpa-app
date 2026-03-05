@@ -730,10 +730,9 @@ function parseCSVLine(line) {
 
         const feedLabel = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div><div style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:2px;text-transform:uppercase;">feed reciente</div><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div></div>`;
 
-    // Cargar posts del muro (resiliente a errores CORS/red)
-        let allRows = [];
-        try { allRows = await cargarMuroHome(); } catch(e) { console.warn('Muro no disponible:', e); }
-        const posts = (allRows || []).filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO');
+      // Cargar posts del muro
+        const allRows = await cargarMuroHome();
+        const posts = allRows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO');
 
         // Mezclar posts y juntadas por fecha, más reciente primero
         const feedItems = [];
@@ -751,11 +750,12 @@ function parseCSVLine(line) {
         });
         feedItems.sort((a, b) => b.fecha - a.fecha);
 
-       const feedHTML = feedItems.map((item, globalIdx) => {
+        let feedIdx = 0;
+        const feedHTML = feedItems.map(item => {
             if (item.tipo === 'juntada') {
                 return renderJuntadaCardHTML(juntadasData.indexOf(item.data), usuario, fotoUsuario, false);
             } else {
-                return renderPostFeedHTML(item.data, allRows, globalIdx);
+                return renderPostFeedHTML(item.data, allRows, feedIdx++);
             }
         }).join('');
 
