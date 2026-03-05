@@ -750,12 +750,11 @@ function parseCSVLine(line) {
         });
         feedItems.sort((a, b) => b.fecha - a.fecha);
 
-        let feedIdx = 0;
-        const feedHTML = feedItems.map(item => {
+       const feedHTML = feedItems.map((item, globalIdx) => {
             if (item.tipo === 'juntada') {
                 return renderJuntadaCardHTML(juntadasData.indexOf(item.data), usuario, fotoUsuario, false);
             } else {
-                return renderPostFeedHTML(item.data, allRows, feedIdx++);
+                return renderPostFeedHTML(item.data, allRows, globalIdx);
             }
         }).join('');
 
