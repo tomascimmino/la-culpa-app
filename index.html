@@ -1359,9 +1359,10 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
     });
 
     // Guaridas más activas
-    const hostCount = {};
+   const hostCount = {};
     pasadas.forEach(j => {
-        const h = (j.Host || 'Sin host').trim();
+        const h = (j.Host || '').trim();
+        if (!h || h === 'Sin guarida' || h === 'Otro lugar') return;
         hostCount[h] = (hostCount[h] || 0) + 1;
     });
     const topHosts = Object.entries(hostCount).sort((a,b) => b[1]-a[1]).slice(0,3);
