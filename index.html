@@ -381,7 +381,7 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrz7UH8fYW5DbP2wD3QtbNC3nigwv_0ZF6HTPgmpZAnouFvR5m1UE1INZAndRbcyKXRA/exec';
     const ADMIN_EMAIL = 'tomascimmino@gmail.com';
 
-    const CULPOSOS_HOSTS = ['Zabala - Sami','Caamaño - Manu','Rama','Tirri - Toto','Santi','Toti - Lei','Mateo - Juli','Sin host'];
+    const CULPOSOS_HOSTS = ['Pastor','El Bachi','CJ','Corregidores','El 22','Castelar Sarmiento','Castelar Elflein','Otro lugar'];
     const CATEGORIAS = ['Comida','Salida','Cumpleaños','Entrenamiento','Otro'];
     const NOMBRES_MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
@@ -460,9 +460,19 @@
     window.juntadasHostActivo = null;
 window.juntadasAsistenteActivo = null;
 
+    const GUARIDA_HOST = {
+        'Pastor':             'Toti - Lei',
+        'El Bachi':           'Tirri - Toto',
+        'CJ':                 'Zabala - Sami',
+        'Corregidores':       'Rama',
+        'El 22':              'Santi',
+        'Castelar Sarmiento': 'Caamaño - Manu',
+        'Castelar Elflein':   'Mateo - Juli',
+    };
     function esHostDe(hostStr, nombre) {
         if (!hostStr || !nombre) return false;
-        const h = hostStr.toLowerCase();
+        const dupla = GUARIDA_HOST[hostStr.trim()] || hostStr;
+        const h = dupla.toLowerCase();
         if (h.includes(nombre.toLowerCase())) return true;
         const ak = ALIAS_HOST[nombre];
         if (ak && h.includes(ak.toLowerCase())) return true;
