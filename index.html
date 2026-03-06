@@ -385,9 +385,23 @@
     const CATEGORIAS = ['Comida','Salida','Cumpleaños','Entrenamiento','Otro'];
     const NOMBRES_MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-    const ALIAS_HOST = {
+   const ALIAS_HOST = {
         'Leila':'Lei','Juli':'Juli','Tirri':'Tirri','Toto':'Toto',
         'Mateo':'Mateo','Toti':'Toti','Zabala':'Zabala','Sami':'Sami','Caamaño':'Caamaño','Manu':'Manu'
+    };
+
+    const GUARIDAS = {
+        'Zabala - Sami':  'CJ',
+        'Toti - Lei':     'PASTOR',
+        'Tirri - Toto':   'BACHI',
+        'Rama':           'CORREGIDORES',
+        'Santi':          'EL 22',
+    };
+    function getGuarida(host) {
+        if (!host) return 'Sin host';
+        const t = host.trim();
+        return GUARIDAS[t] || t;
+    }
     };
 
     const FOTOS = {
@@ -865,7 +879,7 @@ function parseCSVLine(line) {
                         <div style="text-align:center;margin-bottom:16px;">
                             <div style="color:#FFD700;font-size:13px;font-weight:bold;margin-bottom:8px;">${j.Fecha||''}</div>
                             <div style="color:white;font-size:22px;font-weight:bold;margin-bottom:8px;">${j.Descripción||j.Descripcion||'Juntada'}</div>
-                            <div style="color:rgba(255,255,255,0.6);font-size:13px;">🏠 ${j.Host||'Sin host'}${j.Categoría||j.Categoria?' · 🏷️ '+(j.Categoría||j.Categoria):''}</div>
+                            <div style="color:rgba(255,255,255,0.6);font-size:13px;">🏠 ${getGuarida(j.Host)}${j.Categoría||j.Categoria?' · 🏷️ '+(j.Categoría||j.Categoria):''}</div>
                         </div>
                         <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:16px;">
                             <div style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:bold;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.3)':'rgba(255,152,0,0.3)'};">👑 ${reyesC}/8${hayQ?' ✓':''}</div>
@@ -1345,7 +1359,7 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
     const maxHostCount = topHosts[0] ? topHosts[0][1] : 1;
     const hostBarsHTML = topHosts.map(([h, c]) =>
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">'
-        + '<span style="color:rgba(255,255,255,0.8);font-size:11px;width:85px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + h + '</span>'
+        + '<span style="color:rgba(255,255,255,0.8);font-size:11px;width:85px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + getGuarida(h) + '</span>'
         + '<div style="flex:1;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">'
         + '<div style="height:100%;width:' + Math.round((c/maxHostCount)*100) + '%;background:linear-gradient(to right,#6B2D91,#C8A830);border-radius:3px;"></div></div>'
         + '<span style="color:#C8A830;font-size:11px;font-weight:bold;width:18px;text-align:right;">' + c + '</span>'
