@@ -652,15 +652,27 @@ function parseCSVLine(line) {
     async function renderHome() {
         const hoy = new Date(); hoy.setHours(0,0,0,0);
         let proximaJuntada = null, proximaIndex = -1;
+        const juntadasFuturas = [];
         const juntadasPasadas = [];
 
         juntadasData.forEach((j, i) => {
             if (!j.Fecha) return;
             const f = parseFecha(j.Fecha);
             if (!f) return;
-            if (f >= hoy && !proximaJuntada) { proximaJuntada = j; proximaIndex = i; }
-            else if (f < hoy && tieneQuorum(j)) juntadasPasadas.push(j);
+            if (f >= hoy) {
+                juntadasFuturas.push({ j, i });
+            } else if (tieneQuorum(j)) {
+                juntadasPasadas.push(j);
+            }
         });
+
+        // Ordenar futuras por fecha asc
+        juntadasFuturas.sort((a, b) => parseFecha(a.j.Fecha) - parseFecha(b.j.Fecha));
+
+        if (juntadasFuturas.length > 0) {
+            proximaJuntada = juntadasFuturas[0].j;
+            proximaIndex   = juntadasFuturas[0].i;
+        }
 
         document.getElementById('totalJuntadas').textContent = juntadasPasadas.length;
 
@@ -674,6 +686,7 @@ function parseCSVLine(line) {
             document.getElementById('totalCulposos').innerHTML = `<span style="color:${col}">${pct}%</span>`;
         }
 
+        // ── PRÓXIMA JUNTADA ──
         let proximaHTML = '';
         if (proximaJuntada && usuario) {
             const desc = proximaJuntada.Descripción || proximaJuntada.Descripcion || '';
@@ -711,53 +724,95 @@ function parseCSVLine(line) {
                     <div class="card" style="background:linear-gradient(135deg,rgba(255,215,0,0.15) 0%,rgba(255,215,0,0.05) 100%);border-left-color:#FFD700;">
                         <div class="card-date">${proximaJuntada.Fecha}</div>
                         <div class="card-title" style="font-size:20px;">${desc}</div>
-                       <div class="card-details" style="margin:10px 0;">
-                            <span>🏠 ${proximaJuntada.Host || 'Sin guarida / Otro lugar'}</span>
+                        <div class="card-details" style="margin:10px 0;">
+                            <span>🏠 ${getGuarida(proximaJuntada.Host)}</span>
                             ${proximaJuntada.Categoría || proximaJuntada.Categoria ? `<span>🏷️ ${proximaJuntada.Categoría || proximaJuntada.Categoria}</span>` : ''}
                         </div>
-                      ${renderContadorAsistencia(proximaJuntada)}
+                        ${renderContadorAsistencia(proximaJuntada)}
                         ${estadoHTML}${botonesProxima}
                     </div>`;
             }
-        } else if (usuario) {
-    proximaHTML = `
-        <div class="section-title" style="margin-top:10px;">🎯 Próxima Juntada</div>
+        }
 
-        <div class="card" style="background:rgba(139,77,143,0.1);text-align:center;">
-            <div style="font-size:40px;margin-bottom:10px;">📅</div>
-            <div class="card-title" style="color:rgba(255,255,255,0.7);">
-                No hay próxima juntada programada
-            </div>
-        </div>
+        // ── AGENDA: futuras siguientes ──
+        let agendaHTML = '';
+        const siguientes = juntadasFuturas.slice(1);
+        if (siguientes.length > 0 && usuario) {
+            const items = siguientes.map(({ j, i }) => {
+                const desc = j.Descripción || j.Descripcion || 'Juntada';
+                const miVal = j[usuario.Nombre];
+                const yaConfirme = estaConfirmado(miVal);
+                const positivo = esConfirmadoPositivo(miVal);
+                const fechaObj = parseFecha(j.Fecha);
+                const diasFaltan = fechaObj ? Math.ceil((fechaObj - hoy) / 86400000) : '?';
+                const estadoBadge = yaConfirme
+                    ? (positivo
+                        ? `<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:bold;background:rgba(76,175,80,0.2);color:#4CAF50;border:1px solid rgba(76,175,80,0.4);">✅ Voy</span>`
+                        : `<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:bold;background:rgba(244,67,54,0.2);color:#f44336;border:1px solid rgba(244,67,54,0.4);">❌ No voy</span>`)
+                    : `<span style="padding:2px 8px;border-radius:10px;font-size:10px;font-weight:bold;background:rgba(255,152,0,0.15);color:#FF9800;border:1px solid rgba(255,152,0,0.3);">⏳ Sin confirmar</span>`;
 
-        <button onclick="abrirModalProponerJuntada()" 
-            style="width:100%;margin:15px 0 10px;
-                   background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);
-                   border:none;color:#1E1E3F;padding:12px;
-                   border-radius:10px;font-size:14px;
-                   font-weight:bold;cursor:pointer;">
-            ➕ Proponer Juntada
-        </button>
-    `;
-}
-        // Feed mezclado: últimas 5 juntadas + posts del muro
-        const ultimasJuntadas = juntadasPasadas.slice(-5).reverse();
+                const expandId = `agenda_exp_${i}`;
+                const esHost = esHostDe(j.Host, usuario.Nombre);
+                const puedeEditar = esHost || currentUser === ADMIN_EMAIL;
+                const botonesEdit = puedeEditar ? `
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                        <button onclick="abrirModalEditarJuntada(${i})" style="flex:1;background:rgba(255,215,0,0.12);border:1.5px solid #FFD700;color:#FFD700;padding:8px;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;">✏️ Editar</button>
+                        <button onclick="confirmarEliminar(${i})" style="flex:1;background:rgba(244,67,54,0.12);border:1.5px solid #f44336;color:#f44336;padding:8px;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;">🗑️ Eliminar</button>
+                    </div>` : '';
 
-        // Caja nuevo post
+                return `
+                <div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(139,77,143,0.35);border-radius:14px;margin-bottom:8px;overflow:hidden;">
+                    <div onclick="toggleAgendaItem('${expandId}')" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;">
+                        <div style="flex-shrink:0;text-align:center;min-width:36px;">
+                            <div style="color:#FFD700;font-size:11px;font-weight:bold;">${j.Fecha}</div>
+                            <div style="color:rgba(255,255,255,0.35);font-size:9px;margin-top:1px;">${diasFaltan}d</div>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="color:white;font-size:13px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${desc}</div>
+                            <div style="color:rgba(255,255,255,0.4);font-size:11px;">🏠 ${getGuarida(j.Host)}</div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
+                            ${estadoBadge}
+                            <span style="color:rgba(255,255,255,0.25);font-size:14px;">›</span>
+                        </div>
+                    </div>
+                    <div id="${expandId}" style="display:none;padding:0 14px 12px;border-top:1px solid rgba(255,255,255,0.06);">
+                        ${renderContadorAsistencia(j)}
+                        ${yaConfirme
+                            ? `<button onclick="abrirModalConfirmar(${i})" style="width:100%;margin-top:4px;background:rgba(255,255,255,0.08);border:1.5px solid #FFD700;color:#FFD700;padding:10px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;">✏️ Editar respuesta</button>`
+                            : `<button onclick="abrirModalConfirmar(${i})" style="width:100%;margin-top:4px;background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#1E1E3F;padding:10px;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer;">📝 Confirmar asistencia</button>`
+                        }
+                        ${botonesEdit}
+                    </div>
+                </div>`;
+            }).join('');
+
+            agendaHTML = `
+                <div class="section-title" style="margin-top:18px;">📅 Agenda</div>
+                ${items}`;
+        }
+
+        // ── BOTÓN PROPONER ── siempre visible
         const fotoUsuario = usuario ? (FOTOS[usuario.Nombre] || '') : '';
-        const nuevoPosHTML = `
+        const proponerBtn = usuario ? `
+            <button onclick="abrirModalProponerJuntada()"
+                style="width:100%;margin:14px 0 6px;background:linear-gradient(135deg,rgba(107,45,145,0.4),rgba(74,29,107,0.3));border:2px dashed rgba(200,168,48,0.4);color:#C8A830;padding:11px;border-radius:10px;font-size:13px;font-weight:bold;cursor:pointer;">
+                ➕ Proponer Juntada
+            </button>` : '';
+
+        // ── FEED ──
+        const ultimasJuntadas = juntadasPasadas.slice(-5).reverse();
+        const nuevoPosHTML = usuario ? `
         <div onclick="abrirModalNuevoPost()" style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(200,168,48,0.2);border-radius:14px;padding:13px;margin-bottom:14px;display:flex;gap:10px;align-items:center;cursor:pointer;">
             <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${fotoUsuario}') center top/cover;"></div>
             <div style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.25);border-radius:20px;color:rgba(255,255,255,0.4);font-size:13px;padding:9px 14px;">que procede, loko?</div>
-        </div>`;
+        </div>` : '';
 
         const feedLabel = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div><div style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:2px;text-transform:uppercase;">feed reciente</div><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div></div>`;
 
-      // Cargar posts del muro
         const allRows = await cargarMuroHome();
         const posts = allRows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO');
 
-        // Mezclar posts y juntadas por fecha, más reciente primero
         const feedItems = [];
         ultimasJuntadas.forEach(j => {
             const f = parseFecha(j.Fecha);
@@ -784,11 +839,19 @@ function parseCSVLine(line) {
 
         document.getElementById('ultimasJuntadas').innerHTML =
             proximaHTML +
+            agendaHTML +
+            proponerBtn +
             (usuario ? nuevoPosHTML : '') +
             feedLabel +
             feedHTML;
     }
 
+    function toggleAgendaItem(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+    
     // ═══════════════════════════════════════
     // FUNCIÓN UNIFICADA DE CARD JUNTADA
     // Usada en Home feed, Historial y Detalle
