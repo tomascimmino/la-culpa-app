@@ -528,9 +528,9 @@ window.juntadasAsistenteActivo = null;
         const d = new Date(s);
         return isNaN(d.getTime()) ? null : d;
     }
-    function esConfirmadoPositivo(val) { return val === 'TRUE' || val === '✓'; }
-    function esConfirmadoNegativo(val) { return val === 'FALSE' || val === '✗'; }
-    function estaConfirmado(val)       { return esConfirmadoPositivo(val) || esConfirmadoNegativo(val); }
+    function esConfirmadoPositivo(val) { return val === 'TRUE' || val === '✓' || val === '1' || val === 1; }
+    function esConfirmadoNegativo(val) { return val === 'FALSE' || val === '✗' || val === '2' || val === 2; }
+  function estaConfirmado(val)       { return esConfirmadoPositivo(val) || esConfirmadoNegativo(val); }
     function calcularRacha(nombre) {
         const hoy = new Date(); hoy.setHours(0,0,0,0);
         const pasadas = juntadasData
@@ -1652,7 +1652,7 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
         const msg = document.getElementById('mensajeConfirmacion');
         msg.style.display='block'; msg.innerHTML='<div style="color:#FFD700;">⏳ Guardando...</div>';
         try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ email:currentUser, fila:window.proximaJuntadaIndex+2, asistira }) });
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ email:currentUser, fila:window.proximaJuntadaIndex+2, asistira, valor: asistira ? 1 : 2 }) });
             const res = await r.json();
             if (res.success) {
                 msg.innerHTML=`<div style="color:#4CAF50;font-weight:bold;">✅ ${res.mensaje||'Confirmación guardada'}</div>`;
