@@ -901,7 +901,7 @@ function parseCSVLine(line) {
       const driveFolderId = driveLink ? (driveLink.match(/folders\/([^?]+)/)||[])[1] : null;
         const driveBtn = modoDetalle ? (driveLink
             ? `<div style="margin-top:16px;" id="carrusel_${ri}">
-                <div style="position:relative;border-radius:14px;overflow:hidden;background:#0a0614;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;">
+                <div style="position:relative;border-radius:14px;overflow:hidden;background:#0a0614;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;">
                     <div id="carruselSlides_${ri}" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
                         <div style="color:rgba(255,255,255,0.3);font-size:13px;">⏳ Cargando fotos...</div>
                     </div>
@@ -2248,7 +2248,6 @@ function togglePlay() {
     player.play();
     playBtn.textContent = "⏸";
     document.getElementById("vinylDisc").classList.add("playing");
-    registrarReproduccion();
   } else {
     player.pause();
     playBtn.textContent = "▶";
@@ -2279,15 +2278,17 @@ function nextSong() {
   player.play().catch(() => {});
   playBtn.textContent = "⏸";
   document.getElementById("vinylDisc").classList.add("playing");
+  registrarReproduccion();
 }
 
 function prevSong() {
   currentIndex = (currentIndex - 1 + songs.length) % songs.length;
-loadSong(currentIndex);
+  loadSong(currentIndex);
   actualizarContadorUI();
   player.play();
   playBtn.textContent = "⏸";
   document.getElementById("vinylDisc").classList.add("playing");
+  registrarReproduccion();
 }
     function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
@@ -2391,7 +2392,7 @@ loadSong(currentIndex);  let reproData = { total: 0, canciones: [] };  async fun
         const foto = fotos[idx];
         slidesEl.innerHTML = `<a href="${foto.full}" target="_blank" style="display:block;width:100%;height:100%;">
             <img src="${foto.thumb}" 
-                style="width:100%;height:100%;object-fit:contain;background:#0a0614;display:block;transition:opacity 0.25s;"
+                style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;transition:opacity 0.25s;"
                 onerror="this.style.display='none';this.parentElement.parentElement.querySelector('div').style.display='flex'">
         </a>`;
 
