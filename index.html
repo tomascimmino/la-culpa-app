@@ -185,6 +185,35 @@
     50%      { opacity: 0.5; }
 }
 
+@keyframes chipGlow {
+    0%, 100% { box-shadow: 0 0 8px rgba(255,215,0,0.4), 0 4px 15px rgba(0,0,0,0.5); border-color: rgba(255,215,0,0.6); }
+    50%       { box-shadow: 0 0 25px rgba(255,215,0,0.9), 0 0 50px rgba(255,100,0,0.4), 0 4px 15px rgba(0,0,0,0.5); border-color: #FFD700; }
+}
+@keyframes chipScale {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.06); }
+}
+@keyframes emojiWiggle {
+    0%,100% { transform: rotate(0deg) scale(1); }
+    25%      { transform: rotate(-15deg) scale(1.2); }
+    75%      { transform: rotate(15deg) scale(1.2); }
+}
+@keyframes cardShimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+@keyframes starFloat {
+    0%,100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+    50%      { transform: translateY(-8px) rotate(180deg); opacity: 1; }
+}
+@keyframes cardPulse {
+    0%,100% { box-shadow: 0 0 20px rgba(255,215,0,0.3), 0 8px 30px rgba(0,0,0,0.5); }
+    50%      { box-shadow: 0 0 40px rgba(255,215,0,0.6), 0 8px 30px rgba(0,0,0,0.5); }
+}
+@keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
         @keyframes flamePulse {
     0%   { transform:scale(1) rotate(-3deg);    filter:brightness(1); }
     50%  { transform:scale(1.18) rotate(2deg);  filter:brightness(1.4) drop-shadow(0 0 4px #FF6600); }
@@ -2454,8 +2483,8 @@ function initBdayWidget() {
         .sort((a,b) => a.dias - b.dias);
 
     const proximo = ordenados[0];
+    const esHoyAlguien = ordenados.filter(c => c.dias === 0);
 
-    // Chip principal
     const nameEl = document.getElementById('bdayName');
     const daysEl = document.getElementById('bdayDays');
     if (!nameEl || !daysEl) return;
@@ -2463,12 +2492,22 @@ function initBdayWidget() {
     if (proximo.dias === 0) {
         nameEl.textContent = '¡Hoy ' + proximo.n + '! 🎉';
         daysEl.textContent = '¡Feliz cumple!';
+        // Chip pulsante
+        const chip = document.getElementById('bdayChip');
+        if (chip) {
+            chip.style.animation = 'chipGlow 1.8s ease-in-out infinite, chipScale 1.8s ease-in-out infinite';
+            chip.style.border = '2px solid #FFD700';
+            chip.querySelector('span').style.animation = 'emojiWiggle 1.2s ease-in-out infinite';
+        }
+        // Confetti
+        spawnConfetti();
+        // Card en home
+        renderBdayHomeCard(esHoyAlguien);
     } else {
         nameEl.textContent = proximo.n;
         daysEl.textContent = 'en ' + proximo.dias + ' día' + (proximo.dias===1?'':'s');
     }
 
-    // Lista expandida — próximos 5
     const listEl = document.getElementById('bdayList');
     if (listEl) {
         listEl.innerHTML = ordenados.slice(0, 5).map((c, i) => {
@@ -2483,6 +2522,54 @@ function initBdayWidget() {
                 <div style="color:${esHoy?'#FFD700':'rgba(255,255,255,0.5)'};font-size:11px;font-weight:bold;">${esHoy?'¡HOY!':c.dias+'d'}</div>
             </div>`;
         }).join('');
+    }
+}
+
+function renderBdayHomeCard(cumpleaneros) {
+    const container = document.getElementById('ultimasJuntadas');
+    if (!container) return;
+    const nombres = cumpleaneros.map(c => c.n);
+    const fotos = nombres.map(n => FOTOS[n] || '');
+    const avatarsHTML = nombres.map((n, i) =>
+        `<div style="width:70px;height:70px;border-radius:50%;background:url('${fotos[i]}') center top/cover;border:3px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.5);margin:0 auto 10px;position:relative;z-index:1;"></div>`
+    ).join('');
+    const titulo = nombres.length === 1 ? `¡Feliz cumple, ${nombres[0]}! 🎂` : `¡Felices cumples, ${nombres.join(' y ')}! 🎂`;
+
+    const card = document.createElement('div');
+    card.id = 'bdayHomeCard';
+    card.style.cssText = 'background:linear-gradient(135deg,#2a0e50 0%,#1a0830 50%,#2a1000 100%);border:2px solid #FFD700;border-radius:20px;padding:22px 20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;animation:cardPulse 2s ease-in-out infinite;';
+    card.innerHTML = `
+        <div id="bdayCardStars" style="position:absolute;inset:0;pointer-events:none;"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.04),transparent);background-size:200% 100%;animation:cardShimmer 3s linear infinite;pointer-events:none;"></div>
+        ${avatarsHTML}
+        <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:4px;position:relative;z-index:1;text-shadow:0 0 15px rgba(255,215,0,0.4);">${titulo}</div>
+        <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:14px;position:relative;z-index:1;">¡LA CULPA TE SALUDA! 🎉</div>
+        <div style="font-size:26px;letter-spacing:6px;position:relative;z-index:1;display:inline-block;animation:emojiWiggle 1.5s ease-in-out infinite;">🎉🎈🎁</div>`;
+    container.insertBefore(card, container.firstChild);
+
+    // Estrellas flotantes
+    const starsEl = document.getElementById('bdayCardStars');
+    const emojis = ['✨','⭐','🌟','💫','⚡'];
+    for (let i = 0; i < 8; i++) {
+        const el = document.createElement('div');
+        el.style.cssText = `position:absolute;font-size:12px;top:${Math.random()*80+5}%;left:${Math.random()*90+5}%;animation:starFloat ${Math.random()*2+1.5}s ease-in-out ${Math.random()*2}s infinite;`;
+        el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+        starsEl.appendChild(el);
+    }
+}
+
+function spawnConfetti() {
+    const existing = document.getElementById('confettiContainer');
+    if (existing) return;
+    const container = document.createElement('div');
+    container.id = 'confettiContainer';
+    container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;';
+    document.body.appendChild(container);
+    const colors = ['#FFD700','#C8A830','#ff6b6b','#a855f7','#60a5fa','#34d399','#f97316'];
+    for (let i = 0; i < 60; i++) {
+        const el = document.createElement('div');
+        el.style.cssText = `position:absolute;left:${Math.random()*100}vw;width:${Math.random()*8+4}px;height:${Math.random()*8+4}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'2px'};animation:confettiFall ${Math.random()*3+3}s ${Math.random()*5}s linear infinite;opacity:0;`;
+        container.appendChild(el);
     }
 }
 
