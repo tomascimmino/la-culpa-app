@@ -327,7 +327,8 @@
   <span id="duration">0:00</span>
 </div>
 </div>
-<div id="ultimasJuntadas" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
+<div id="bdayHomeCardContainer"></div>            
+<div id="bdayHomeCardContainer"></div> <div id="ultimasJuntadas" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
         </div>
         <!-- RANKING -->
         <div id="ranking" class="content">
@@ -2526,7 +2527,7 @@ function initBdayWidget() {
 }
 
 function renderBdayHomeCard(cumpleaneros) {
-    const container = document.getElementById('ultimasJuntadas');
+    const container = document.getElementById('bdayHomeCardContainer');
     if (!container) return;
     const nombres = cumpleaneros.map(c => c.n);
     const fotos = nombres.map(n => FOTOS[n] || '');
@@ -2545,7 +2546,7 @@ function renderBdayHomeCard(cumpleaneros) {
         <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:4px;position:relative;z-index:1;text-shadow:0 0 15px rgba(255,215,0,0.4);">${titulo}</div>
         <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:14px;position:relative;z-index:1;">¡LA CULPA TE SALUDA! 🎉</div>
         <div style="font-size:26px;letter-spacing:6px;position:relative;z-index:1;display:inline-block;animation:emojiWiggle 1.5s ease-in-out infinite;">🎉🎈🎁</div>`;
-    container.insertBefore(card, container.firstChild);
+    container.innerHTML = '';     container.appendChild(card);
 
     // Estrellas flotantes
     const starsEl = document.getElementById('bdayCardStars');
