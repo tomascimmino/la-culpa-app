@@ -2243,11 +2243,14 @@ function loadSong(index) {
   document.getElementById("songName").textContent = songs[index].name + " - LA CULPA";
 }
 
+let yaContado = false;
+
 function togglePlay() {
   if (player.paused) {
     player.play();
     playBtn.textContent = "⏸";
     document.getElementById("vinylDisc").classList.add("playing");
+    if (!yaContado) { registrarReproduccion(); yaContado = true; }
   } else {
     player.pause();
     playBtn.textContent = "▶";
@@ -2272,23 +2275,27 @@ async function registrarReproduccion() {
 }
 
 function nextSong() {
+  const indexAnterior = currentIndex;
   currentIndex = (currentIndex + 1) % songs.length;
   loadSong(currentIndex);
   actualizarContadorUI();
   player.play().catch(() => {});
   playBtn.textContent = "⏸";
   document.getElementById("vinylDisc").classList.add("playing");
-  registrarReproduccion();
+  yaContado = false;
+  registrarReproduccion(indexAnterior);
 }
 
 function prevSong() {
+  const indexAnterior = currentIndex;
   currentIndex = (currentIndex - 1 + songs.length) % songs.length;
   loadSong(currentIndex);
   actualizarContadorUI();
   player.play();
   playBtn.textContent = "⏸";
   document.getElementById("vinylDisc").classList.add("playing");
-  registrarReproduccion();
+  yaContado = false;
+  registrarReproduccion(indexAnterior);
 }
     function formatTime(seconds) {
     const mins = Math.floor(seconds / 60);
