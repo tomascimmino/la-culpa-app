@@ -2279,11 +2279,15 @@ function nextSong() {
   currentIndex = (currentIndex + 1) % songs.length;
   loadSong(currentIndex);
   actualizarContadorUI();
-  player.play().catch(() => {});
-  playBtn.textContent = "⏸";
-  document.getElementById("vinylDisc").classList.add("playing");
-  yaContado = false;
-  registrarReproduccion(indexAnterior);
+  player.play().then(() => {
+    playBtn.textContent = "⏸";
+    document.getElementById("vinylDisc").classList.add("playing");
+    yaContado = false;
+    registrarReproduccion(indexAnterior);
+  }).catch(() => {
+    playBtn.textContent = "▶";
+    document.getElementById("vinylDisc").classList.remove("playing");
+  });
 }
 
 function prevSong() {
