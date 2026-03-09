@@ -650,15 +650,19 @@ function parseCSVLine(line) {
         const conf = esConfirmadoPositivo(val);
         const noConf = esConfirmadoNegativo(val);
         const foto = FOTOS[nombre] || '';
-        return `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;flex-shrink:0;">
-            <div style="width:24px;height:24px;border-radius:50%;background:url('${foto}') center top/cover;
-                border:1.5px solid ${conf?'#4CAF50':noConf?'#f44336':'rgba(255,255,255,0.2)'};
-                opacity:${noConf?'0.35':conf?'1':'0.55'};
-                filter:${noConf?'grayscale(60%)':'none'};
-                transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:1px;flex-shrink:0;">
+            <div style="position:relative;width:24px;height:24px;flex-shrink:0;">
+                <div style="width:24px;height:24px;border-radius:50%;background:url('${foto}') center top/cover;
+                    border:1.5px solid ${conf?'#4CAF50':noConf?'#f44336':'rgba(255,255,255,0.2)'};
+                    opacity:${conf?'1':'0.55'};
+                    filter:${noConf?'grayscale(40%)':'none'};
+                    transition:transform 0.15s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
+                ${noConf?`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+                    <div style="width:26px;height:2px;background:#f44336;border-radius:1px;transform:rotate(-45deg);opacity:0.9;"></div>
+                </div>`:''}
+            </div>
             <span style="font-size:7px;color:rgba(255,255,255,0.4);max-width:24px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">${nombre}</span>
         </div>`;
-    }
 
     const reyesHTML = REYES.map(avHTML).join('');
     const agHTML = AGREGADOS.filter(n => culpososData.find(c=>c.Nombre===n)).map(avHTML).join('');
