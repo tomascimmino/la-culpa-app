@@ -379,7 +379,7 @@
 
         <!-- CALCULADORA -->
         <div id="calculadora" class="content">
-            <div class="section-title">💰 Calculadora de Gastos</div>
+            <div class="section-title">💰 Calculadora de Gastos</div> <div class="card" style="margin-bottom:16px;">     <div style="color:#C8A830;font-size:13px;font-weight:bold;margin-bottom:10px;">👥 Invitados extras <span style="color:rgba(255,255,255,0.3);font-weight:normal;">(máx. 5)</span></div>     <div style="display:flex;gap:8px;margin-bottom:10px;">         <input id="nuevoInvitado" type="text" placeholder="Nombre del invitado..." maxlength="20"             style="flex:1;background:rgba(255,255,255,0.07);border:1.5px solid rgba(139,77,143,0.4);border-radius:8px;color:white;padding:9px 12px;font-size:13px;"             onkeydown="if(event.key==='Enter')agregarInvitado()">         <button onclick="agregarInvitado()"             style="background:rgba(107,45,145,0.5);border:1.5px solid rgba(200,168,48,0.4);color:#C8A830;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;">+ Sumar</button>     </div>     <div id="invitadosChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div> </div>
             <div id="gastosContainer"></div>
             <button onclick="agregarGasto()" style="width:100%;margin:20px 0;background:linear-gradient(135deg,#8B4D8F 0%,#6B3870 100%);border:none;color:#FFD700;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">➕ Agregar Gasto</button>
             <button onclick="calcularDivision()" style="width:100%;background:linear-gradient(135deg,#FFD700 0%,#FFA500 100%);border:none;color:#1E1E3F;padding:15px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;">🧮 Calcular División</button>
@@ -1859,7 +1859,7 @@ document.getElementById('awardsList').innerHTML=html;
 
     function getAlias(nombre) { const c=culpososData.find(x=>x.Nombre===nombre); return c&&c.Alias?c.Alias:''; }
 
-    function agregarGasto() { gastosArray.push({id:Date.now(),quien:'',concepto:'',monto:0,consumidores:[]}); renderGastos(); }
+    let invitadosExtras = [];  function agregarInvitado() {     if (invitadosExtras.length >= 5) return;     const nombre = document.getElementById('nuevoInvitado').value.trim();     if (!nombre) return;     if (invitadosExtras.includes(nombre) || TODOS_NOMBRES.includes(nombre)) {         document.getElementById('nuevoInvitado').value = '';         return;     }     invitadosExtras.push(nombre);     document.getElementById('nuevoInvitado').value = '';     renderInvitados();     renderGastos(); }  function quitarInvitado(nombre) {     invitadosExtras = invitadosExtras.filter(n => n !== nombre);     gastosArray.forEach(g => {         g.consumidores = g.consumidores.filter(c => c !== nombre);         if (g.quien === nombre) g.quien = '';     });     renderInvitados();     renderGastos(); }  function getNombresConInvitados() {     return [...TODOS_NOMBRES, ...invitadosExtras]; }  function renderInvitados() {     const el = document.getElementById('invitadosChips');     if (!el) return;     el.innerHTML = invitadosExtras.map(n => `         <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(107,45,145,0.3);border:1px solid rgba(200,168,48,0.3);color:#C8A830;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold;">             👤 ${n}             <span onclick="quitarInvitado('${n}')" style="cursor:pointer;color:rgba(255,255,255,0.4);font-size:14px;line-height:1;">×</span>         </span>`).join(''); }  function agregarGasto() { gastosArray.push({id:Date.now(),quien:'',concepto:'',monto:0,consumidores:[]}); renderGastos(); }
     function eliminarGasto(id) { gastosArray=gastosArray.filter(g=>g.id!==id); renderGastos(); }
     function toggleTodos(idx) { const todos=gastosArray[idx].consumidores.length===TODOS_NOMBRES.length; gastosArray[idx].consumidores=todos?[]:[...TODOS_NOMBRES]; renderGastos(); }
 
@@ -1869,11 +1869,11 @@ document.getElementById('awardsList').innerHTML=html;
         c.innerHTML=gastosArray.map((g,idx)=>`
             <div class="card" style="margin-bottom:20px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><div style="color:#FFD700;font-weight:bold;">Gasto ${idx+1}</div><button onclick="eliminarGasto(${g.id})" style="background:rgba(244,67,54,0.2);border:2px solid #f44336;color:#f44336;padding:5px 10px;border-radius:5px;font-size:12px;cursor:pointer;">✕ Eliminar</button></div>
-                <div style="margin-bottom:10px;"><label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">¿Quién pagó?</label><select onchange="gastosArray[${idx}].quien=this.value" class="form-select"><option value="">Seleccionar...</option>${TODOS_NOMBRES.map(n=>`<option value="${n}" ${g.quien===n?'selected':''}>${n}</option>`).join('')}</select></div>
+                <div style="margin-bottom:10px;"><label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">¿Quién pagó?</label><select onchange="gastosArray[${idx}].quien=this.value" class="form-select"><option value="">Seleccionar...</option>${getNombresConInvitados().map(n=>`<option value="${n}" ${g.quien===n?'selected':''}>${n}</option>`).join('')}</select></div>
                 <div style="margin-bottom:10px;"><label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">Concepto</label><input type="text" value="${g.concepto}" oninput="gastosArray[${idx}].concepto=this.value" placeholder="Ej: Carne, Pan..." style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
                 <div style="margin-bottom:10px;"><label style="color:rgba(255,255,255,0.8);font-size:13px;display:block;margin-bottom:5px;">Monto ($)</label><input type="number" value="${g.monto||''}" oninput="gastosArray[${idx}].monto=parseFloat(this.value)||0" placeholder="0" style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;"></div>
                 <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><label style="color:rgba(255,255,255,0.8);font-size:13px;">¿Quiénes consumen/usan?</label><button onclick="toggleTodos(${idx})" style="background:rgba(255,215,0,0.15);border:2px solid #FFD700;color:#FFD700;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:bold;cursor:pointer;">${g.consumidores.length===TODOS_NOMBRES.length?"☐ Ninguno":"☑️ Todos"}</button></div>
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">${TODOS_NOMBRES.map(n=>`<label style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.9);font-size:13px;cursor:pointer;"><input type="checkbox" ${g.consumidores.includes(n)?'checked':''} onchange="if(this.checked){if(!gastosArray[${idx}].consumidores.includes('${n}'))gastosArray[${idx}].consumidores.push('${n}');}else{gastosArray[${idx}].consumidores=gastosArray[${idx}].consumidores.filter(x=>x!=='${n}');}" style="cursor:pointer;">${n}</label>`).join('')}</div></div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">${getNombresConInvitados().map(n=>`<label style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.9);font-size:13px;cursor:pointer;"><input type="checkbox" ${g.consumidores.includes(n)?'checked':''} onchange="if(this.checked){if(!gastosArray[${idx}].consumidores.includes('${n}'))gastosArray[${idx}].consumidores.push('${n}');}else{gastosArray[${idx}].consumidores=gastosArray[${idx}].consumidores.filter(x=>x!=='${n}');}" style="cursor:pointer;">${n}</label>`).join('')}</div></div>
             </div>`).join('');
     }
 
@@ -1929,7 +1929,7 @@ while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.
         let txt=`💰 *DIVISIÓN DE GASTOS - LA CULPA*\n\nTotal: $${total.toLocaleString('es-AR')}\n\n`;
         gastosArray.forEach((g,i)=>{ txt+=`${i+1}. ${g.concepto}: $${g.monto.toLocaleString('es-AR')} (${g.quien})\n`; });
         txt+=`\n💸 *TRANSFERENCIAS:*\n`;
-        const bal={};TODOS_NOMBRES.forEach(n=>bal[n]=0);
+        const bal={};getNombresConInvitados().forEach(n=>bal[n]=0);
         gastosArray.forEach(g=>{ const cpp=g.monto/g.consumidores.length; g.consumidores.forEach(c=>bal[c]-=cpp); bal[g.quien]+=g.monto; });
         const PAREJAS = {
     'Toto':'Cata','Cata':'Toto',
@@ -2321,15 +2321,20 @@ function nextSong() {
   currentIndex = (currentIndex + 1) % songs.length;
   loadSong(currentIndex);
   actualizarContadorUI();
-  player.play().then(() => {
-    playBtn.textContent = "⏸";
-    document.getElementById("vinylDisc").classList.add("playing");
-    yaContado = false;
-    registrarReproduccion(indexAnterior);
-  }).catch(() => {
-    playBtn.textContent = "▶";
-    document.getElementById("vinylDisc").classList.remove("playing");
-  });
+  yaContado = false;
+  player.load();
+  const onReady = () => {
+    player.removeEventListener('canplaythrough', onReady);
+    player.play().then(() => {
+      playBtn.textContent = "⏸";
+      document.getElementById("vinylDisc").classList.add("playing");
+      registrarReproduccion(indexAnterior);
+    }).catch(() => {
+      playBtn.textContent = "▶";
+      document.getElementById("vinylDisc").classList.remove("playing");
+    });
+  };
+  player.addEventListener('canplaythrough', onReady, { once: true });
 }
 
 function prevSong() {
