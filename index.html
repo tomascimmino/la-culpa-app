@@ -418,8 +418,8 @@
 </div>
 
 <script>
-    const SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrz7UH8fYW5DbP2wD3QtbNC3nigwv_0ZF6HTPgmpZAnouFvR5m1UE1INZAndRbcyKXRA/exec';
+    SHEET_ID = '161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxrz7UH8fYW5DbP2wD3QtbNC3nigwv_0ZF6HTPgmpZAnouFvR5m1UE1INZAndRbcyKXRA/exec;
     const ADMIN_EMAIL = 'tomascimmino@gmail.com';
 
     const CULPOSOS_HOSTS = ['Pastor','El Bachi','CJ','Corregidores','El 22','Castelar Sarmiento','Castelar Elflein','Otro lugar'];
@@ -2073,7 +2073,7 @@ function renderLeyes() {
             const res = await r.json();
             if (res.success) { await cargarLeyes(); }
             else { alert(res.error || 'Error al enviar.'); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
-        } catch(e) { alert('Error de conexión.'); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
+        } catch(e) { alert('Error: ' + e.message); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
     }
 
    function showTab(tabName, el) {
