@@ -2038,9 +2038,7 @@ function renderLeyes() {
             html += `<div style="text-align:center;color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px;">Ya usaste tus 3 propuestas, culposo. 👑</div>`;
         }
 
-        if (leyesData.length === 0) {
-            html += `<div style="text-align:center;color:rgba(255,255,255,0.35);font-size:13px;padding:20px;">Todavía no hay propuestas. ¡Sé el primero!</div>`;
-        } else {
+       if (esAdmin && leyesData.length > 0) {
             html += `<div class="section-title" style="margin-bottom:12px;">📋 Propuestas recibidas (${leyesData.length})</div>`;
             leyesData.forEach(l => {
                 const esMia = l.nombre === usuario.Nombre;
