@@ -2049,7 +2049,7 @@ function renderLeyes() {
                         ${esMia?`<span style="background:rgba(200,168,48,0.2);color:#C8A830;font-size:10px;padding:2px 8px;border-radius:10px;">tuya</span>`:''}
                     </div>
                     <div style="color:rgba(255,255,255,0.75);font-size:13px;margin-bottom:8px;">${l.descripcion}</div>
-                    <div style="color:rgba(255,255,255,0.35);font-size:11px;">👤 ${l.nombre} · ${l.timestamp}</div>
+                    <div style="color:rgba(255,255,255,0.35);font-size:11px;">👤 ${l.nombre} · ${formatFechaPost(l.timestamp)}</div>
                 </div>`;
             });
         }
