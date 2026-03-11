@@ -302,6 +302,7 @@
             <div class="tab" onclick="showTab('juntadas',this)">📅<br>Juntadas</div>
             <div class="tab" onclick="showTab('awards',this)">🏆<br>Awards</div>
             <div class="tab" onclick="showTab('calculadora',this)">💰<br>Calc</div>
+            <div class="tab" onclick="showTab('leyes',this)">⚖️<br>Leyes</div>
             <div class="tab" onclick="showTab('perfil',this)">👤<br>Perfil</div>
         </div>
 
@@ -377,6 +378,12 @@
             <div id="awardsList" class="loading"><div class="spinner"></div>Cargando premios...</div>
         </div>
 
+<!-- LEYES -->
+        <div id="leyes" class="content">
+            <div class="section-title">⚖️ Estatuto Culposo</div>
+            <div id="leyesContent"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+        </div>
+        
         <!-- CALCULADORA -->
         <div id="calculadora" class="content">
             <div class="section-title">💰 Calculadora de Gastos</div> <div class="card" style="margin-bottom:16px;">     <div style="color:#C8A830;font-size:13px;font-weight:bold;margin-bottom:10px;">👥 Invitados extras <span style="color:rgba(255,255,255,0.3);font-weight:normal;">(garpan igual que todos)</span></div>     <div style="display:flex;gap:8px;margin-bottom:10px;">         <input id="nuevoInvitado" type="text" placeholder="Nombre del invitado..." maxlength="20"             style="flex:1;background:rgba(255,255,255,0.07);border:1.5px solid rgba(139,77,143,0.4);border-radius:8px;color:white;padding:9px 12px;font-size:13px;"             onkeydown="if(event.key==='Enter')agregarInvitado()">         <button onclick="agregarInvitado()"             style="background:rgba(107,45,145,0.5);border:1.5px solid rgba(200,168,48,0.4);color:#C8A830;padding:9px 14px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;">+ Sumar</button>     </div>     <div id="invitadosChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div> </div>
@@ -1979,7 +1986,7 @@ while(dcRest.length&&acRest.length){ const d=dcRest[0],a=acRest[0],m=Math.min(d.
         });
        const valoresPollera = Object.values(parejasTotales).map(p => Math.round(p.total));
         if (valoresPollera.length) {
-            const montoPollera = valoresPollera[0] * 2;
+          const montoPollera = valoresPollera[0];
         txt += `\n\n👗👫 *¿JUEGA POLLERA?*\n$${montoPollera.toLocaleString('es-AR')} por pareja\n_(👫)_`;
         }
         const waLink = document.createElement('a');
@@ -1990,9 +1997,91 @@ waLink.click();
 document.body.removeChild(waLink);
     }
 
-    function showTab(tabName, el) {
+    // ══════════════════════════════════════════════
+    // LEYES
+    // ══════════════════════════════════════════════
+    let leyesData = [];
+
+    async function cargarLeyes() {
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion:'get_leyes' }) });
+            const res = await r.json();
+            leyesData = res.leyes || [];
+        } catch(e) { leyesData = []; }
+        renderLeyes();
+    }
+
+function renderLeyes() {
+        const usuario = getUsuarioActual();
+        if (!usuario) return;
+        const esAdmin = usuario.Email === ADMIN_EMAIL || usuario.Nombre === 'Zabala';
+        const misProps = leyesData.filter(l => l.nombre === usuario.Nombre).length;
+        const contenedor = document.getElementById('leyesContent');
+        let html = `
+            <div style="background:linear-gradient(135deg,rgba(200,168,48,0.08),rgba(107,45,145,0.12));border:1px solid rgba(200,168,48,0.25);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center;">
+                <div style="font-size:28px;margin-bottom:8px;">📜</div>
+                <div style="color:#FFD700;font-size:15px;font-weight:bold;margin-bottom:6px;">Constitución Culposa</div>
+                <div style="color:rgba(255,255,255,0.6);font-size:12px;">Cada culposo puede proponer hasta 3 normas.<br>En el Cónclave de Abril se votarán en comisión.</div>
+                <div style="margin-top:10px;color:rgba(200,168,48,0.5);font-size:11px;letter-spacing:2px;text-transform:uppercase;">⚖️ Próximamente: sistema de votación</div>
+            </div>`;
+
+        if (misProps < 3) {
+            html += `
+            <div class="card" style="margin-bottom:20px;">
+                <div style="color:#C8A830;font-weight:bold;margin-bottom:12px;">✍️ Proponer una norma</div>
+                <input id="leyTitulo" placeholder="Título de la norma" style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;margin-bottom:10px;">
+                <textarea id="leyDescripcion" placeholder="Descripción y fundamento..." style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;resize:none;height:90px;font-family:inherit;margin-bottom:10px;"></textarea>
+                <div style="color:rgba(255,255,255,0.4);font-size:11px;margin-bottom:10px;">Propuestas usadas: ${misProps}/3</div>
+                <button onclick="enviarLey()" style="width:100%;background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:2px solid #C8A830;color:#C8A830;padding:12px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;">📨 Enviar propuesta</button>
+            </div>`;
+        } else {
+            html += `<div style="text-align:center;color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px;">Ya usaste tus 3 propuestas, culposo. 👑</div>`;
+        }
+
+        if (leyesData.length === 0) {
+            html += `<div style="text-align:center;color:rgba(255,255,255,0.35);font-size:13px;padding:20px;">Todavía no hay propuestas. ¡Sé el primero!</div>`;
+        } else {
+            html += `<div class="section-title" style="margin-bottom:12px;">📋 Propuestas recibidas (${leyesData.length})</div>`;
+            leyesData.forEach(l => {
+                const esMia = l.nombre === usuario.Nombre;
+                html += `
+                <div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(139,77,143,${esMia?'0.7':'0.3'});border-radius:14px;padding:16px;margin-bottom:10px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                        <div style="color:#FFD700;font-size:14px;font-weight:bold;">${l.titulo}</div>
+                        ${esMia?`<span style="background:rgba(200,168,48,0.2);color:#C8A830;font-size:10px;padding:2px 8px;border-radius:10px;">tuya</span>`:''}
+                    </div>
+                    <div style="color:rgba(255,255,255,0.75);font-size:13px;margin-bottom:8px;">${l.descripcion}</div>
+                    <div style="color:rgba(255,255,255,0.35);font-size:11px;">👤 ${l.nombre} · ${l.timestamp}</div>
+                </div>`;
+            });
+        }
+
+        contenedor.innerHTML = html;
+    }
+
+    async function enviarLey() {
+        const titulo = document.getElementById('leyTitulo').value.trim();
+        const descripcion = document.getElementById('leyDescripcion').value.trim();
+        if (!titulo || !descripcion) { alert('Completá título y descripción.'); return; }
+        const btn = document.querySelector('#leyesContent button');
+        if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({
+                accion: 'proponer_ley',
+                nombre: usuario.Nombre,
+                titulo,
+                descripcion
+            })});
+            const res = await r.json();
+            if (res.success) { await cargarLeyes(); }
+            else { alert(res.error || 'Error al enviar.'); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
+        } catch(e) { alert('Error de conexión.'); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
+    }
+
+   function showTab(tabName, el) {
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     if(el) el.classList.add('active');
+    if (tabName === 'leyes') cargarLeyes();
     
     const current = document.querySelector('.content.active');
     if(current) {
@@ -2024,9 +2113,10 @@ document.body.removeChild(waLink);
                 if (title) showInAppNotification(title, body);
             });
         } catch(e) { console.warn('Firebase init error:', e); }
+       
     }
-
-    function showInAppNotification(title, body) {
+    
+     function showInAppNotification(title, body) {
         const el = document.createElement('div');
         el.style.cssText = `position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;background:linear-gradient(135deg,#6B2D91 0%,#4A1D6B 100%);color:white;padding:16px 22px;border-radius:16px;border:2px solid #C8A830;box-shadow:0 8px 30px rgba(0,0,0,0.6);max-width:340px;width:90%;text-align:center;animation:slideDown 0.3s ease;`;
         el.innerHTML = `<div style="font-size:22px;margin-bottom:6px;">🎉</div><div style="font-weight:bold;color:#FFD700;font-size:15px;margin-bottom:4px;letter-spacing:0.5px;">${title}</div><div style="font-size:13px;opacity:0.85;line-height:1.4;">${body||''}</div>`;
