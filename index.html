@@ -2073,7 +2073,7 @@ function renderLeyes() {
             const res = await r.json();
             if (res.success) { await cargarLeyes(); }
             else { alert(res.error || 'Error al enviar.'); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
-        } catch(e) { alert('Error: ' + e.message); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
+        } catch(e) { alert('Error de conexión.'); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
     }
 
    function showTab(tabName, el) {
