@@ -644,8 +644,9 @@ window.juntadasAsistenteActivo = null;
                 fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`),
                 fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PREMIOS`)
             ]);
-            juntadasData = parseCSV(await jR.text());
+            juntadasData = parseCSV(await jR.text());        
             culpososData = parseCSV(await cR.text());
+window.culpososData = culpososData;
             premiosData  = parseCSV(await pR.text());
             await cargarInteraccionesJuntadas();
             window.juntadasMesActivo = null;
