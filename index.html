@@ -3325,11 +3325,16 @@ async function recordAndShow(won, attempts) {
 
 // Guardar en Sheet
   const email=getCurrentUser();
-  let nombre=getNombreDesdeEmail(email);
-  if (email && window.culpososData && window.culpososData.length) {
-    const found=window.culpososData.find(c=>c.Email&&c.Email.toLowerCase()===email.toLowerCase());
-    if (found) nombre=found.Nombre;
+ let nombre = null;
+  // Esperar hasta 3 segundos a que culpososData cargue
+  for (let i = 0; i < 30; i++) {
+    if (window.culpososData && window.culpososData.length) {
+      const found = window.culpososData.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+      if (found) { nombre = found.Nombre; break; }
+    }
+    await new Promise(r => setTimeout(r, 100));
   }
+  if (!nombre) nombre = getNombreDesdeEmail(email);
   if (nombre) {
     try {
       await fetch(APPS_SCRIPT_URL, {
