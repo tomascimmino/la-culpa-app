@@ -2135,11 +2135,15 @@ function renderLeyes() {
         } catch(e) { alert('Error: ' + e.message); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
     }
 
-   function showTab(tabName, el) {
+ function showTab(tabName, el) {
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     if(el) el.classList.add('active');
     if (tabName === 'leyes') cargarLeyes();
-    if (tabName === 'juegos') initWordle();  
+    if (tabName === 'juegos') initWordle();
+
+    // Widget cumpleaños solo en home
+    const bdayWidget = document.getElementById('bdayWidget');
+    if (bdayWidget) bdayWidget.style.display = tabName === 'home' ? 'block' : 'none';
     
     const current = document.querySelector('.content.active');
     if(current) {
@@ -3225,7 +3229,7 @@ function submitGuess() {
   setTimeout(()=>{
     if (won) {
       stopTimer();
-      const msgs=['¡SOKOTROSKI!','¡LA ROMPES!','¡CULPOSO DE ORO!','¡ÍDOLO!','¡QUÓRUM!','JUSTO A TIEMPO'];
+      const msgs=['¡LA ROMPES!','¡CRACK!','¡ÍDOLO!','JUSTO A TIEMPO','¡LA ROMPISTE!'];
       showMessage(msgs[Math.min(rowDone, msgs.length-1)]);
       gameOver=true;
       resultGuesses=rowDone+1;
@@ -3315,6 +3319,10 @@ async function recordAndShow(won, attempts) {
   document.getElementById('keyboard').style.opacity='0.3';
   document.getElementById('keyboard').style.pointerEvents='none';
  
+// Guardar estado local del día (bloquea replay)
+  const playedKey = 'wc_played_' + today;
+  localStorage.setItem(playedKey, JSON.stringify({ gano: won, intentos: attempts, tiempo: finalTime }));
+
   // Guardar en Sheet
   const email=getCurrentUser();
   const nombre=getNombreDesdeEmail(email);
@@ -3356,7 +3364,7 @@ function getNombreDesdeEmail(email) {
 // ══════════════════════════════════════════════
 // RANKING DEL DÍA
 // ══════════════════════════════════════════════
-async function loadRankingHoy(nombre) {
+async function loadRankingHoy(nombreParam) {   // Re-resolver el nombre por si culpososData ya cargó   const email = getCurrentUser();   let nombre = nombreParam;   if (email && window.culpososData && window.culpososData.length) {     const found = window.culpososData.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());     if (found) nombre = found.Nombre;   }
   const list=document.getElementById('ranking-list');
   list.innerHTML='<div style="text-align:center;padding:10px"><span class="spinner-sm"></span></div>';
  
@@ -3501,6 +3509,7 @@ function setHeader() {
   document.getElementById('header-day').textContent=
     `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]}`;
   document.getElementById('word-len').textContent=COLS;
+  document.getElementById('word-num').textContent=getDayNumber();
 }
  
 // ══════════════════════════════════════════════
@@ -3512,6 +3521,30 @@ function initWordle() {
     buildKeyboard();
     setHeader();
     updateAttemptsLabel();
+
+    // Bloquear si ya jugó hoy
+    const playedKey = 'wc_played_' + getTodayStr();
+    const saved = localStorage.getItem(playedKey);
+    if (saved) {
+        const data = JSON.parse(saved);
+        gameOver = true;
+        finalTime = data.tiempo;
+        document.getElementById('res-emoji').textContent = data.gano ? '👑' : '😤';
+        document.getElementById('res-title').textContent = data.gano ? '¡LA ROMPISTE!' : 'ERA...';
+        document.getElementById('res-word').textContent = TARGET;
+        document.getElementById('res-intentos').textContent = data.gano ? data.intentos : '✗';
+        document.getElementById('res-tiempo').textContent = formatTime(data.tiempo);
+        const stats = getStats();
+        document.getElementById('res-streak').textContent = stats.streak;
+        document.getElementById('result-panel').classList.add('show');
+        document.getElementById('keyboard').style.opacity = '0.3';
+        document.getElementById('keyboard').style.pointerEvents = 'none';
+        const email = getCurrentUser();
+        const nombre = getNombreDesdeEmail(email);
+        setTimeout(() => loadRankingHoy(nombre), 300);
+        return;
+    }
+
     if (!localStorage.getItem('wc_seen_instructions')) {
         document.getElementById('modal-bg').classList.add('show');
         localStorage.setItem('wc_seen_instructions','1');
