@@ -3323,9 +3323,14 @@ async function recordAndShow(won, attempts) {
   const playedKey = 'wc_played_' + today;
   localStorage.setItem(playedKey, JSON.stringify({ gano: won, intentos: attempts, tiempo: finalTime }));
 
-  // Guardar en Sheet
+// Guardar en Sheet
   const email=getCurrentUser();
-  const nombre=getNombreDesdeEmail(email);
+  let nombre=getNombreDesdeEmail(email);
+  // Re-intentar con culpososData global por si ya cargó
+  if (email && window.culpososData && window.culpososData.length) {
+    const found=window.culpososData.find(c=>c.Email&&c.Email.toLowerCase()===email.toLowerCase());
+    if (found) nombre=found.Nombre;
+  }
   if (nombre) {
     try {
       await fetch(APPS_SCRIPT_URL, {
