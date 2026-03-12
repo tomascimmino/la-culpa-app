@@ -333,8 +333,7 @@
   <span id="currentTime">0:00</span>
   <span id="duration">0:00</span>
 </div>
-</div>
-<div id="bdayHomeCardContainer"></div>            
+</div>          
 <div id="bdayHomeCardContainer"></div> <div id="ultimasJuntadas" class="loading"><div class="spinner"></div>Cargando juntadas...</div>
         </div>
         <!-- RANKING -->
@@ -3128,12 +3127,6 @@ function updateTimerDisplay(s) {
   const m = String(Math.floor(s/60)).padStart(2,'0');
   const ss = String(s%60).padStart(2,'0');
   document.getElementById('timer-display').textContent = `${m}:${ss}`;
-}
-function formatTime(s) {
-  if (!s && s!==0) return '-';
-  const m = Math.floor(s/60);
-  const ss = s%60;
-  return m>0 ? `${m}m ${ss}s` : `${ss}s`;
 }
  
 // ══════════════════════════════════════════════
