@@ -3058,12 +3058,12 @@ function getTodayStr() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function getWordOfDay() {
-  const start = new Date(2026,0,1);
+  const start = new Date(2026,12,2);
   const diff  = Math.floor((new Date() - start) / 86400000);
   return norm(PALABRAS[((diff % PALABRAS.length) + PALABRAS.length) % PALABRAS.length]);
 }
 function getDayNumber() {
-  return Math.floor((new Date() - new Date(2026,0,1)) / 86400000) + 1;
+  return Math.floor((new Date() - new Date(2026,2,12)) / 86400000) + 1;
 }
  
 // ══════════════════════════════════════════════
@@ -3326,7 +3326,6 @@ async function recordAndShow(won, attempts) {
 // Guardar en Sheet
   const email=getCurrentUser();
   let nombre=getNombreDesdeEmail(email);
-  // Re-intentar con culpososData global por si ya cargó
   if (email && window.culpososData && window.culpososData.length) {
     const found=window.culpososData.find(c=>c.Email&&c.Email.toLowerCase()===email.toLowerCase());
     if (found) nombre=found.Nombre;
