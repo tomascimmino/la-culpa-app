@@ -92,7 +92,7 @@
             to   { opacity: 0; transform: translateY(-6px); }
         }
 
-     html { overflow-x: hidden; scrollbar-gutter: stable; }
+  html { overflow-x: hidden; }
         body { overflow-x: hidden; max-width: 100vw; }
         #mainApp { min-height: 100vh; overflow-x: hidden; }
         .container { min-height: 100vh; position: relative; overflow-x: hidden; max-width: 100%; }
@@ -1404,17 +1404,57 @@ function formatFechaPost(fechaStr) {
     }
 
 
-    async function comentarPost(postId, seccionId, inputId) {
-        const input = document.getElementById(inputId);
-        const texto = input ? input.value.trim() : '';
-        if (!texto) return;
-        try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar_post', postId, autor:currentUser, texto }) });
-            const res = await r.json();
-            if (res.success) {      if (input) input.value = '';      await cargarMuroHome();      const sec = document.getElementById(seccionId);     if (sec) sec.style.display = 'block'; }
-            else alert('❌ ' + res.error);
-        } catch { alert('❌ Error de conexión'); }
+   // REEMPLAZAR POR:
+async function comentarPost(postId, seccionId, inputId) {
+    const input = document.getElementById(inputId);
+    const texto = input ? input.value.trim() : '';
+    if (!texto) return;
+
+    // Buscar el botón de enviar (hermano del input)
+    const btn = input ? input.parentElement.querySelector('button') : null;
+
+    // Deshabilitar para evitar duplicados
+    if (input) input.disabled = true;
+    if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+
+    // Optimistic UI: agregar el comentario al DOM inmediatamente
+    const usuario = getUsuarioActual();
+    const fotoYo = usuario ? (FOTOS[usuario.Nombre] || '') : '';
+    const nombreYo = usuario ? usuario.Nombre : currentUser;
+    const listEl = document.getElementById(seccionId)?.querySelector('[id^="feedComList_"]') 
+                   || document.getElementById(seccionId);
+    if (listEl) {
+        const div = document.createElement('div');
+        div.style.cssText = 'display:flex;gap:8px;margin:8px 0;';
+        div.innerHTML = `
+            <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoYo}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
+            <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
+                <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nombreYo}</div>
+                <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;">${texto}</div>
+            </div>`;
+        listEl.appendChild(div);
     }
+    if (input) input.value = '';
+
+    try {
+        const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar_post', postId, autor:currentUser, texto }) });
+        const res = await r.json();
+        if (res.success) {
+            if (btn) { btn.textContent = '✅'; setTimeout(() => { btn.textContent = '➤'; btn.disabled = false; }, 1500); }
+            const sec = document.getElementById(seccionId);
+            if (sec) sec.style.display = 'block';
+            // Sync silencioso en background para actualizar IDs y likes
+            cargarMuroHome();
+        } else {
+            alert('❌ ' + res.error);
+            if (btn) { btn.textContent = '➤'; btn.disabled = false; }
+        }
+    } catch {
+        alert('❌ Error de conexión');
+        if (btn) { btn.textContent = '➤'; btn.disabled = false; }
+    }
+    if (input) input.disabled = false;
+}
 
     async function eliminarPost(postId) {
         if (!confirm('¿Eliminar este post?')) return;
