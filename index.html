@@ -2197,13 +2197,17 @@ function renderLeyes() {
     const bdayWidget = document.getElementById('bdayWidget');
     if (bdayWidget) bdayWidget.style.display = tabName === 'home' ? 'block' : 'none';
     
-   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  const current = document.querySelector('.content.active');
     const next = document.getElementById(tabName);
-    if (next) {
-        next.classList.add('active');
-        next.style.opacity = '0';
-        requestAnimationFrame(() => { next.style.opacity = '1'; });
+    if (!next || next === current) return;
+
+    if (current) {
+        current.classList.add('leaving');
+        current.classList.remove('active');
+        setTimeout(() => current.classList.remove('leaving'), 150);
     }
+
+    next.classList.add('active');
 }
 
     const FIREBASE_CONFIG = {
