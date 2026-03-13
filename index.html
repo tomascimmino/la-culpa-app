@@ -29,6 +29,7 @@
 
         .content-wrapper {
             padding-top: 16px;
+            min-height: 80vh;
         }
         .header {
             background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 50%, #3A1555 100%);
@@ -92,7 +93,7 @@
             to   { opacity: 0; transform: translateY(-6px); }
         }
 
-      html { overflow-x: hidden; }
+     html { overflow-x: hidden; scrollbar-gutter: stable both-edges; }
         body { overflow-x: hidden; max-width: 100vw; }
         #mainApp { min-height: 100vh; overflow-x: hidden; }
         .container { min-height: 100vh; position: relative; overflow-x: hidden; max-width: 100%; }
