@@ -17,7 +17,7 @@
             background: #120D1F;
             min-height: 100vh; color: white;
         }
-      .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+ .container { max-width: 500px; margin: 0 auto; padding: 20px; overflow-x: hidden; }
 
         /* Tabs pegadas al hacer scroll */
         #mainApp > .tabs {
@@ -46,14 +46,15 @@
             display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;
             background: rgba(20,10,35,0.7); padding: 8px; border-radius: 15px; border: 1px solid rgba(107,45,145,0.3);
         }
-        .tab {
-            flex: 1 1 calc(25% - 6px); padding: 8px 4px; text-align: center; background: transparent;
+       .tab {
+            flex: 1 1 calc(25% - 8px); padding: 8px 4px; text-align: center; background: transparent;
             border: 2px solid rgba(139,77,143,0.3); border-radius: 10px; color: rgba(255,255,255,0.6);
             cursor: pointer; transition: all 0.3s; font-size: 11px; line-height: 1.3; min-width: 0;
+            box-sizing: border-box;
         }
        @media (max-width: 500px) {
   .tabs { gap: 5px !important; padding: 6px !important; }
-    .tab { flex: 1 1 calc(25% - 5px) !important; padding: 7px 2px !important; font-size: 10px !important; border-radius: 8px !important; line-height: 1.3; }
+  .tab { flex: 1 1 calc(25% - 8px) !important; padding: 7px 2px !important; font-size: 10px !important; border-radius: 8px !important; line-height: 1.3; box-sizing: border-box; }
     .container { padding: 12px !important; min-height: 100vh !important; }
             .stats-grid { gap: 10px !important; }
             .stat-number { font-size: 24px !important; }
@@ -91,9 +92,10 @@
             to   { opacity: 0; transform: translateY(-6px); }
         }
 
-        html, body { height: 100%; overflow-x: hidden; }
-        #mainApp { min-height: 100vh; }
-        .container { min-height: 100vh; position: relative; }
+      html { overflow-x: hidden; }
+        body { overflow-x: hidden; max-width: 100vw; }
+        #mainApp { min-height: 100vh; overflow-x: hidden; }
+        .container { min-height: 100vh; position: relative; overflow-x: hidden; max-width: 100%; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-card {
             padding: 20px; border-radius: 15px; text-align: center; border: 2px solid rgba(107,45,145,0.35);
@@ -2400,8 +2402,9 @@ function renderLeyes() {
   gap: 12px;
   font-family: sans-serif;
   width: 100%;
-  max-width: 420px;
-  margin: 15px auto;
+  max-width: 100%;
+  margin: 15px 0;
+  box-sizing: border-box;
 }
 
 #culpapp-player button {
@@ -2534,12 +2537,28 @@ function renderLeyes() {
   #timer-display.running { color: #fff; }
   #timer-display.done    { color: var(--green); }
  
-  main {
-    flex:1; width:100%; max-width:520px;
+ main {
+    width:100%;
+    max-width: 100%;
     display:flex; flex-direction:column; align-items:center;
-    padding: 14px 16px 8px;
+    padding: 8px 4px 12px;
     position:relative; z-index:1;
-    gap: 12px;
+    gap: 8px;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+  #grid-wrapper {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  #keyboard {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .kb-row {
+    width: 100%;
+    justify-content: center;
   }
  
   /* TOP BAR */
