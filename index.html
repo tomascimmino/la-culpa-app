@@ -2191,64 +2191,402 @@ waLink.click();
 document.body.removeChild(waLink);
     }
 
-    // ══════════════════════════════════════════════
-    // LEYES
+   // ══════════════════════════════════════════════
+    // LEYES / CÓNCLAVE
     // ══════════════════════════════════════════════
     let leyesData = [];
+    let conclaveData = null;
+    let conclavePollingInterval = null;
+    let conclaveSuspensoDisparado = false;
 
-    async function cargarLeyes() {
-        try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion:'get_leyes' }) });
-            const res = await r.json();
-            leyesData = res.leyes || [];
-        } catch(e) { leyesData = []; }
-        renderLeyes();
+    const VOTANTES_CONCLAVE = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti','Cata','Lola','Sami','Leila','Juli','Manu','Matu'];
+    const AVATARES_CONCLAVE = {
+      'Toto':    'https://i.imgur.com/Y8NOVgH.png',
+      'Caamaño': 'https://i.imgur.com/7E7f3Xy.png',
+      'Rama':    'https://i.imgur.com/8hsqIL8.png',
+      'Zabala':  'https://i.imgur.com/IsgSjm9.png',
+      'Santi':   'https://i.imgur.com/iXHdIVT.png',
+      'Mateo':   'https://i.imgur.com/MY6KbRq.png',
+      'Tirri':   'https://i.imgur.com/biqacxq.png',
+      'Toti':    'https://i.imgur.com/fOVTNio.png',
+      'Cata':    'https://i.imgur.com/czObXpX.png',
+      'Lola':    'https://i.imgur.com/czObXpX.png',
+      'Sami':    'https://i.imgur.com/czObXpX.png',
+      'Leila':   'https://i.imgur.com/czObXpX.png',
+      'Juli':    'https://i.imgur.com/czObXpX.png',
+      'Manu':    'https://i.imgur.com/czObXpX.png',
+      'Matu':    'https://i.imgur.com/czObXpX.png',
+    };
+
+    function esSoloAdmin() {
+      return currentUser && currentUser.toLowerCase() === ADMIN_EMAIL.toLowerCase();
     }
 
-function renderLeyes() {
-        const usuario = getUsuarioActual();
-        if (!usuario) return;
-        const esAdmin = usuario.Email === ADMIN_EMAIL || usuario.Nombre === 'Zabala';
-        const misProps = leyesData.filter(l => l.nombre === usuario.Nombre).length;
-        const contenedor = document.getElementById('leyesContent');
-        let html = `
-            <div style="background:linear-gradient(135deg,rgba(200,168,48,0.08),rgba(107,45,145,0.12));border:1px solid rgba(200,168,48,0.25);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center;">
-                <div style="font-size:28px;margin-bottom:8px;">📜</div>
-                <div style="color:#FFD700;font-size:15px;font-weight:bold;margin-bottom:6px;">Constitución Culposa</div>
-                <div style="color:rgba(255,255,255,0.6);font-size:12px;">Cada culposo puede proponer hasta 3 normas.<br>En el Cónclave de Abril se votarán en comisión.</div>
-                <div style="margin-top:10px;color:rgba(200,168,48,0.5);font-size:11px;letter-spacing:2px;text-transform:uppercase;">⚖️ Próximamente: sistema de votación</div>
-            </div>`;
+    async function cargarLeyes() {
+      if (esSoloAdmin()) {
+        await cargarConclave();
+        return;
+      }
+      try {
+        const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion: 'get_leyes' }) });
+        const res = await r.json();
+        leyesData = res.leyes || [];
+      } catch(e) { leyesData = []; }
+      renderLeyes();
+    }
 
-        if (misProps < 3) {
-            html += `
-            <div class="card" style="margin-bottom:20px;">
-                <div style="color:#C8A830;font-weight:bold;margin-bottom:12px;">✍️ Proponer una norma</div>
-                <input id="leyTitulo" placeholder="Título de la norma" style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;margin-bottom:10px;">
-                <textarea id="leyDescripcion" placeholder="Descripción y fundamento..." style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;resize:none;height:90px;font-family:inherit;margin-bottom:10px;"></textarea>
-                <div style="color:rgba(255,255,255,0.4);font-size:11px;margin-bottom:10px;">Propuestas usadas: ${misProps}/3</div>
-                <button onclick="enviarLey()" style="width:100%;background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:2px solid #C8A830;color:#C8A830;padding:12px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;">📨 Enviar propuesta</button>
-            </div>`;
-        } else {
-            html += `<div style="text-align:center;color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px;">Ya usaste tus 3 propuestas, culposo. 👑</div>`;
+    async function cargarConclave() {
+      try {
+        const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion: 'get_conclave' }) });
+        const res = await r.json();
+        if (res.success) {
+          const anterior = conclaveData;
+          conclaveData = res;
+          renderConclave(anterior);
         }
+      } catch(e) { console.error('Error get_conclave:', e); }
+    }
 
-       if (esAdmin && leyesData.length > 0) {
-            html += `<div class="section-title" style="margin-bottom:12px;">📋 Propuestas recibidas (${leyesData.length})</div>`;
-            leyesData.forEach(l => {
-                const esMia = l.nombre === usuario.Nombre;
-                html += `
-                <div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(139,77,143,${esMia?'0.7':'0.3'});border-radius:14px;padding:16px;margin-bottom:10px;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                        <div style="color:#FFD700;font-size:14px;font-weight:bold;">${l.titulo}</div>
-                        ${esMia?`<span style="background:rgba(200,168,48,0.2);color:#C8A830;font-size:10px;padding:2px 8px;border-radius:10px;">tuya</span>`:''}
-                    </div>
-                    <div style="color:rgba(255,255,255,0.75);font-size:13px;margin-bottom:8px;">${l.descripcion}</div>
-                    <div style="color:rgba(255,255,255,0.35);font-size:11px;">👤 ${l.nombre} · ${formatFechaPost(l.timestamp)}</div>
-                </div>`;
-            });
-        }
+    function renderLeyes() {
+      const usuario = getUsuarioActual();
+      if (!usuario) return;
+      const misProps = leyesData.filter(l => l.nombre === usuario.Nombre).length;
+      const contenedor = document.getElementById('leyesContent');
+      let html = `
+        <div style="background:linear-gradient(135deg,rgba(200,168,48,0.08),rgba(107,45,145,0.12));border:1px solid rgba(200,168,48,0.25);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center;">
+          <div style="font-size:28px;margin-bottom:8px;">📜</div>
+          <div style="color:#FFD700;font-size:15px;font-weight:bold;margin-bottom:6px;">Constitución Culposa</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:12px;">Cada culposo puede proponer hasta 3 normas.<br>En el Cónclave se votarán en comisión.</div>
+        </div>`;
+      if (misProps < 3) {
+        html += `
+          <div class="card" style="margin-bottom:20px;">
+            <div style="color:#C8A830;font-weight:bold;margin-bottom:12px;">✍️ Proponer una norma</div>
+            <input id="leyTitulo" placeholder="Título de la norma" style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;margin-bottom:10px;">
+            <textarea id="leyDescripcion" placeholder="Descripción y fundamento..." style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;resize:none;height:90px;font-family:inherit;margin-bottom:10px;"></textarea>
+            <div style="color:rgba(255,255,255,0.4);font-size:11px;margin-bottom:10px;">Propuestas usadas: ${misProps}/3</div>
+            <button onclick="enviarLey()" style="width:100%;background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:2px solid #C8A830;color:#C8A830;padding:12px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;">📨 Enviar propuesta</button>
+          </div>`;
+      } else {
+        html += `<div style="text-align:center;color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px;">Ya usaste tus 3 propuestas, culposo. 👑</div>`;
+      }
+      contenedor.innerHTML = html;
+    }
 
-        contenedor.innerHTML = html;
+    function renderConclave(anterior) {
+      const contenedor = document.getElementById('leyesContent');
+      if (!conclaveData) { contenedor.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.5);padding:40px;">Cargando...</div>'; return; }
+
+      const { leyes, leyActiva, iniciado } = conclaveData;
+      const esAdmin = esSoloAdmin();
+
+      // Si no está iniciado, mostrar botón de inicio (solo admin)
+      if (!iniciado) {
+        contenedor.innerHTML = `
+          <div style="text-align:center;padding:60px 20px;">
+            <div style="font-size:48px;margin-bottom:16px;">⚖️</div>
+            <div style="font-family:'Cinzel',serif;color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:8px;letter-spacing:3px;">EL CÓNCLAVE</div>
+            <div style="color:rgba(200,168,48,0.5);font-size:12px;margin-bottom:32px;letter-spacing:2px;">MODO PRUEBA — SOLO ADMIN</div>
+            <button onclick="iniciarConclave()" style="padding:16px 40px;background:linear-gradient(135deg,#3D0000,#1a0000);border:2px solid #C8A830;border-radius:4px;color:#FFD700;font-size:14px;font-weight:bold;letter-spacing:3px;cursor:pointer;">⚜ INICIAR CÓNCLAVE ⚜</button>
+            <br><br>
+            <button onclick="resetConclave()" style="padding:8px 20px;background:transparent;border:1px solid rgba(255,50,50,0.3);border-radius:4px;color:rgba(255,80,80,0.5);font-size:11px;cursor:pointer;">🔄 Reset (pruebas)</button>
+          </div>`;
+        return;
+      }
+
+      // Si ya se terminaron todas las leyes
+      if (leyActiva >= leyes.length) {
+        contenedor.innerHTML = `
+          <div style="text-align:center;padding:60px 20px;">
+            <div style="font-size:48px;margin-bottom:16px;">🏛️</div>
+            <div style="font-family:'Cinzel',serif;color:#FFD700;font-size:18px;font-weight:bold;margin-bottom:8px;letter-spacing:3px;">CÓNCLAVE FINALIZADO</div>
+            <div style="color:rgba(200,168,48,0.6);font-size:13px;font-style:italic;">La Constitución Culposa ha sido sellada.</div>
+            ${esAdmin ? `<br><button onclick="resetConclave()" style="padding:8px 20px;background:transparent;border:1px solid rgba(255,50,50,0.3);border-radius:4px;color:rgba(255,80,80,0.5);font-size:11px;cursor:pointer;">🔄 Reset</button>` : ''}
+          </div>`;
+        return;
+      }
+
+      const ley = leyes[leyActiva];
+      const votos = ley.votos;
+      const favor = ley.favor, contra = ley.contra, abst = ley.abstenciones;
+      const totalVotaron = favor + contra + abst;
+      const totalVotantes = VOTANTES_CONCLAVE.length;
+      const todosVotaron = totalVotaron >= totalVotantes;
+
+      // Detectar si todos acaban de votar para disparar suspenso
+      const anteriorTodosVotaron = anterior && anterior.leyes && anterior.leyes[anterior.leyActiva] &&
+        (anterior.leyes[anterior.leyActiva].favor + anterior.leyes[anterior.leyActiva].contra + anterior.leyes[anterior.leyActiva].abstenciones) >= totalVotantes;
+
+      if (todosVotaron && !anteriorTodosVotaron && !conclaveSuspensoDisparado) {
+        conclaveSuspensoDisparado = true;
+        setTimeout(() => iniciarSuspensoConclave({ favor, contra, abstenc: abst }), 2000);
+      }
+
+      const totalParaBars = totalVotaron || 1;
+      const pctFavor  = Math.round(favor  / totalParaBars * 100);
+      const pctContra = Math.round(contra / totalParaBars * 100);
+      const pctAbst   = Math.round(abst   / totalParaBars * 100);
+
+      const avatarsHTML = VOTANTES_CONCLAVE.map(nombre => {
+        const v = votos[nombre];
+        const clase = v === 1 ? 'favor' : v === 2 ? 'contra' : v === 3 ? 'abstenc' : 'pending';
+        const av = AVATARES_CONCLAVE[nombre] || 'https://i.imgur.com/czObXpX.png';
+        return `<div style="width:28px;height:28px;border-radius:50%;background-image:url('${av}');background-size:cover;background-position:center top;border:2px solid ${clase==='favor'?'#4CAF50':clase==='contra'?'#C41E3A':clase==='abstenc'?'#C8A830':'rgba(255,255,255,0.15)'};opacity:${clase==='pending'?'0.4':'1'};transition:all 0.4s;box-shadow:${clase==='pending'?'none':clase==='favor'?'0 0 8px rgba(76,175,80,0.5)':clase==='contra'?'0 0 8px rgba(196,30,58,0.5)':'0 0 8px rgba(200,168,48,0.4)'};" title="${nombre}"></div>`;
+      }).join('');
+
+      const numRomano = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+      const progresoW = Math.round((leyActiva / leyes.length) * 100);
+
+      contenedor.innerHTML = `
+        <div id="conclaveContainer" style="font-family:serif;">
+
+          <!-- Header -->
+          <div style="text-align:center;padding:16px 0 8px;">
+            <div style="font-size:36px;filter:drop-shadow(0 0 12px rgba(200,168,48,0.5));">⚖️</div>
+            <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:900;background:linear-gradient(180deg,#FFE566,#C8A830);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:4px;margin:4px 0;">EL CÓNCLAVE</div>
+            <div style="color:rgba(200,168,48,0.5);font-size:10px;letter-spacing:5px;text-transform:uppercase;">Constitución Culposa · Sesión I</div>
+            <div style="display:flex;align-items:center;gap:10px;margin:10px auto;max-width:300px;">
+              <div style="flex:1;height:1px;background:linear-gradient(to right,transparent,#C8A830,transparent);"></div>
+              <div style="width:6px;height:6px;background:#C8A830;transform:rotate(45deg);"></div>
+              <div style="flex:1;height:1px;background:linear-gradient(to right,transparent,#C8A830,transparent);"></div>
+            </div>
+            <div style="color:rgba(200,168,48,0.5);font-size:10px;letter-spacing:2px;">Artículo ${numRomano[leyActiva]||leyActiva+1} de ${leyes.length}</div>
+          </div>
+
+          <!-- Card de ley -->
+          <div style="background:linear-gradient(160deg,#1a0a08 0%,#0f0518 50%,#140808 100%);border:1px solid rgba(200,168,48,0.3);border-radius:4px;padding:24px 20px;margin-bottom:16px;position:relative;box-shadow:0 0 0 1px rgba(200,168,48,0.1),0 20px 60px rgba(0,0,0,0.8);">
+            <div style="font-family:'Cinzel',serif;font-size:10px;color:#C41E3A;letter-spacing:4px;text-transform:uppercase;text-align:center;margin-bottom:10px;">Artículo ${numRomano[leyActiva]||leyActiva+1}</div>
+            <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:#FFE566;text-align:center;margin-bottom:14px;line-height:1.3;">${ley.titulo}</div>
+            <div style="font-size:14px;color:rgba(245,230,200,0.8);line-height:1.7;text-align:center;font-style:italic;margin-bottom:16px;">"${ley.descripcion}"</div>
+            <div style="text-align:center;font-family:'Cinzel',serif;font-size:10px;color:rgba(200,168,48,0.4);letter-spacing:2px;margin-bottom:20px;">Propuesto por · ${ley.nombre}</div>
+
+            <!-- Escrutinio -->
+            <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(200,168,48,0.15);border-radius:4px;padding:14px;margin-bottom:20px;">
+              <div style="font-family:'Cinzel',serif;font-size:9px;color:rgba(200,168,48,0.4);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:10px;">Escrutinio en vivo · ${totalVotaron}/${totalVotantes}</div>
+              <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:16px;">👍</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${pctFavor}%;background:linear-gradient(to right,#2d7a2d,#4CAF50);border-radius:3px;transition:width 0.8s;"></div></div><span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#4CAF50;min-width:16px;text-align:right;">${favor}</span></div>
+                <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:16px;">👎</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${pctContra}%;background:linear-gradient(to right,#7a1a1a,#C41E3A);border-radius:3px;transition:width 0.8s;"></div></div><span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#C41E3A;min-width:16px;text-align:right;">${contra}</span></div>
+                <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:16px;">🤷</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${pctAbst}%;background:linear-gradient(to right,#4a4a1a,#C8A830);border-radius:3px;transition:width 0.8s;"></div></div><span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#C8A830;min-width:16px;text-align:right;">${abst}</span></div>
+              </div>
+              <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;">${avatarsHTML}</div>
+            </div>
+
+            <!-- Botón de voto (solo admin por ahora, simulando) -->
+            <div id="votoBtnsContainer">
+              ${renderVotoBtns(votos)}
+            </div>
+          </div>
+
+          <!-- Botón avanzar (solo admin/Zabala) -->
+          ${esAdmin ? `
+          <button id="btnAvanzarLey" onclick="avanzarLeyConclave()" ${todosVotaron ? '' : 'disabled'} style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(139,0,0,0.3),rgba(139,0,0,0.15));border:1.5px solid rgba(196,30,58,${todosVotaron?'0.7':'0.3'});border-radius:4px;color:${todosVotaron?'#C41E3A':'rgba(196,30,58,0.35)'};font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:${todosVotaron?'pointer':'not-allowed'};margin-bottom:12px;transition:all 0.3s;">⚔ &nbsp; Siguiente Artículo &nbsp; ⚔</button>
+          <button onclick="resetConclave()" style="width:100%;padding:8px;background:transparent;border:1px solid rgba(255,50,50,0.2);border-radius:4px;color:rgba(255,80,80,0.4);font-size:11px;cursor:pointer;margin-bottom:12px;">🔄 Reset (pruebas)</button>
+          ` : ''}
+
+          <!-- Progreso -->
+          <div style="margin-bottom:20px;">
+            <div style="font-family:'Cinzel',serif;font-size:9px;color:rgba(200,168,48,0.35);letter-spacing:2px;text-align:center;margin-bottom:6px;">Progreso del Cónclave</div>
+            <div style="height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;">
+              <div style="height:100%;width:${progresoW}%;background:linear-gradient(to right,#8B0000,#C8A830);border-radius:2px;transition:width 1s;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overlays de suspenso (fijos, fuera del scroll) -->
+        <div id="conclaveVeredictoOverlay" style="position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0);display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;transition:background 1.2s ease;">
+          <div id="conclaveSuspensoBox" style="display:none;flex-direction:column;align-items:center;">
+            <div id="conclaveSuspensoIcono" style="font-size:72px;opacity:0;transform:scale(0.5);transition:opacity 0.8s,transform 0.8s;margin-bottom:20px;">⚖️</div>
+            <div id="conclaveSuspensoTexto" style="font-family:'Cinzel',serif;font-size:11px;color:rgba(200,168,48,0.5);letter-spacing:6px;text-transform:uppercase;opacity:0;transition:opacity 0.6s 0.4s;margin-bottom:32px;">Deliberando<span id="conclavePuntos"></span></div>
+            <div id="conclaveTensionTrack" style="width:200px;height:2px;background:rgba(200,168,48,0.1);border-radius:1px;overflow:hidden;opacity:0;transition:opacity 0.5s 0.6s;margin-bottom:48px;">
+              <div id="conclaveTensionFill" style="height:100%;width:0%;background:linear-gradient(to right,#8B0000,#C8A830);border-radius:1px;transition:width 3.2s cubic-bezier(0.4,0,0.2,1);"></div>
+            </div>
+          </div>
+          <div id="conclaveResultadoBox" style="display:none;flex-direction:column;align-items:center;gap:14px;opacity:0;transform:scale(0.85) translateY(10px);transition:opacity 1.2s,transform 1.2s;">
+            <div id="conclaveResultadoSello" style="width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:52px;border:2px solid transparent;"><span id="conclaveResultadoEmoji">⚖️</span></div>
+            <div id="conclaveResultadoTitulo" style="font-family:'Cinzel Decorative',serif;font-size:32px;font-weight:900;letter-spacing:3px;text-align:center;">APROBADA</div>
+            <div id="conclaveResultadoLinea" style="width:260px;height:1px;"></div>
+            <div id="conclaveResultadoVotos" style="font-family:'Cinzel',serif;font-size:11px;color:rgba(200,168,48,0.6);letter-spacing:3px;text-align:center;"></div>
+          </div>
+        </div>
+        <div id="conclaveLuzFlash" style="position:fixed;inset:0;z-index:8999;pointer-events:none;background:rgba(255,255,255,0);"></div>
+      `;
+
+      // Iniciar oscillación del icono de suspenso si aplica
+    }
+
+    function renderVotoBtns(votos) {
+      // Solo admin puede "simular" votos en modo prueba — en producción todos votan
+      const usuario = getUsuarioActual();
+      if (!usuario) return '';
+      const miNombre = usuario.Nombre;
+      const miVoto = votos[miNombre];
+      if (miVoto) {
+        const label = miVoto===1?'✅ Votaste a favor':miVoto===2?'❌ Votaste en contra':'🟡 Te abstuviste';
+        return `<div style="text-align:center;color:rgba(255,255,255,0.5);font-size:13px;padding:10px;border:1px solid rgba(255,255,255,0.1);border-radius:4px;">${label}</div>`;
+      }
+      return `
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+          <button onclick="votarConclave(1)" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 8px;border-radius:4px;border:1.5px solid rgba(76,175,80,0.35);cursor:pointer;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:rgba(255,255,255,0.03);color:#4CAF50;transition:all 0.2s;"><span style="font-size:28px;">👍</span><span>A favor</span></button>
+          <button onclick="votarConclave(2)" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 8px;border-radius:4px;border:1.5px solid rgba(196,30,58,0.35);cursor:pointer;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:rgba(255,255,255,0.03);color:#C41E3A;transition:all 0.2s;"><span style="font-size:28px;">👎</span><span>En contra</span></button>
+          <button onclick="votarConclave(3)" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 8px;border-radius:4px;border:1.5px solid rgba(200,168,48,0.25);cursor:pointer;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;background:rgba(255,255,255,0.03);color:#C8A830;transition:all 0.2s;"><span style="font-size:28px;">🤷</span><span>Me abstengo</span></button>
+        </div>`;
+    }
+
+    async function votarConclave(voto) {
+      const usuario = getUsuarioActual();
+      if (!usuario || !conclaveData) return;
+      const ley = conclaveData.leyes[conclaveData.leyActiva];
+      try {
+        await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({
+          accion: 'votar_ley',
+          nombre: usuario.Nombre,
+          voto,
+          leyIndex: ley.index
+        })});
+        await cargarConclave();
+      } catch(e) { console.error('Error votar:', e); }
+    }
+
+    async function avanzarLeyConclave() {
+      try {
+        await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion: 'avanzar_ley', email: currentUser }) });
+        conclaveSuspensoDisparado = false;
+        await cargarConclave();
+      } catch(e) { console.error('Error avanzar:', e); }
+    }
+
+    async function iniciarConclave() {
+      try {
+        await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion: 'iniciar_conclave', email: currentUser }) });
+        await cargarConclave();
+      } catch(e) { console.error('Error iniciar:', e); }
+    }
+
+    async function resetConclave() {
+      if (!confirm('¿Resetear el cónclave? Se borran todos los votos.')) return;
+      try {
+        await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion: 'reset_conclave', email: currentUser }) });
+        conclaveSuspensoDisparado = false;
+        await cargarConclave();
+      } catch(e) { console.error('Error reset:', e); }
+    }
+
+    // ── AUDIO CÓNCLAVE ─────────────────────────────────────
+    let conclaveAudioCtx = null;
+    function getConclaveAudio() {
+      if (!conclaveAudioCtx) conclaveAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return conclaveAudioCtx;
+    }
+    function crearReverbConclave(ctx, dur, decay) {
+      const rate=ctx.sampleRate, largo=rate*dur, buf=ctx.createBuffer(2,largo,rate);
+      for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<largo;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/largo,decay);}
+      const conv=ctx.createConvolver();conv.buffer=buf;return conv;
+    }
+    function golpeRedoblanteConclave(ctx,t,vol,dm){
+      dm=dm||1;const rate=ctx.sampleRate;
+      const crLen=Math.floor(rate*0.004),crBuf=ctx.createBuffer(1,crLen,rate),crD=crBuf.getChannelData(0);
+      for(let i=0;i<crLen;i++)crD[i]=Math.random()*2-1;
+      const crSrc=ctx.createBufferSource();crSrc.buffer=crBuf;
+      const crHP=ctx.createBiquadFilter();crHP.type='highpass';crHP.frequency.value=6000;
+      const crG=ctx.createGain();crG.gain.setValueAtTime(vol*1.4,t);crG.gain.exponentialRampToValueAtTime(0.001,t+0.005);
+      crSrc.connect(crHP);crHP.connect(crG);crG.connect(ctx.destination);crSrc.start(t);
+      const bdLen=Math.floor(rate*0.065*dm),bdBuf=ctx.createBuffer(1,bdLen,rate),bdD=bdBuf.getChannelData(0);
+      for(let i=0;i<bdLen;i++)bdD[i]=Math.random()*2-1;
+      const bdSrc=ctx.createBufferSource();bdSrc.buffer=bdBuf;
+      const bdHP=ctx.createBiquadFilter();bdHP.type='highpass';bdHP.frequency.value=800;
+      const bdBP=ctx.createBiquadFilter();bdBP.type='bandpass';bdBP.frequency.value=2800;bdBP.Q.value=0.9;
+      const bdG=ctx.createGain();bdG.gain.setValueAtTime(vol*0.85,t);bdG.gain.exponentialRampToValueAtTime(0.001,t+0.055*dm);
+      bdSrc.connect(bdHP);bdHP.connect(bdBP);bdBP.connect(bdG);bdG.connect(ctx.destination);bdSrc.start(t);
+      const osc=ctx.createOscillator();osc.type='sine';osc.frequency.value=185;
+      const og=ctx.createGain();og.gain.setValueAtTime(vol*0.12,t);og.gain.exponentialRampToValueAtTime(0.001,t+0.03);
+      osc.connect(og);og.connect(ctx.destination);osc.start(t);osc.stop(t+0.035);
+    }
+    function tocarRedobleConclave(duracion){
+      const ctx=getConclaveAudio(),now=ctx.currentTime;
+      const rev=crearReverbConclave(ctx,1.8,4),revG=ctx.createGain();revG.gain.value=0.22;rev.connect(revG);revG.connect(ctx.destination);
+      const tiempos=[],intervalInicio=0.32,intervalFin=0.055;let acum=0;
+      while(acum<duracion-0.25){tiempos.push(acum);const progreso=acum/(duracion-0.25);acum+=intervalInicio*Math.pow(intervalFin/intervalInicio,progreso);}
+      tiempos.forEach((offset,i)=>{
+        const t=now+offset,progreso=i/tiempos.length,vol=0.18+progreso*0.78,dm=0.6+progreso*0.5;
+        golpeRedoblanteConclave(ctx,t,vol,dm);
+      });
+      golpeRedoblanteConclave(ctx,now+duracion-0.18,1.0,1.2);
+      golpeRedoblanteConclave(ctx,now+duracion-0.10,1.0,1.2);
+      golpeRedoblanteConclave(ctx,now+duracion-0.03,1.2,1.5);
+    }
+    function tocarGongConclave(aprobada){
+      const ctx=getConclaveAudio(),now=ctx.currentTime,base=aprobada?80:60;
+      const rev=crearReverbConclave(ctx,3.5,2),revG=ctx.createGain();revG.gain.value=0.5;rev.connect(revG);revG.connect(ctx.destination);
+      const impLen=Math.floor(ctx.sampleRate*0.04),impBuf=ctx.createBuffer(1,impLen,ctx.sampleRate),impD=impBuf.getChannelData(0);
+      for(let i=0;i<impLen;i++)impD[i]=Math.random()*2-1;
+      const impSrc=ctx.createBufferSource();impSrc.buffer=impBuf;
+      const impLP=ctx.createBiquadFilter();impLP.type='lowpass';impLP.frequency.value=600;
+      const impG=ctx.createGain();impG.gain.setValueAtTime(1.4,now);impG.gain.exponentialRampToValueAtTime(0.001,now+0.05);
+      impSrc.connect(impLP);impLP.connect(impG);impG.connect(ctx.destination);impG.connect(rev);impSrc.start(now);
+      const parc=aprobada?[{f:base,g:0.9,d:6},{f:base*2.76,g:0.5,d:4.5},{f:base*5.4,g:0.25,d:3},{f:base*0.5,g:0.6,d:7}]:[{f:base,g:0.9,d:5.5},{f:base*2.41,g:0.5,d:3.8},{f:base*4.9,g:0.22,d:2.5},{f:base*0.5,g:0.55,d:6.5}];
+      parc.forEach(p=>{const osc=ctx.createOscillator(),gan=ctx.createGain();osc.type='sine';osc.frequency.setValueAtTime(p.f*1.06,now);osc.frequency.exponentialRampToValueAtTime(p.f,now+0.06);gan.gain.setValueAtTime(p.g,now);gan.gain.exponentialRampToValueAtTime(0.001,now+p.d);osc.connect(gan);gan.connect(ctx.destination);gan.connect(rev);osc.start(now);osc.stop(now+p.d+0.1);});
+    }
+
+    function iniciarSuspensoConclave(counts) {
+      const overlay = document.getElementById('conclaveVeredictoOverlay');
+      const suspensoBox = document.getElementById('conclaveSuspensoBox');
+      const resultadoBox = document.getElementById('conclaveResultadoBox');
+      if (!overlay) return;
+
+      overlay.style.background = 'rgba(0,0,0,0.93)';
+      overlay.style.pointerEvents = 'all';
+      suspensoBox.style.display = 'flex';
+      resultadoBox.style.display = 'none';
+
+      const icono = document.getElementById('conclaveSuspensoIcono');
+      const texto = document.getElementById('conclaveSuspensoTexto');
+      const track = document.getElementById('conclaveTensionTrack');
+      const fill  = document.getElementById('conclaveTensionFill');
+
+      tocarRedobleConclave(3.2);
+
+      setTimeout(()=>{ icono.style.opacity='1'; icono.style.transform='scale(1)'; },200);
+      setTimeout(()=>{ texto.style.opacity='1'; track.style.opacity='1'; animarPuntosConclave(); },500);
+      setTimeout(()=>{ fill.style.width='100%'; },600);
+
+      let puntosIv=null;
+      function animarPuntosConclave(){
+        const el=document.getElementById('conclavePuntos');let n=0;
+        puntosIv=setInterval(()=>{el.textContent='.'.repeat((n%3)+1);n++;},400);
+      }
+
+      setTimeout(()=>{
+        if(puntosIv) clearInterval(puntosIv);
+        suspensoBox.style.display='none';
+        const aprobada = counts.favor > counts.contra;
+        const emoji=document.getElementById('conclaveResultadoEmoji');
+        const sello=document.getElementById('conclaveResultadoSello');
+        const titulo=document.getElementById('conclaveResultadoTitulo');
+        const linea=document.getElementById('conclaveResultadoLinea');
+        const votosEl=document.getElementById('conclaveResultadoVotos');
+        emoji.textContent = aprobada?'⚖️':'🚫';
+        sello.style.background = aprobada?'radial-gradient(circle,rgba(76,175,80,0.15) 0%,transparent 70%)':'radial-gradient(circle,rgba(196,30,58,0.15) 0%,transparent 70%)';
+        sello.style.borderColor = aprobada?'rgba(76,175,80,0.5)':'rgba(196,30,58,0.5)';
+        titulo.textContent = aprobada?'APROBADA':'RECHAZADA';
+        titulo.style.color = aprobada?'#4CAF50':'#C41E3A';
+        titulo.style.textShadow = aprobada?'0 0 40px rgba(76,175,80,0.6)':'0 0 40px rgba(196,30,58,0.6)';
+        linea.style.background = aprobada?'linear-gradient(to right,transparent,rgba(76,175,80,0.5),transparent)':'linear-gradient(to right,transparent,rgba(196,30,58,0.5),transparent)';
+        votosEl.textContent = `${counts.favor} a favor · ${counts.contra} en contra · ${counts.abstenc} abstención`;
+        resultadoBox.style.display='flex';
+        // Flash
+        const flash=document.getElementById('conclaveLuzFlash');
+        if(flash){flash.style.animation='none';flash.style.background='rgba(255,240,180,0.25)';setTimeout(()=>{flash.style.transition='background 0.6s';flash.style.background='rgba(255,255,255,0)';},80);}
+        tocarGongConclave(aprobada);
+        setTimeout(()=>{ resultadoBox.style.opacity='1'; resultadoBox.style.transform='scale(1) translateY(0)'; },80);
+        // Cerrar después de 6s
+        setTimeout(()=>{
+          resultadoBox.style.opacity='0'; resultadoBox.style.transform='scale(0.96) translateY(-8px)';
+          setTimeout(()=>{
+            overlay.style.background='rgba(0,0,0,0)'; overlay.style.pointerEvents='none';
+            resultadoBox.style.display='none'; resultadoBox.style.opacity='0'; resultadoBox.style.transform='scale(0.85) translateY(10px)';
+          },1500);
+        },6000);
+      },3400);
     }
 
     async function enviarLey() {
@@ -2270,11 +2608,10 @@ function renderLeyes() {
             else { alert(res.error || 'Error al enviar.'); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
         } catch(e) { alert('Error: ' + e.message); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
     }
-
  function showTab(tabName, el) {
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     if(el) el.classList.add('active');
-    if (tabName === 'leyes') cargarLeyes();
+    if (tabName === 'leyes') {       cargarLeyes();       if (conclavePollingInterval) clearInterval(conclavePollingInterval);       if (esSoloAdmin()) {         conclavePollingInterval = setInterval(cargarConclave, 4000);       }     } else {       if (conclavePollingInterval) { clearInterval(conclavePollingInterval); conclavePollingInterval = null; }     }
     if (tabName === 'juegos') initWordle();
 
     // Widget cumpleaños solo en home
