@@ -1378,7 +1378,17 @@ function formatFechaPost(fechaStr) {
         } catch { if (msg) { msg.style.color = '#f44336'; msg.textContent = '❌ Error de conexión'; } }
     }
 
-    async function reaccionarPost(postId, tipo) {
+   async function reaccionarPost(postId, tipo) {
+        // Optimistic: toggle en cache local
+        const post = muroPostsCache.find(p => (p.ID2||p.ID||p.id) === postId);
+        if (post) {
+            const key = tipo === 'like' ? 'Likes' : 'Coronas';
+            const arr = post[key] ? post[key].split(',').filter(Boolean) : [];
+            const idx = arr.indexOf(currentUser);
+            if (idx > -1) arr.splice(idx, 1); else arr.push(currentUser);
+            post[key] = arr.join(',');
+            renderHome();
+        }
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'reaccionar_post', id:postId, tipo, email:currentUser }) });
             const res = await r.json();
@@ -1386,7 +1396,16 @@ function formatFechaPost(fechaStr) {
         } catch(e) { console.error(e); }
     }
 
-    async function likearComentarioMuro(id) {
+   async function likearComentarioMuro(id) {
+        // Optimistic: toggle like en cache local
+        const com = muroPostsCache.find(r => (r.ID2||r.ID||r.id) === id);
+        if (com) {
+            const arr = com.Likes ? com.Likes.split(',').filter(Boolean) : [];
+            const idx = arr.indexOf(currentUser);
+            if (idx > -1) arr.splice(idx, 1); else arr.push(currentUser);
+            com.Likes = arr.join(',');
+            renderHome();
+        }
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'likear_comentario', id, email:currentUser }) });
             const res = await r.json();
@@ -1394,8 +1413,11 @@ function formatFechaPost(fechaStr) {
         } catch(e) { console.error(e); }
     }
 
-    async function eliminarComentarioMuro(id, postId) {
+   async function eliminarComentarioMuro(id, postId) {
         if (!confirm('¿Eliminar comentario?')) return;
+        // Optimistic: sacar del cache local
+        const idx = muroPostsCache.findIndex(r => (r.ID2||r.ID||r.id) === id);
+        if (idx > -1) { muroPostsCache.splice(idx, 1); renderHome(); }
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_comentario', id, email:currentUser }) });
             const res = await r.json();
@@ -1403,7 +1425,6 @@ function formatFechaPost(fechaStr) {
             else alert('❌ ' + res.error);
         } catch(e) { console.error(e); }
     }
-
 
    // REEMPLAZAR POR:
 async function comentarPost(postId, seccionId, inputId) {
@@ -1456,9 +1477,21 @@ async function comentarPost(postId, seccionId, inputId) {
     }
     if (input) input.disabled = false;
 }
-
-    async function eliminarPost(postId) {
+async function eliminarPost(postId) {
         if (!confirm('¿Eliminar este post?')) return;
+        // Optimistic: sacar el post y sus comentarios del cache
+        const idx = muroPostsCache.findIndex(r => (r.ID2||r.ID||r.id) === postId);
+        if (idx > -1) {
+            muroPostsCache = muroPostsCache.filter(r => (r.ID2||r.ID||r.id) !== postId && r.Destinatario !== postId);
+            renderHome();
+        }
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_post', id:postId, email:currentUser }) });
+            const res = await r.json();
+            if (res.success) cargarMuroHome();
+            else alert('❌ ' + res.error);
+        } catch(e) { console.error(e); }
+    }
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_post', id:postId, email:currentUser }) });
             const res = await r.json();
