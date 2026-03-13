@@ -2200,7 +2200,7 @@ document.body.removeChild(waLink);
     let conclaveSuspensoDisparado = false;
 
     const VOTANTES_CONCLAVE = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti','Cata','Lola','Sami','Leila','Juli','Manu','Matu'];
-    const AVATARES_CONCLAVE = {
+   const AVATARES_CONCLAVE = {
       'Toto':    'https://i.imgur.com/Y8NOVgH.png',
       'Caamaño': 'https://i.imgur.com/7E7f3Xy.png',
       'Rama':    'https://i.imgur.com/8hsqIL8.png',
@@ -2209,13 +2209,13 @@ document.body.removeChild(waLink);
       'Mateo':   'https://i.imgur.com/MY6KbRq.png',
       'Tirri':   'https://i.imgur.com/biqacxq.png',
       'Toti':    'https://i.imgur.com/fOVTNio.png',
-      'Cata':    'https://i.imgur.com/czObXpX.png',
-      'Lola':    'https://i.imgur.com/czObXpX.png',
-      'Sami':    'https://i.imgur.com/czObXpX.png',
-      'Leila':   'https://i.imgur.com/czObXpX.png',
-      'Juli':    'https://i.imgur.com/czObXpX.png',
-      'Manu':    'https://i.imgur.com/czObXpX.png',
-      'Matu':    'https://i.imgur.com/czObXpX.png',
+      'Cata':    'https://i.imgur.com/jhme4wb.png',
+      'Lola':    'https://i.imgur.com/qTP4eT2.png',
+      'Sami':    'https://i.imgur.com/HP41gaP.png',
+      'Leila':   'https://i.imgur.com/wcf3be4.png',
+      'Juli':    'https://i.imgur.com/cn779x3.png',
+      'Manu':    'https://i.imgur.com/BzDK66B.png',
+      'Matu':    'https://i.imgur.com/gNabdVm.png',
     };
 
     function esSoloAdmin() {
@@ -2379,8 +2379,9 @@ document.body.removeChild(waLink);
 
           <!-- Botón avanzar (solo admin/Zabala) -->
           ${esAdmin ? `
-          <button id="btnAvanzarLey" onclick="avanzarLeyConclave()" ${todosVotaron ? '' : 'disabled'} style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(139,0,0,0.3),rgba(139,0,0,0.15));border:1.5px solid rgba(196,30,58,${todosVotaron?'0.7':'0.3'});border-radius:4px;color:${todosVotaron?'#C41E3A':'rgba(196,30,58,0.35)'};font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:${todosVotaron?'pointer':'not-allowed'};margin-bottom:12px;transition:all 0.3s;">⚔ &nbsp; Siguiente Artículo &nbsp; ⚔</button>
-          <button onclick="resetConclave()" style="width:100%;padding:8px;background:transparent;border:1px solid rgba(255,50,50,0.2);border-radius:4px;color:rgba(255,80,80,0.4);font-size:11px;cursor:pointer;margin-bottom:12px;">🔄 Reset (pruebas)</button>
+          <button id="btnAvanzarLey" onclick="avanzarLeyConclave()" ${todosVotaron ? '' : 'disabled'} style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(139,0,0,0.3),rgba(139,0,0,0.15));border:1.5px solid rgba(196,30,58,${todosVotaron?'0.7':'0.3'});border-radius:4px;color:${todosVotaron?'#C41E3A':'rgba(196,30,58,0.35)'};font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:${todosVotaron?'pointer':'not-allowed'};margin-bottom:8px;transition:all 0.3s;">⚔ &nbsp; Siguiente Artículo &nbsp; ⚔</button>
+          <button onclick="if(confirm('¿Forzar avance sin esperar todos los votos?')) avanzarLeyConclave()" style="width:100%;padding:7px;background:transparent;border:1px solid rgba(200,168,48,0.15);border-radius:4px;color:rgba(200,168,48,0.35);font-family:'Cinzel',serif;font-size:10px;letter-spacing:2px;cursor:pointer;margin-bottom:8px;">⚡ Forzar avance (admin)</button>
+          <button onclick="resetConclave()" style="width:100%;padding:7px;background:transparent;border:1px solid rgba(255,50,50,0.2);border-radius:4px;color:rgba(255,80,80,0.4);font-size:11px;cursor:pointer;margin-bottom:12px;">🔄 Reset (pruebas)</button>
           ` : ''}
 
           <!-- Progreso -->
@@ -2392,26 +2393,7 @@ document.body.removeChild(waLink);
           </div>
         </div>
 
-        <!-- Overlays de suspenso (fijos, fuera del scroll) -->
-        <div id="conclaveVeredictoOverlay" style="position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0);display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;transition:background 1.2s ease;">
-          <div id="conclaveSuspensoBox" style="display:none;flex-direction:column;align-items:center;">
-            <div id="conclaveSuspensoIcono" style="font-size:72px;opacity:0;transform:scale(0.5);transition:opacity 0.8s,transform 0.8s;margin-bottom:20px;">⚖️</div>
-            <div id="conclaveSuspensoTexto" style="font-family:'Cinzel',serif;font-size:11px;color:rgba(200,168,48,0.5);letter-spacing:6px;text-transform:uppercase;opacity:0;transition:opacity 0.6s 0.4s;margin-bottom:32px;">Deliberando<span id="conclavePuntos"></span></div>
-            <div id="conclaveTensionTrack" style="width:200px;height:2px;background:rgba(200,168,48,0.1);border-radius:1px;overflow:hidden;opacity:0;transition:opacity 0.5s 0.6s;margin-bottom:48px;">
-              <div id="conclaveTensionFill" style="height:100%;width:0%;background:linear-gradient(to right,#8B0000,#C8A830);border-radius:1px;transition:width 3.2s cubic-bezier(0.4,0,0.2,1);"></div>
-            </div>
-          </div>
-          <div id="conclaveResultadoBox" style="display:none;flex-direction:column;align-items:center;gap:14px;opacity:0;transform:scale(0.85) translateY(10px);transition:opacity 1.2s,transform 1.2s;">
-            <div id="conclaveResultadoSello" style="width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:52px;border:2px solid transparent;"><span id="conclaveResultadoEmoji">⚖️</span></div>
-            <div id="conclaveResultadoTitulo" style="font-family:'Cinzel Decorative',serif;font-size:32px;font-weight:900;letter-spacing:3px;text-align:center;">APROBADA</div>
-            <div id="conclaveResultadoLinea" style="width:260px;height:1px;"></div>
-            <div id="conclaveResultadoVotos" style="font-family:'Cinzel',serif;font-size:11px;color:rgba(200,168,48,0.6);letter-spacing:3px;text-align:center;"></div>
-          </div>
-        </div>
-        <div id="conclaveLuzFlash" style="position:fixed;inset:0;z-index:8999;pointer-events:none;background:rgba(255,255,255,0);"></div>
-      `;
-
-      // Iniciar oscillación del icono de suspenso si aplica
+       // Iniciar oscillación del icono de suspenso si aplica
     }
 
     function renderVotoBtns(votos) {
@@ -4224,5 +4206,22 @@ async function initWordle() {
     </div>
 </div>
     
+<!-- CÓNCLAVE: overlay fijo en DOM, nunca se re-renderiza -->
+  <div id="conclaveVeredictoOverlay" style="position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0);display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;transition:background 1.2s ease;">
+    <div id="conclaveSuspensoBox" style="display:none;flex-direction:column;align-items:center;">
+      <div id="conclaveSuspensoIcono" style="font-size:72px;opacity:0;transform:scale(0.5);transition:opacity 0.8s,transform 0.8s cubic-bezier(0.2,0.8,0.4,1);margin-bottom:20px;">⚖️</div>
+      <div id="conclaveSuspensoTexto" style="font-family:'Cinzel',serif;font-size:11px;color:rgba(200,168,48,0.5);letter-spacing:6px;text-transform:uppercase;opacity:0;transition:opacity 0.6s 0.4s;margin-bottom:32px;">Deliberando<span id="conclavePuntos"></span></div>
+      <div id="conclaveTensionTrack" style="width:200px;height:2px;background:rgba(200,168,48,0.1);border-radius:1px;overflow:hidden;opacity:0;transition:opacity 0.5s 0.6s;margin-bottom:48px;">
+        <div id="conclaveTensionFill" style="height:100%;width:0%;background:linear-gradient(to right,#8B0000,#C8A830);border-radius:1px;transition:width 3.2s cubic-bezier(0.4,0,0.2,1);"></div>
+      </div>
+    </div>
+    <div id="conclaveResultadoBox" style="display:none;flex-direction:column;align-items:center;gap:14px;opacity:0;transform:scale(0.85) translateY(10px);transition:opacity 1.2s cubic-bezier(0.2,0.8,0.4,1),transform 1.2s cubic-bezier(0.2,0.8,0.4,1);position:absolute;">
+      <div id="conclaveResultadoSello" style="width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:52px;border:2px solid transparent;"><span id="conclaveResultadoEmoji">⚖️</span></div>
+      <div id="conclaveResultadoTitulo" style="font-family:'Cinzel Decorative',serif;font-size:32px;font-weight:900;letter-spacing:3px;text-align:center;">APROBADA</div>
+      <div id="conclaveResultadoLinea" style="width:260px;height:1px;"></div>
+      <div id="conclaveResultadoVotos" style="font-family:'Cinzel',serif;font-size:11px;color:rgba(200,168,48,0.6);letter-spacing:3px;text-align:center;"></div>
+    </div>
+  </div>
+  <div id="conclaveLuzFlash" style="position:fixed;inset:0;z-index:8999;pointer-events:none;background:rgba(255,255,255,0);"></div>
 </body>
 </html>
