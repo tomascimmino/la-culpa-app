@@ -2467,14 +2467,7 @@ function renderLeyes() {
             const btns = lista.querySelectorAll('button');
             btns.forEach(b => { if (b.getAttribute('onclick')?.includes(`'${id}'`)) b.closest('div[style]')?.remove(); });
         }
-        try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_comentario', id, email:currentUser }) });
-            const res = await r.json();
-            if (res.success) cargarComentarios(destinatario);
-            else alert('❌ ' + res.error);
-        } catch { alert('❌ Error de conexión'); }
-    }
-        try {
+             try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_comentario', id, email:currentUser }) });
             const res = await r.json();
             if (res.success) cargarComentarios(destinatario);
