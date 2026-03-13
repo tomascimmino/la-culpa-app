@@ -38,10 +38,10 @@
             border: 2px solid rgba(139,77,143,0.3); border-radius: 10px; color: rgba(255,255,255,0.6);
             cursor: pointer; transition: all 0.3s; font-size: 11px; line-height: 1.3; min-width: 0;
         }
-        @media (max-width: 500px) {
+       @media (max-width: 500px) {
   .tabs { gap: 5px !important; padding: 6px !important; }
     .tab { flex: 1 1 calc(25% - 5px) !important; padding: 7px 2px !important; font-size: 10px !important; border-radius: 8px !important; line-height: 1.3; }
-    .container { padding: 12px !important; }
+    .container { padding: 12px !important; min-height: 100vh !important; }
             .stats-grid { gap: 10px !important; }
             .stat-number { font-size: 24px !important; }
             .ranking-item { gap: 10px !important; padding: 12px !important; }
@@ -53,8 +53,34 @@
             .card { padding: 12px !important; }
         }
         .tab.active { background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 100%); color: #C8A830; border-color: #C8A830; }
-        .content { display: none; }
-        .content.active { display: block; }
+       .content {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+        }
+        .content.active {
+            display: block;
+            animation: tabFadeIn 0.25s ease forwards;
+        }
+        .content.leaving {
+            display: block;
+            animation: tabFadeOut 0.15s ease forwards;
+            pointer-events: none;
+            position: absolute;
+            width: calc(100% - 24px);
+        }
+        @keyframes tabFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes tabFadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to   { opacity: 0; transform: translateY(-6px); }
+        }
+
+        html, body { height: 100%; overflow-x: hidden; }
+        #mainApp { min-height: 100vh; }
+        .container { min-height: 100vh; position: relative; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-card {
             padding: 20px; border-radius: 15px; text-align: center; border: 2px solid rgba(107,45,145,0.35);
@@ -415,8 +441,9 @@
                     <div class="stat-box"><div class="stat-val" id="res-streak"></div><div class="stat-lbl">Racha</div></div>
                 </div>
                 <div class="res-tabs">
-                    <div class="res-tab active" id="tab-ranking" onclick="switchResTab('ranking')">👑 Ranking hoy</div>
+                    <div class="res-tab active" id="tab-ranking" onclick="switchResTab('ranking')">👑 Hoy</div>
                     <div class="res-tab" id="tab-historial" onclick="switchResTab('historial')">📊 Mi historial</div>
+                    <div class="res-tab" id="tab-historico" onclick="switchResTab('historico')">🏆 All time</div>
                 </div>
                 <div id="ranking-hoy"><div class="ranking-title">HOY JUGARON</div><div id="ranking-list"></div></div>
                 <div id="historial-section"><div id="historial-list"></div></div>
@@ -2170,16 +2197,12 @@ function renderLeyes() {
     const bdayWidget = document.getElementById('bdayWidget');
     if (bdayWidget) bdayWidget.style.display = tabName === 'home' ? 'block' : 'none';
     
-    const current = document.querySelector('.content.active');
-    if(current) {
-        current.style.opacity = '0';
-        setTimeout(() => {
-            document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
-            const next = document.getElementById(tabName);
-            next.classList.add('active');
-            next.style.opacity = '0';
-            setTimeout(() => { next.style.opacity = '1'; }, 20);
-        }, 150);
+   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    const next = document.getElementById(tabName);
+    if (next) {
+        next.classList.add('active');
+        next.style.opacity = '0';
+        requestAnimationFrame(() => { next.style.opacity = '1'; });
     }
 }
 
@@ -3399,53 +3422,68 @@ function getNombreDesdeEmail(email) {
 // ══════════════════════════════════════════════
 // RANKING DEL DÍA
 // ══════════════════════════════════════════════
-async function loadRankingHoy(nombreParam) {   // Re-resolver el nombre por si culpososData ya cargó   const email = getCurrentUser();   let nombre = nombreParam;   if (email && window.culpososData && window.culpososData.length) {     const found = window.culpososData.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());     if (found) nombre = found.Nombre;   }
-  const list=document.getElementById('ranking-list');
-  list.innerHTML='<div style="text-align:center;padding:10px"><span class="spinner-sm"></span></div>';
- 
+async function cargarWordleSheet() {
+  const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=WORDLE`);
+  const text = await r.text();
+  const rows = parseCSV(text);
+  return rows;
+}
+
+async function loadRankingHoy(nombreParam) {
+  const email = getCurrentUser();
+  let nombre = nombreParam;
+  if (email && window.culpososData && window.culpososData.length) {
+    const found = window.culpososData.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+    if (found) nombre = found.Nombre;
+  }
+  const list = document.getElementById('ranking-list');
+  list.innerHTML = '<div style="text-align:center;padding:10px"><span class="spinner-sm"></span></div>';
   try {
-    const r=await fetch(APPS_SCRIPT_URL,{
-      method:'POST',
-      body:JSON.stringify({ accion:'get_wordle_dia', nombre:nombre||'', fecha:getTodayStr() })
-    });
-    const res=await r.json();
- 
-    if (!res.success||!res.resultados||!res.resultados.length) {
-      list.innerHTML='<div class="rank-pending">Aún no hay más resultados hoy 👀</div>';
+    const rows = await cargarWordleSheet();
+    const today = getTodayStr();
+    const deHoy = rows.filter(r => r.Fecha === today);
+    if (!deHoy.length) {
+      list.innerHTML = '<div class="rank-pending">Aún no hay resultados hoy 👀</div>';
       return;
     }
- 
-    const medals=['🥇','🥈','🥉'];
-    list.innerHTML=res.resultados.map((p,i)=>{
-      const esYo=p.nombre===nombre;
-      const foto=FOTOS[p.nombre]||'';
-      const avatarStyle=foto?`background-image:url('${foto}')`:'background:linear-gradient(135deg,#8B4D8F,#6B3870)';
-      const badge=medals[i]||(i+1)+'°';
-      const detalle=p.gano
-        ? `<span class="won">✓ ${p.intentos} intento${p.intentos!==1?'s':''}</span><span>⏱ ${formatTime(p.tiempo)}</span>`
+    // Ordenar: ganaron primero (por intentos asc, luego tiempo asc), después los que no ganaron
+    const ganaron = deHoy.filter(r => r['Gano'] === 'SI').sort((a,b) => {
+      const iDiff = parseInt(a.Intentos) - parseInt(b.Intentos);
+      return iDiff !== 0 ? iDiff : parseInt(a.Tiempo) - parseInt(b.Tiempo);
+    });
+    const noGanaron = deHoy.filter(r => r['Gano'] !== 'SI');
+    const ordenados = [...ganaron, ...noGanaron];
+
+    const medals = ['🥇','🥈','🥉'];
+    list.innerHTML = ordenados.map((p, i) => {
+      const esYo = p.Nombre === nombre;
+      const foto = FOTOS[p.Nombre] || '';
+      const avatarStyle = foto ? `background-image:url('${foto}')` : 'background:linear-gradient(135deg,#8B4D8F,#6B3870)';
+      const badge = medals[i] || (i+1)+'°';
+      const gano = p['Gano'] === 'SI';
+      const detalle = gano
+        ? `<span class="won">✓ ${p.Intentos} intento${p.Intentos!='1'?'s':''}</span><span>⏱ ${formatTime(parseInt(p.Tiempo))}</span>`
         : `<span class="lost">✗ No lo sacó</span>`;
       return `<div class="rank-row${esYo?' me':''}${i===0?' pos-1':''}">
         <div class="rank-pos">${badge}</div>
         <div class="rank-avatar" style="${avatarStyle}"></div>
         <div class="rank-info">
-          <div class="rank-name">${p.nombre}${esYo?' <span style="color:var(--gold);font-size:11px;">(vos)</span>':''}</div>
+          <div class="rank-name">${p.Nombre}${esYo?' <span style="color:var(--gold);font-size:11px;">(vos)</span>':''}</div>
           <div class="rank-detail">${detalle}</div>
         </div>
         ${i===0?'<div class="rank-badge">👑 REY HOY</div>':''}
       </div>`;
     }).join('');
- 
-    // Quiénes aún no jugaron
-    const jugaron=new Set(res.resultados.map(p=>p.nombre));
-    const todos=Object.keys(FOTOS);
-    const pendientes=todos.filter(n=>!jugaron.has(n));
+
+    // Quiénes no jugaron todavía
+    const jugaron = new Set(deHoy.map(r => r.Nombre));
+    const pendientes = Object.keys(FOTOS).filter(n => !jugaron.has(n));
     if (pendientes.length) {
-      list.innerHTML+=`<div class="rank-pending" style="margin-top:8px;">
-        ⏳ Sin jugar aún: ${pendientes.join(', ')}
-      </div>`;
+      list.innerHTML += `<div class="rank-pending" style="margin-top:8px;">⏳ Sin jugar aún: ${pendientes.join(', ')}</div>`;
     }
   } catch(e) {
-    list.innerHTML='<div class="rank-pending">Error cargando ranking 😤</div>';
+    console.error(e);
+    list.innerHTML = '<div class="rank-pending">Error cargando ranking 😤</div>';
   }
 }
  
@@ -3453,58 +3491,121 @@ async function loadRankingHoy(nombreParam) {   // Re-resolver el nombre por si c
 // HISTORIAL PERSONAL
 // ══════════════════════════════════════════════
 async function loadHistorial(nombre) {
-  const list=document.getElementById('historial-list');
-  list.innerHTML='<div style="text-align:center;padding:10px"><span class="spinner-sm"></span></div>';
+  const list = document.getElementById('historial-list');
+  list.innerHTML = '<div style="text-align:center;padding:10px"><span class="spinner-sm"></span></div>';
   try {
-    const r=await fetch(APPS_SCRIPT_URL,{
-      method:'POST',
-      body:JSON.stringify({ accion:'get_wordle_historial', nombre:nombre||'' })
-    });
-    const res=await r.json();
-    if (!res.historial||!res.historial.length) {
-      list.innerHTML='<div class="rank-pending">Sin historial todavía</div>';
+    const rows = await cargarWordleSheet();
+    const mios = rows.filter(r => r.Nombre === nombre).sort((a,b) => b.Fecha.localeCompare(a.Fecha));
+    if (!mios.length) {
+      list.innerHTML = '<div class="rank-pending">Sin historial todavía</div>';
       return;
     }
-    const ganados=res.historial.filter(h=>h.gano).length;
-    const pct=Math.round(ganados/res.historial.length*100);
-    list.innerHTML=`<div style="display:flex;gap:10px;justify-content:center;margin-bottom:10px;">
-      <div class="stat-box"><div class="stat-val">${res.historial.length}</div><div class="stat-lbl">Jugadas</div></div>
-      <div class="stat-box"><div class="stat-val">${ganados}</div><div class="stat-lbl">Ganadas</div></div>
-      <div class="stat-box"><div class="stat-val">${pct}%</div><div class="stat-lbl">Win %</div></div>
-    </div>`+
-    res.historial.slice(0,10).map(h=>`
-      <div class="hist-row">
-        <div>
-          <div class="hist-fecha">${h.fecha}</div>
-          <div class="hist-palabra">${h.palabra}</div>
-        </div>
-        <div class="hist-stats">
-          ${h.gano
-            ?`<span style="color:var(--green)">✓ ${h.intentos}i</span><span style="color:var(--text-dim)">⏱${formatTime(h.tiempo)}</span>`
-            :`<span style="color:#f44336">✗</span>`}
-        </div>
-      </div>`).join('');
+    const ganados = mios.filter(h => h['Gano'] === 'SI').length;
+    const pct = Math.round(ganados / mios.length * 100);
+    const avgIntentos = (mios.filter(h=>h['Gano']==='SI').reduce((s,h)=>s+parseInt(h.Intentos),0) / (ganados||1)).toFixed(1);
+    const tiemposGanados = mios.filter(h=>h['Gano']==='SI').map(h=>parseInt(h.Tiempo));
+    const avgTiempo = tiemposGanados.length ? Math.round(tiemposGanados.reduce((a,b)=>a+b,0)/tiemposGanados.length) : 0;
+
+    list.innerHTML = `
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
+        <div class="stat-box"><div class="stat-val">${mios.length}</div><div class="stat-lbl">Jugadas</div></div>
+        <div class="stat-box"><div class="stat-val">${ganados}</div><div class="stat-lbl">Ganadas</div></div>
+        <div class="stat-box"><div class="stat-val">${pct}%</div><div class="stat-lbl">Win %</div></div>
+        <div class="stat-box"><div class="stat-val">${avgIntentos}</div><div class="stat-lbl">Prom intentos</div></div>
+        <div class="stat-box"><div class="stat-val">${formatTime(avgTiempo)}</div><div class="stat-lbl">Prom tiempo</div></div>
+      </div>` +
+      mios.slice(0,15).map(h => `
+        <div class="hist-row">
+          <div>
+            <div class="hist-fecha">${h.Fecha}</div>
+            <div class="hist-palabra">${h.Palabra}</div>
+          </div>
+          <div class="hist-stats">
+            ${h['Gano']==='SI'
+              ? `<span style="color:var(--green)">✓ ${h.Intentos}i</span><span style="color:var(--text-dim)">⏱${formatTime(parseInt(h.Tiempo))}</span>`
+              : `<span style="color:#f44336">✗</span>`}
+          </div>
+        </div>`).join('');
   } catch(e) {
-    list.innerHTML='<div class="rank-pending">Error cargando historial 😤</div>';
+    console.error(e);
+    list.innerHTML = '<div class="rank-pending">Error cargando historial 😤</div>';
   }
 }
- 
+
+async function loadRankingHistorico() {
+  const list = document.getElementById('historial-list');
+  list.innerHTML = '<div style="text-align:center;padding:10px"><span class="spinner-sm"></span></div>';
+  try {
+    const rows = await cargarWordleSheet();
+    const porNombre = {};
+    rows.forEach(r => {
+      if (!r.Nombre) return;
+      if (!porNombre[r.Nombre]) porNombre[r.Nombre] = { jugadas:0, ganadas:0, intentos:[], tiempos:[] };
+      const d = porNombre[r.Nombre];
+      d.jugadas++;
+      if (r['Gano']==='SI') {
+        d.ganadas++;
+        d.intentos.push(parseInt(r.Intentos));
+        d.tiempos.push(parseInt(r.Tiempo));
+      }
+    });
+    const ranking = Object.entries(porNombre).map(([nombre, d]) => ({
+      nombre,
+      jugadas: d.jugadas,
+      ganadas: d.ganadas,
+      pct: Math.round(d.ganadas/d.jugadas*100),
+      avgIntentos: d.intentos.length ? (d.intentos.reduce((a,b)=>a+b,0)/d.intentos.length).toFixed(1) : '-',
+      avgTiempo: d.tiempos.length ? Math.round(d.tiempos.reduce((a,b)=>a+b,0)/d.tiempos.length) : 99999
+    })).sort((a,b) => b.pct - a.pct || parseFloat(a.avgIntentos) - parseFloat(b.avgIntentos) || a.avgTiempo - b.avgTiempo);
+
+    const email = getCurrentUser();
+    const yo = window.culpososData && window.culpososData.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+    const miNombre = yo ? yo.Nombre : '';
+
+    list.innerHTML = `<div style="color:var(--gold);font-size:13px;font-weight:bold;text-align:center;letter-spacing:2px;margin-bottom:10px;">🏆 RANKING HISTÓRICO</div>` +
+      ranking.map((p, i) => {
+        const esYo = p.nombre === miNombre;
+        const foto = FOTOS[p.nombre] || '';
+        const medals = ['🥇','🥈','🥉'];
+        return `<div class="rank-row${esYo?' me':''}${i===0?' pos-1':''}">
+          <div class="rank-pos">${medals[i]||(i+1)+'°'}</div>
+          <div class="rank-avatar" style="${foto?`background-image:url('${foto}')`:'background:linear-gradient(135deg,#8B4D8F,#6B3870)'}"></div>
+          <div class="rank-info">
+            <div class="rank-name">${p.nombre}${esYo?' <span style="color:var(--gold);font-size:11px;">(vos)</span>':''}</div>
+            <div class="rank-detail">
+              <span class="won">${p.pct}% win</span>
+              <span>~${p.avgIntentos}i</span>
+              <span>⏱ ${p.avgTiempo < 99999 ? formatTime(p.avgTiempo) : '-'}</span>
+              <span style="color:var(--text-dim)">${p.ganadas}/${p.jugadas}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+  } catch(e) {
+    console.error(e);
+    list.innerHTML = '<div class="rank-pending">Error cargando ranking histórico 😤</div>';
+  }
+}
 // ══════════════════════════════════════════════
 // TABS RESULTADO
 // ══════════════════════════════════════════════
 function switchResTab(tab) {
-  resultTab=tab;
-  document.getElementById('tab-ranking').classList.toggle('active',tab==='ranking');
-  document.getElementById('tab-historial').classList.toggle('active',tab==='historial');
-  document.getElementById('ranking-hoy').classList.toggle('show',tab==='ranking');
-  document.getElementById('historial-section').classList.toggle('show',tab==='historial');
+  resultTab = tab;
+  ['ranking','historial','historico'].forEach(t => {
+    document.getElementById('tab-'+t)?.classList.toggle('active', tab===t);
+  });
+  document.getElementById('ranking-hoy').classList.toggle('show', tab==='ranking');
+  document.getElementById('historial-section').classList.toggle('show', tab==='historial' || tab==='historico');
   if (tab==='ranking') {
-    document.getElementById('ranking-hoy').classList.add('show');
+    const email = getCurrentUser();
+    loadRankingHoy(getNombreDesdeEmail(email));
   }
   if (tab==='historial') {
-    document.getElementById('historial-section').classList.add('show');
-    const email=getCurrentUser();
+    const email = getCurrentUser();
     loadHistorial(getNombreDesdeEmail(email));
+  }
+  if (tab==='historico') {
+    loadRankingHistorico();
   }
 }
 // mostrar ranking por defecto
