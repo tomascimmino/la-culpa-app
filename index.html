@@ -46,7 +46,8 @@
             background: rgba(20,10,35,0.7); padding: 8px; border-radius: 15px; border: 1px solid rgba(107,45,145,0.3);
         }
        .tab {
-            flex: 1 1 calc(25% - 8px); padding: 8px 4px; text-align: center; background: transparent;
+            flex: 1 1 calc(25% - 6px); max-width: calc(25% - 5px);
+            padding: 8px 4px; text-align: center; background: transparent;
             border: 2px solid rgba(139,77,143,0.3); border-radius: 10px; color: rgba(255,255,255,0.6);
             cursor: pointer; transition: all 0.3s; font-size: 11px; line-height: 1.3; min-width: 0;
             box-sizing: border-box;
@@ -339,9 +340,9 @@
 
         <div class="tabs">
     <div class="tab active" onclick="showTab('home',this)">🏠<br>Home</div>
-    <div class="tab" onclick="showTab('ranking',this)">👑<br>Culposos</div>
-    <div class="tab" onclick="showTab('juntadas',this)">📅<br>Juntadas</div>
-    <div class="tab" onclick="showTab('awards',this)">🏆<br>LCA</div>
+    <div class="tab" onclick="showTab('ranking',this)">👑<br>Reyes</div>
+    <div class="tab" onclick="showTab('juntadas',this)">📅<br>Fechas</div>
+    <div class="tab" onclick="showTab('awards',this)">🏆<br>Awards</div>
     <div class="tab" onclick="showTab('calculadora',this)">💰<br>Calc</div>
    <div class="tab" onclick="showTab('leyes',this)">⚖️<br>Ley</div>
 <div class="tab" onclick="showTab('juegos',this)">🎮<br>Wordle</div>
@@ -3225,9 +3226,13 @@ function buildGrid() {
   // Cell-size dinámico según cantidad de columnas
   const maxPx = COLS <= 5 ? 62 : COLS <= 7 ? 54 : COLS <= 8 ? 46 : 40;
   const maxVw = COLS <= 5 ? 13 : COLS <= 7 ? 11.5 : COLS <= 8 ? 10 : 8.5;
-  document.documentElement.style.setProperty('--cell-size', 'min(' + maxPx + 'px, ' + maxVw + 'vw)');
+  // Calcular basado en el ancho real del contenedor (max 500px), no del viewport
+  const containerW = Math.min(window.innerWidth, 500) - 40; // padding 20px c/lado
+  const cellFromContainer = Math.floor((containerW - (COLS - 1) * (COLS <= 6 ? 6 : 5)) / COLS);
+  const cellFinal = Math.min(maxPx, cellFromContainer);
+  document.documentElement.style.setProperty('--cell-size', cellFinal + 'px');
   const gapPx = COLS <= 6 ? 6 : 5;
-  document.documentElement.style.setProperty('--gap', 'min(' + gapPx + 'px, 1vw)');
+  document.documentElement.style.setProperty('--gap', gapPx + 'px');
 
   const w = document.getElementById('grid-wrapper');
   w.innerHTML = ''; grid = [];
