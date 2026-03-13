@@ -2391,11 +2391,9 @@ document.body.removeChild(waLink);
               <div style="height:100%;width:${progresoW}%;background:linear-gradient(to right,#8B0000,#C8A830);border-radius:2px;transition:width 1s;"></div>
             </div>
           </div>
-        </div>
-
-       // Iniciar oscillación del icono de suspenso si aplica
+      </div>
+      `;
     }
-
     function renderVotoBtns(votos) {
       // Solo admin puede "simular" votos en modo prueba — en producción todos votan
       const usuario = getUsuarioActual();
