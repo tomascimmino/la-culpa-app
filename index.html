@@ -92,7 +92,7 @@
             to   { opacity: 0; transform: translateY(-6px); }
         }
 
-     html { overflow-x: hidden; overflow-y: scroll; scrollbar-gutter: stable both-edges; }
+     html { overflow-x: hidden; scrollbar-gutter: stable both-edges; }
         body { overflow-x: hidden; max-width: 100vw; }
         #mainApp { min-height: 100vh; overflow-x: hidden; }
         .container { min-height: 100vh; position: relative; overflow-x: hidden; max-width: 100%; }
@@ -3128,14 +3128,13 @@ initBdayWidget();
 // PALABRAS
 // ══════════════════════════════════════════════
 const PALABRAS = [
-  "REYES","CULPOSOS","CULPA","GUARIDA","AWARDS","TROLO","QUEQUEN",
-   "PORTUARIO","TOMBOLA","ZABALA","CREATINA","PROTEINA",
+  "REYES","CULPOSOS","CULPA","GUARIDA","AWARDS","TROLOS","ABSTENCION",
+  "QUEQUEN","PORTUARIO","TOMBOLA","ZABALA","CREATINA","PROTEINA",
   "SOKOTROSKI","FIERO","BACHI","PASTOR","COSMOPOLITA","KADRI","QUORUM",
   "AMIGOS","DETENDRAN","CULPAPP","MATUKA","PORRO","REINAS","NICOLE",
   "ONLYFANS","PEPINO","LEON","PERON","ESTATUTO","JUNTADAS","FUTBOL",
-  "PARTIDO","ESCRIBANO","GUILLOTE","CHIZITO","AMIGOS","ERITOS","ASADO",
-    "POMBOKO","DUENDE","JAPONES","MIKE","ASISTENCIA","PIPA","ABSTENERSE"
-
+  "PARTIDO","ESCRIBANO","GUILLOTE"
+];
  
 function norm(s) {
   return s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z]/g,'');
@@ -3145,10 +3144,9 @@ function getTodayStr() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function getWordOfDay() {
-  const today = getTodayStr().replace(/-/g,'');
-  let hash = 0;
-  for (let i = 0; i < today.length; i++) hash = (hash * 31 + today.charCodeAt(i)) >>> 0;
-  return norm(PALABRAS[hash % PALABRAS.length]);
+  const start = new Date(2026,12,2);
+  const diff  = Math.floor((new Date() - start) / 86400000);
+  return norm(PALABRAS[((diff % PALABRAS.length) + PALABRAS.length) % PALABRAS.length]);
 }
 function getDayNumber() {
   return Math.floor((new Date() - new Date(2026,2,12)) / 86400000) + 1;
