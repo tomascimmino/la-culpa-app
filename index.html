@@ -17,7 +17,38 @@
             background: #120D1F;
             min-height: 100vh; color: white;
         }
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; padding: 0; }
+        
+        #mainApp {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Header fijo */
+        #mainApp > .header {
+            flex-shrink: 0;
+        }
+        
+        /* Tabs fijas */
+        #mainApp > .tabs {
+            flex-shrink: 0;
+            margin-bottom: 0;
+            border-radius: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        /* Solo el contenido hace scroll */
+        .content-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
         .header {
             background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 50%, #3A1555 100%);
             padding: 40px 20px 30px; text-align: center; border-radius: 20px;
@@ -334,6 +365,7 @@
 <div class="tab" onclick="showTab('perfil',this)">👤<br>Perfil</div>
 </div>
 
+    <div class="content-wrapper">
         <!-- HOME -->
         <div id="home" class="content active">
             <div class="stats-grid">
@@ -493,11 +525,12 @@
             </div>
         </div>
 
-        <!-- PERFIL -->
+       <!-- PERFIL -->
         <div id="perfil" class="content">
             <div class="section-title">👤 Mi Perfil</div>
             <div id="perfilData" class="loading"><div class="spinner"></div>Cargando perfil...</div>
         </div>
+        </div><!-- fin content-wrapper -->
     </div>
 </div>
 
