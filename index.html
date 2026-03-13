@@ -27,9 +27,10 @@
             border-radius: 0;
         }
 
-        .content-wrapper {
+      .content-wrapper {
             padding-top: 16px;
-            min-height: 80vh;
+            position: relative;
+            overflow-x: hidden;
         }
         .header {
             background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 50%, #3A1555 100%);
@@ -77,12 +78,13 @@
             display: block;
             animation: tabFadeIn 0.25s ease forwards;
         }
-        .content.leaving {
+       .content.leaving {
             display: block;
             animation: tabFadeOut 0.15s ease forwards;
             pointer-events: none;
             position: absolute;
             width: calc(100% - 24px);
+            overflow: hidden;
         }
         @keyframes tabFadeIn {
             from { opacity: 0; transform: translateY(8px); }
@@ -2219,10 +2221,14 @@ function renderLeyes() {
     const next = document.getElementById(tabName);
     if (!next || next === current) return;
 
-    if (current) {
+   if (current) {
         current.classList.add('leaving');
         current.classList.remove('active');
-        setTimeout(() => current.classList.remove('leaving'), 150);
+        document.documentElement.style.overflow = 'hidden';
+        setTimeout(() => {
+            current.classList.remove('leaving');
+            document.documentElement.style.overflow = '';
+        }, 160);
     }
 
     next.classList.add('active');
