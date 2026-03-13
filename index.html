@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -340,9 +339,9 @@
 
         <div class="tabs">
     <div class="tab active" onclick="showTab('home',this)">🏠<br>Home</div>
-    <div class="tab" onclick="showTab('ranking',this)">👑<br>Reyes</div>
-    <div class="tab" onclick="showTab('juntadas',this)">📅<br>Fechas</div>
-    <div class="tab" onclick="showTab('awards',this)">🏆<br>Awards</div>
+    <div class="tab" onclick="showTab('ranking',this)">👑<br>Culposos</div>
+    <div class="tab" onclick="showTab('juntadas',this)">📅<br>Juntadas</div>
+    <div class="tab" onclick="showTab('awards',this)">🏆<br>LCA</div>
     <div class="tab" onclick="showTab('calculadora',this)">💰<br>Calc</div>
    <div class="tab" onclick="showTab('leyes',this)">⚖️<br>Ley</div>
 <div class="tab" onclick="showTab('juegos',this)">🎮<br>Wordle</div>
@@ -2489,8 +2488,8 @@ function renderLeyes() {
     --gray: #3A3050;
     --text: #FFFFFF;
     --text-dim: rgba(255,255,255,0.45);
-    --cell-size: min(62px, 13.5vw);
-    --gap: min(6px, 1.2vw);
+    --cell-size: min(52px, 11vw);
+    --gap: min(5px, 1vw);
   }
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body {
@@ -3223,6 +3222,13 @@ function updateTimerDisplay(s) {
 // BUILD GRID & KEYBOARD
 // ══════════════════════════════════════════════
 function buildGrid() {
+  // Cell-size dinámico según cantidad de columnas
+  const maxPx = COLS <= 5 ? 62 : COLS <= 7 ? 54 : COLS <= 8 ? 46 : 40;
+  const maxVw = COLS <= 5 ? 13 : COLS <= 7 ? 11.5 : COLS <= 8 ? 10 : 8.5;
+  document.documentElement.style.setProperty('--cell-size', 'min(' + maxPx + 'px, ' + maxVw + 'vw)');
+  const gapPx = COLS <= 6 ? 6 : 5;
+  document.documentElement.style.setProperty('--gap', 'min(' + gapPx + 'px, 1vw)');
+
   const w = document.getElementById('grid-wrapper');
   w.innerHTML = ''; grid = [];
   for (let r=0;r<MAX_ROWS;r++) {
@@ -3689,18 +3695,18 @@ function setHeader() {
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
-function initWordle() {
+async function initWordle() {
     if (document.getElementById('grid-wrapper').children.length > 0) return;
     buildGrid();
     buildKeyboard();
     setHeader();
     updateAttemptsLabel();
 
-    // Bloquear si ya jugó hoy
-    const playedKey = 'wc_played_' + getTodayStr();
+    const today = getTodayStr();
+    const playedKey = 'wc_played_' + today;
     const saved = localStorage.getItem(playedKey);
-    if (saved) {
-        const data = JSON.parse(saved);
+
+    function mostrarResultadoBloqueado(data) {
         gameOver = true;
         finalTime = data.tiempo;
         document.getElementById('res-emoji').textContent = data.gano ? '👑' : '😤';
@@ -3716,8 +3722,39 @@ function initWordle() {
         const email = getCurrentUser();
         const nombre = getNombreDesdeEmail(email);
         setTimeout(() => loadRankingHoy(nombre), 300);
+    }
+
+    // 1) Chequeo local (rápido)
+    if (saved) {
+        mostrarResultadoBloqueado(JSON.parse(saved));
         return;
     }
+
+    // 2) Chequeo cross-device: buscar en el Sheet si este nombre ya jugó hoy
+    try {
+        const email = getCurrentUser();
+        let nombre = null;
+        if (window.culpososData && window.culpososData.length) {
+            const found = window.culpososData.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
+            if (found) nombre = found.Nombre;
+        }
+        if (!nombre) nombre = getNombreDesdeEmail(email);
+        if (nombre) {
+            const rows = await cargarWordleSheet();
+            const yaJugo = rows.find(r => r.Nombre === nombre && r.Fecha === today);
+            if (yaJugo) {
+                // Sincronizar localStorage y bloquear
+                const dataSynced = {
+                    gano: yaJugo['Gano'] === 'SI',
+                    intentos: parseInt(yaJugo.Intentos),
+                    tiempo: parseInt(yaJugo.Tiempo)
+                };
+                localStorage.setItem(playedKey, JSON.stringify(dataSynced));
+                mostrarResultadoBloqueado(dataSynced);
+                return;
+            }
+        }
+    } catch(e) { console.warn('Error chequeando Sheet:', e); }
 
     if (!localStorage.getItem('wc_seen_instructions')) {
         document.getElementById('modal-bg').classList.add('show');
