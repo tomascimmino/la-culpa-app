@@ -1479,7 +1479,6 @@ async function comentarPost(postId, seccionId, inputId) {
 }
 async function eliminarPost(postId) {
         if (!confirm('¿Eliminar este post?')) return;
-        // Optimistic: sacar el post y sus comentarios del cache
         const idx = muroPostsCache.findIndex(r => (r.ID2||r.ID||r.id) === postId);
         if (idx > -1) {
             muroPostsCache = muroPostsCache.filter(r => (r.ID2||r.ID||r.id) !== postId && r.Destinatario !== postId);
@@ -1491,13 +1490,6 @@ async function eliminarPost(postId) {
             if (res.success) cargarMuroHome();
             else alert('❌ ' + res.error);
         } catch(e) { console.error(e); }
-    }
-        try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_post', id:postId, email:currentUser }) });
-            const res = await r.json();
-            if (res.success) cargarMuroHome();
-            else alert('❌ ' + res.error);
-        } catch { alert('❌ Error de conexión'); }
     }
     // ═══════════════════════════════════════
     // FIN MURO
@@ -2419,28 +2411,69 @@ function renderLeyes() {
         } catch(e) { console.error(e); }
     }
 
-    async function enviarComentario(destinatario) {
+   async function enviarComentario(destinatario) {
         const ta = document.getElementById('nuevoComentario_' + destinatario);
         const texto = ta ? ta.value.trim() : '';
         if (!texto) return;
+        const btn = ta ? ta.parentElement.querySelector('button') : null;
+        if (ta) ta.disabled = true;
+        if (btn) { btn.disabled = true; btn.textContent = '⏳'; }
+        // Optimistic: agregar al DOM inmediatamente
+        const usuario = getUsuarioActual();
+        const fotoYo = usuario ? (FOTOS[usuario.Nombre] || '') : '';
+        const nombreYo = usuario ? usuario.Nombre : currentUser;
+        const lista = document.getElementById('comentariosList_' + destinatario);
+        if (lista) {
+            const div = document.createElement('div');
+            div.style.cssText = 'background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border-radius:12px;padding:14px;margin-bottom:10px;border:1.5px solid rgba(107,45,145,0.35);';
+            div.innerHTML = `
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                    <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;background:url('${fotoYo}') center top/cover;"></div>
+                    <div style="color:#C8A830;font-size:12px;font-weight:bold;">${nombreYo}</div>
+                </div>
+                <div style="color:rgba(255,255,255,0.9);font-size:14px;line-height:1.5;">${texto}</div>`;
+            lista.appendChild(div);
+        }
+        if (ta) ta.value = '';
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'comentar', destinatario, autor:currentUser, texto }) });
             const res = await r.json();
-            if (res.success) { ta.value = ''; cargarComentarios(destinatario); }
-            else alert('❌ Error: ' + res.error);
-        } catch { alert('❌ Error de conexión'); }
+            if (res.success) {
+                if (btn) { btn.textContent = '✅'; setTimeout(() => { btn.textContent = '💬'; btn.disabled = false; }, 1500); }
+                cargarComentarios(destinatario);
+            } else { alert('❌ Error: ' + res.error); if (btn) { btn.textContent = '💬'; btn.disabled = false; } }
+        } catch { alert('❌ Error de conexión'); if (btn) { btn.textContent = '💬'; btn.disabled = false; } }
+        if (ta) ta.disabled = false;
     }
-
-    async function likearComentario(id, destinatario) {
+   async function likearComentario(id, destinatario) {
+        // Optimistic: toggle visual en el botón
+        const btns = document.querySelectorAll(`#comentariosList_${destinatario} button`);
+        btns.forEach(b => { if (b.getAttribute('onclick')?.includes(`'${id}'`)) {
+            const yaActivo = b.style.background.includes('255,80,80');
+            b.style.background = yaActivo ? 'rgba(255,255,255,0.05)' : 'rgba(255,80,80,0.2)';
+            b.style.color = yaActivo ? 'rgba(255,255,255,0.5)' : '#ff5050';
+        }});
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'likear_comentario', id, email:currentUser }) });
             const res = await r.json();
             if (res.success) cargarComentarios(destinatario);
         } catch(e) { console.error(e); }
     }
-
-    async function eliminarComentario(id, destinatario) {
+   async function eliminarComentario(id, destinatario) {
         if (!confirm('¿Eliminar este comentario?')) return;
+        // Optimistic: sacar del DOM
+        const lista = document.getElementById('comentariosList_' + destinatario);
+        if (lista) {
+            const btns = lista.querySelectorAll('button');
+            btns.forEach(b => { if (b.getAttribute('onclick')?.includes(`'${id}'`)) b.closest('div[style]')?.remove(); });
+        }
+        try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_comentario', id, email:currentUser }) });
+            const res = await r.json();
+            if (res.success) cargarComentarios(destinatario);
+            else alert('❌ ' + res.error);
+        } catch { alert('❌ Error de conexión'); }
+    }
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'eliminar_comentario', id, email:currentUser }) });
             const res = await r.json();
