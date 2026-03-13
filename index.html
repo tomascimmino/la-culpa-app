@@ -17,37 +17,19 @@
             background: #120D1F;
             min-height: 100vh; color: white;
         }
-        .container { max-width: 500px; margin: 0 auto; padding: 0; }
-        
-        #mainApp {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        /* Header fijo */
-        #mainApp > .header {
-            flex-shrink: 0;
-        }
-        
-        /* Tabs fijas */
+      .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+
+        /* Tabs pegadas al hacer scroll */
         #mainApp > .tabs {
-            flex-shrink: 0;
-            margin-bottom: 0;
-            border-radius: 0;
             position: sticky;
             top: 0;
             z-index: 100;
+            margin-bottom: 0;
+            border-radius: 0;
         }
-        
-        /* Solo el contenido hace scroll */
+
         .content-wrapper {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 16px;
-            -webkit-overflow-scrolling: touch;
+            padding-top: 16px;
         }
         .header {
             background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 50%, #3A1555 100%);
