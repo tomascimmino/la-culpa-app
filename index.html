@@ -80,13 +80,8 @@
             display: block;
             animation: tabFadeIn 0.25s ease forwards;
         }
-       .content.leaving {
-            display: block;
-            animation: tabFadeOut 0.15s ease forwards;
-            pointer-events: none;
-            position: absolute;
-            width: calc(100% - 24px);
-            overflow: hidden;
+      .content.leaving {
+            display: none;
         }
         @keyframes tabFadeIn {
             from { opacity: 0; transform: translateY(8px); }
@@ -2226,11 +2221,7 @@ function renderLeyes() {
    if (current) {
         current.classList.add('leaving');
         current.classList.remove('active');
-        document.documentElement.style.overflow = 'hidden';
-        setTimeout(() => {
-            current.classList.remove('leaving');
-            document.documentElement.style.overflow = '';
-        }, 160);
+        setTimeout(() => current.classList.remove('leaving'), 10);
     }
 
     next.classList.add('active');
