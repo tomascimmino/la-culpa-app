@@ -92,9 +92,10 @@
             from { opacity: 1; transform: translateY(0); }
             to   { opacity: 0; transform: translateY(-6px); }
         }
-
-  html { overflow: hidden; height: 100%; }
-body { overflow-y: auto; height: 100%; }
+html { overflow: hidden; height: 100%; }
+body { overflow: hidden; height: 100%; }
+.container { overflow-y: auto; height: 100vh; scrollbar-width: none; }
+.container::-webkit-scrollbar { display: none; }
         body { overflow-x: hidden; max-width: 100vw; }
         #mainApp { min-height: 100vh; overflow-x: hidden; }
         .container { min-height: 100vh; position: relative; overflow-x: hidden; max-width: 100%; }
