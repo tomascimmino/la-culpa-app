@@ -7,7 +7,7 @@
     <link rel="icon" type="image/png" href="https://i.imgur.com/czObXpX.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/qJl5bjR.png">
     <meta name="theme-color" content="#120D1F">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Cinzel+Decorative:wght@700;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkxBIENVTFBBIiwgInNob3J0X25hbWUiOiAiTGEgQ3VscGEiLCAiZGVzY3JpcHRpb24iOiAiUmFua2luZyBkZSBBc2lzdGVuY2lhcyIsICJzdGFydF91cmwiOiAiL2xhLWN1bHBhLWFwcC8iLCAic2NvcGUiOiAiL2xhLWN1bHBhLWFwcC8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsICJ0aGVtZV9jb2xvciI6ICIjMTIwRDFGIiwgImljb25zIjogW3sic3JjIjogImh0dHBzOi8vaS5pbWd1ci5jb20vcUpsNWJqUi5wbmciLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9XX0=">
     <style> 
            * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -2311,11 +2311,12 @@ document.body.removeChild(waLink);
       const favor = ley.favor, contra = ley.contra, abst = ley.abstenciones;
       const totalVotaron = favor + contra + abst;
       const totalVotantes = VOTANTES_CONCLAVE.length;
-      const todosVotaron = totalVotaron >= totalVotantes;
+      const todosVotaron = esSoloAdmin() ? totalVotaron >= 1 : totalVotaron >= totalVotantes;
 
       // Detectar si todos acaban de votar para disparar suspenso
+      const umbral = esSoloAdmin() ? 1 : totalVotantes;
       const anteriorTodosVotaron = anterior && anterior.leyes && anterior.leyes[anterior.leyActiva] &&
-        (anterior.leyes[anterior.leyActiva].favor + anterior.leyes[anterior.leyActiva].contra + anterior.leyes[anterior.leyActiva].abstenciones) >= totalVotantes;
+        (anterior.leyes[anterior.leyActiva].favor + anterior.leyes[anterior.leyActiva].contra + anterior.leyes[anterior.leyActiva].abstenciones) >= umbral;
 
       if (todosVotaron && !anteriorTodosVotaron && !conclaveSuspensoDisparado) {
         conclaveSuspensoDisparado = true;
@@ -2392,6 +2393,7 @@ document.body.removeChild(waLink);
             </div>
           </div>
       </div>
+
       `;
     }
     function renderVotoBtns(votos) {
