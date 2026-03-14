@@ -2222,9 +2222,20 @@ document.body.removeChild(waLink);
       return currentUser && currentUser.toLowerCase() === ADMIN_EMAIL.toLowerCase();
     }
 
+   let leyesVistaAdmin = 'conclave'; // 'conclave' | 'propuestas'
+
     async function cargarLeyes() {
       if (esSoloAdmin()) {
-        await cargarConclave();
+        if (leyesVistaAdmin === 'conclave') {
+          await cargarConclave();
+        } else {
+          try {
+            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion: 'get_leyes' }) });
+            const res = await r.json();
+            leyesData = res.leyes || [];
+          } catch(e) { leyesData = []; }
+          renderLeyesConToggle();
+        }
         return;
       }
       try {
@@ -2270,9 +2281,70 @@ document.body.removeChild(waLink);
       } else {
         html += `<div style="text-align:center;color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px;">Ya usaste tus 3 propuestas, culposo. 👑</div>`;
       }
+      const esAdminOZabala = currentUser === ADMIN_EMAIL ||
+        (usuario.Nombre === 'Zabala');
+      if (esAdminOZabala && leyesData.length > 0) {
+        html += `<div class="section-title" style="margin-bottom:12px;">📋 Propuestas recibidas (${leyesData.length})</div>`;
+        leyesData.forEach(l => {
+          const esMia = l.nombre === usuario.Nombre;
+          html += `
+          <div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(139,77,143,${esMia?'0.7':'0.3'});border-radius:14px;padding:16px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <div style="color:#FFD700;font-size:14px;font-weight:bold;">${l.titulo}</div>
+              ${esMia?`<span style="background:rgba(200,168,48,0.2);color:#C8A830;font-size:10px;padding:2px 8px;border-radius:10px;">tuya</span>`:''}
+            </div>
+            <div style="color:rgba(255,255,255,0.75);font-size:13px;margin-bottom:8px;">${l.descripcion}</div>
+            <div style="color:rgba(255,255,255,0.35);font-size:11px;">👤 ${l.nombre} · ${formatFechaPost(l.timestamp)}</div>
+          </div>`;
+        });
+      }
       contenedor.innerHTML = html;
     }
 
+    function renderLeyesConToggle() {
+      const contenedor = document.getElementById('leyesContent');
+      const toggleHTML = `
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <button onclick="leyesVistaAdmin='conclave';cargarLeyes()" style="flex:1;padding:10px;border-radius:8px;border:2px solid ${leyesVistaAdmin==='conclave'?'#C8A830':'rgba(139,77,143,0.3)'};background:${leyesVistaAdmin==='conclave'?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'transparent'};color:${leyesVistaAdmin==='conclave'?'#FFD700':'rgba(255,255,255,0.5)'};font-size:12px;font-weight:bold;cursor:pointer;">⚖️ Cónclave</button>
+          <button onclick="leyesVistaAdmin='propuestas';cargarLeyes()" style="flex:1;padding:10px;border-radius:8px;border:2px solid ${leyesVistaAdmin==='propuestas'?'#C8A830':'rgba(139,77,143,0.3)'};background:${leyesVistaAdmin==='propuestas'?'linear-gradient(135deg,#6B2D91,#4A1D6B)':'transparent'};color:${leyesVistaAdmin==='propuestas'?'#FFD700':'rgba(255,255,255,0.5)'};font-size:12px;font-weight:bold;cursor:pointer;">📜 Propuestas</button>
+        </div>`;
+      // Reusar renderLeyes pero con toggle arriba
+      const usuario = getUsuarioActual();
+      if (!usuario) return;
+      const misProps = leyesData.filter(l => l.nombre === usuario.Nombre).length;
+      let html = toggleHTML + `
+        <div style="background:linear-gradient(135deg,rgba(200,168,48,0.08),rgba(107,45,145,0.12));border:1px solid rgba(200,168,48,0.25);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center;">
+          <div style="font-size:28px;margin-bottom:8px;">📜</div>
+          <div style="color:#FFD700;font-size:15px;font-weight:bold;margin-bottom:6px;">Constitución Culposa</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:12px;">Cada culposo puede proponer hasta 3 normas.<br>En el Cónclave se votarán en comisión.</div>
+        </div>`;
+      if (misProps < 3) {
+        html += `
+          <div class="card" style="margin-bottom:20px;">
+            <div style="color:#C8A830;font-weight:bold;margin-bottom:12px;">✍️ Proponer una norma</div>
+            <input id="leyTitulo" placeholder="Título de la norma" style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;margin-bottom:10px;">
+            <textarea id="leyDescripcion" placeholder="Descripción y fundamento..." style="width:100%;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;resize:none;height:90px;font-family:inherit;margin-bottom:10px;"></textarea>
+            <div style="color:rgba(255,255,255,0.4);font-size:11px;margin-bottom:10px;">Propuestas usadas: ${misProps}/3</div>
+            <button onclick="enviarLey()" style="width:100%;background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:2px solid #C8A830;color:#C8A830;padding:12px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;">📨 Enviar propuesta</button>
+          </div>`;
+      }
+      if (leyesData.length > 0) {
+        html += `<div class="section-title" style="margin-bottom:12px;">📋 Propuestas recibidas (${leyesData.length})</div>`;
+        leyesData.forEach(l => {
+          const esMia = l.nombre === usuario.Nombre;
+          html += `
+          <div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(139,77,143,${esMia?'0.7':'0.3'});border-radius:14px;padding:16px;margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <div style="color:#FFD700;font-size:14px;font-weight:bold;">${l.titulo}</div>
+              ${esMia?`<span style="background:rgba(200,168,48,0.2);color:#C8A830;font-size:10px;padding:2px 8px;border-radius:10px;">tuya</span>`:''}
+            </div>
+            <div style="color:rgba(255,255,255,0.75);font-size:13px;margin-bottom:8px;">${l.descripcion}</div>
+            <div style="color:rgba(255,255,255,0.35);font-size:11px;">👤 ${l.nombre} · ${formatFechaPost(l.timestamp)}</div>
+          </div>`;
+        });
+      }
+      contenedor.innerHTML = html;
+    }
     function renderConclave(anterior) {
       const contenedor = document.getElementById('leyesContent');
       if (!conclaveData) { contenedor.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.5);padding:40px;">Cargando...</div>'; return; }
@@ -2338,7 +2410,12 @@ document.body.removeChild(waLink);
       const numRomano = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
       const progresoW = Math.round((leyActiva / leyes.length) * 100);
 
-      contenedor.innerHTML = `
+     const toggleConclave = `
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <button onclick="leyesVistaAdmin='conclave';cargarLeyes()" style="flex:1;padding:10px;border-radius:8px;border:2px solid #C8A830;background:linear-gradient(135deg,#6B2D91,#4A1D6B);color:#FFD700;font-size:12px;font-weight:bold;cursor:pointer;">⚖️ Cónclave</button>
+          <button onclick="leyesVistaAdmin='propuestas';cargarLeyes()" style="flex:1;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:transparent;color:rgba(255,255,255,0.5);font-size:12px;font-weight:bold;cursor:pointer;">📜 Propuestas</button>
+        </div>`;
+      contenedor.innerHTML = (esSoloAdmin() ? toggleConclave : '') + `
         <div id="conclaveContainer" style="font-family:serif;">
 
           <!-- Header -->
