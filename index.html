@@ -2228,7 +2228,8 @@ document.body.removeChild(waLink);
       if (esSoloAdmin()) {
         if (leyesVistaAdmin === 'conclave') {
           await cargarConclave();
-        } else {
+      } else {
+          if (conclavePollingInterval) { clearInterval(conclavePollingInterval); conclavePollingInterval = null; }
           try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion: 'get_leyes' }) });
             const res = await r.json();
@@ -2353,8 +2354,12 @@ document.body.removeChild(waLink);
       const esAdmin = esSoloAdmin();
 
       // Si no está iniciado, mostrar botón de inicio (solo admin)
-      if (!iniciado) {
-        contenedor.innerHTML = `
+  if (!iniciado) {
+        contenedor.innerHTML = (esSoloAdmin() ? `
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <button onclick="leyesVistaAdmin='conclave';cargarLeyes()" style="flex:1;padding:10px;border-radius:8px;border:2px solid #C8A830;background:linear-gradient(135deg,#6B2D91,#4A1D6B);color:#FFD700;font-size:12px;font-weight:bold;cursor:pointer;">⚖️ Cónclave</button>
+          <button onclick="leyesVistaAdmin='propuestas';cargarLeyes()" style="flex:1;padding:10px;border-radius:8px;border:2px solid rgba(139,77,143,0.3);background:transparent;color:rgba(255,255,255,0.5);font-size:12px;font-weight:bold;cursor:pointer;">📜 Propuestas</button>
+        </div>` : '') + `
           <div style="text-align:center;padding:60px 20px;">
             <div style="font-size:48px;margin-bottom:16px;">⚖️</div>
             <div style="font-family:'Cinzel',serif;color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:8px;letter-spacing:3px;">EL CÓNCLAVE</div>
@@ -2667,10 +2672,20 @@ document.body.removeChild(waLink);
             else { alert(res.error || 'Error al enviar.'); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
         } catch(e) { alert('Error: ' + e.message); if (btn) { btn.disabled = false; btn.textContent = '📨 Enviar propuesta'; } }
     }
- function showTab(tabName, el) {
+function showTab(tabName, el) {
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     if(el) el.classList.add('active');
-    if (tabName === 'leyes') {       cargarLeyes();       if (conclavePollingInterval) clearInterval(conclavePollingInterval);       if (esSoloAdmin()) {         conclavePollingInterval = setInterval(cargarConclave, 4000);       }     } else {       if (conclavePollingInterval) { clearInterval(conclavePollingInterval); conclavePollingInterval = null; }     }
+
+    if (tabName === 'leyes') {
+      cargarLeyes();
+      if (conclavePollingInterval) clearInterval(conclavePollingInterval);
+      if (esSoloAdmin() && leyesVistaAdmin === 'conclave') {
+        conclavePollingInterval = setInterval(cargarConclave, 4000);
+      }
+    } else {
+      if (conclavePollingInterval) { clearInterval(conclavePollingInterval); conclavePollingInterval = null; }
+    }
+    
     if (tabName === 'juegos') initWordle();
 
     // Widget cumpleaños solo en home
