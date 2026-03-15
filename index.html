@@ -4328,22 +4328,24 @@ async function recordAndShow(won, attempts) {
   document.getElementById('keyboard').style.opacity='0.3';
   document.getElementById('keyboard').style.pointerEvents='none';
  
-// Guardar estado local del día (bloquea replay)
+// Guardar estado local del día — esperar que terminen las animaciones de reveal
   const playedKey = 'wc_played_' + today;
-  // Guardar también el grid de emojis para el share
-  let gridEmojis = '';
-  for (let r = 0; r < attempts; r++) {
-    let line = '';
-    for (let c = 0; c < COLS; c++) {
-      const cell = document.getElementById(`cell-${r}-${c}`);
-      if (!cell) break;
-      if (cell.classList.contains('correct'))      line += '🟩';
-      else if (cell.classList.contains('present')) line += '🟨';
-      else                                          line += '⬜';
+  const animDelay = COLS * 100 + 600; // mismo delay que el reveal + margen
+  setTimeout(() => {
+    let gridEmojis = '';
+    for (let r = 0; r < attempts; r++) {
+      let line = '';
+      for (let c = 0; c < COLS; c++) {
+        const cell = document.getElementById(`cell-${r}-${c}`);
+        if (!cell) break;
+        if (cell.classList.contains('correct'))      line += '🟩';
+        else if (cell.classList.contains('present')) line += '🟨';
+        else                                          line += '⬜';
+      }
+      if (line) gridEmojis += line + '\n';
     }
-    if (line) gridEmojis += line + '\n';
-  }
-  localStorage.setItem(playedKey, JSON.stringify({ gano: won, intentos: attempts, tiempo: finalTime, grid: gridEmojis }));
+    localStorage.setItem(playedKey, JSON.stringify({ gano: won, intentos: attempts, tiempo: finalTime, grid: gridEmojis }));
+  }, animDelay);
 
 // Guardar en Sheet
   const email=getCurrentUser();
@@ -4495,7 +4497,7 @@ async function loadHistorial(nombre) {
           </div>
           <div class="hist-stats">
             ${h['Gano']==='SI'
-              ? `<span style="color:var(--green)">✓ ${h.Intentos}i</span><span style="color:var(--text-dim)">⏱${formatTime(parseInt(h.Tiempo))}</span>`
+              ? `<span style="color:var(--text-dim)">⏱${formatTime(parseInt(h.Tiempo))}</span><span style="color:var(--green)">✓ ${h.Intentos}i</span>`
               : `<span style="color:#f44336">✗</span>`}
           </div>
         </div>`).join('');
