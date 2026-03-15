@@ -4330,7 +4330,20 @@ async function recordAndShow(won, attempts) {
  
 // Guardar estado local del día (bloquea replay)
   const playedKey = 'wc_played_' + today;
-  localStorage.setItem(playedKey, JSON.stringify({ gano: won, intentos: attempts, tiempo: finalTime }));
+  // Guardar también el grid de emojis para el share
+  let gridEmojis = '';
+  for (let r = 0; r < attempts; r++) {
+    let line = '';
+    for (let c = 0; c < COLS; c++) {
+      const cell = document.getElementById(`cell-${r}-${c}`);
+      if (!cell) break;
+      if (cell.classList.contains('correct'))      line += '🟩';
+      else if (cell.classList.contains('present')) line += '🟨';
+      else                                          line += '⬜';
+    }
+    if (line) gridEmojis += line + '\n';
+  }
+  localStorage.setItem(playedKey, JSON.stringify({ gano: won, intentos: attempts, tiempo: finalTime, grid: gridEmojis }));
 
 // Guardar en Sheet
   const email=getCurrentUser();
@@ -4514,9 +4527,17 @@ async function loadRankingHistorico() {
       jugadas: d.jugadas,
       ganadas: d.ganadas,
       pct: Math.round(d.ganadas/d.jugadas*100),
-      avgIntentos: d.intentos.length ? (d.intentos.reduce((a,b)=>a+b,0)/d.intentos.length).toFixed(1) : '-',
+      avgIntentos: d.intentos.length ? (d.intentos.reduce((a,b)=>a+b,0)/d.intentos.length).toFixed(2) : '99',
       avgTiempo: d.tiempos.length ? Math.round(d.tiempos.reduce((a,b)=>a+b,0)/d.tiempos.length) : 99999
-    })).sort((a,b) => b.pct - a.pct || parseFloat(a.avgIntentos) - parseFloat(b.avgIntentos) || a.avgTiempo - b.avgTiempo);
+    })).sort((a,b) => {
+      // 1° más victorias absolutas
+      if (b.ganadas !== a.ganadas) return b.ganadas - a.ganadas;
+      // 2° mejor promedio de intentos
+      const iDiff = parseFloat(a.avgIntentos) - parseFloat(b.avgIntentos);
+      if (Math.abs(iDiff) > 0.01) return iDiff;
+      // 3° menor tiempo promedio
+      return a.avgTiempo - b.avgTiempo;
+    });
 
     const email = getCurrentUser();
     const yo = window.culpososData && window.culpososData.find(c => c.Email && c.Email.toLowerCase() === email.toLowerCase());
@@ -4533,8 +4554,8 @@ async function loadRankingHistorico() {
           <div class="rank-info">
             <div class="rank-name">${p.nombre}${esYo?' <span style="color:var(--gold);font-size:11px;">(vos)</span>':''}</div>
             <div class="rank-detail">
-              <span class="won">${p.pct}% win</span>
-              <span>~${p.avgIntentos}i</span>
+              <span class="won">${p.ganadas}V</span>
+              <span>~${parseFloat(p.avgIntentos).toFixed(1)}i</span>
               <span>⏱ ${p.avgTiempo < 99999 ? formatTime(p.avgTiempo) : '-'}</span>
               <span style="color:var(--text-dim)">${p.ganadas}/${p.jugadas}</span>
             </div>
@@ -4575,24 +4596,40 @@ document.getElementById('ranking-hoy').classList.add('show');
 // COMPARTIR
 // ══════════════════════════════════════════════
 function compartir() {
-  const today=new Date().toLocaleDateString('es-AR');
-  let text=`🟨 WORDLE CULPOSO — Día #${getDayNumber()} (${today})\n`;
-  text+=`Palabra: ${'?'.repeat(TARGET.length)} · ${TARGET.length} letras\n`;
-  if (finalTime) text+=`⏱ ${formatTime(finalTime)}\n`;
-  text+='\n';
-  for (let r=0;r<currentRow;r++) {
-    let line='';
-    for (let c=0;c<COLS;c++) {
-      const cell=document.getElementById(`cell-${r}-${c}`);
-      if (cell.classList.contains('correct'))      line+='🟩';
-      else if (cell.classList.contains('present')) line+='🟨';
-      else                                          line+='⬜';
+  const today = new Date().toLocaleDateString('es-AR');
+  const won = gameOver && currentRow <= MAX_ROWS;
+  let text = `🟨 WORDLE CULPOSO — Día #${getDayNumber()} (${today})\n`;
+  text += `Palabra: ${'?'.repeat(TARGET.length)} · ${TARGET.length} letras\n`;
+  if (finalTime) text += `⏱ ${formatTime(finalTime)}\n`;
+  text += '\n';
+
+  // Intentar construir grilla desde el DOM
+  let gridText = '';
+  for (let r = 0; r < currentRow; r++) {
+    let line = '';
+    for (let c = 0; c < COLS; c++) {
+      const cell = document.getElementById(`cell-${r}-${c}`);
+      if (!cell) break;
+      if (cell.classList.contains('correct'))      line += '🟩';
+      else if (cell.classList.contains('present')) line += '🟨';
+      else                                          line += '⬜';
     }
-    text+=line+'\n';
+    if (line) gridText += line + '\n';
   }
-  text+='\n👑 LA CULPA APP';
-  if (navigator.share) navigator.share({text});
-  else if (navigator.clipboard) { navigator.clipboard.writeText(text); showMessage('¡Copiado!',2000); }
+
+  // Si el DOM no tiene el grid (carga bloqueada), usar el guardado en localStorage
+  if (!gridText) {
+    const playedKey = 'wc_played_' + getTodayStr();
+    const saved = localStorage.getItem(playedKey);
+    if (saved) {
+      const data = JSON.parse(saved);
+      if (data.grid) gridText = data.grid;
+    }
+  }
+
+  text += gridText + '\n👑 LA CULPA APP';
+  if (navigator.share) navigator.share({ text });
+  else if (navigator.clipboard) { navigator.clipboard.writeText(text); showMessage('¡Copiado!', 2000); }
 }
  
 // ══════════════════════════════════════════════
