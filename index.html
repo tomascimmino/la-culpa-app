@@ -2450,9 +2450,109 @@ document.body.removeChild(waLink);
         if (res.success) {
           const anterior = conclaveData;
           conclaveData = res;
-          renderConclave(anterior);
+          // Si el cónclave está activo y es la misma ley, solo actualizamos barras/avatares sin re-render
+          if (anterior && anterior.iniciado && res.iniciado
+              && anterior.leyActiva === res.leyActiva
+              && res.leyActiva < res.leyes.length
+              && document.getElementById('conclaveContainer')) {
+            actualizarVotosEnVivo(res, anterior);
+          } else {
+            renderConclave(anterior);
+          }
         }
       } catch(e) { console.error('Error get_conclave:', e); }
+    }
+
+    // Actualiza solo barras + avatares + botón avanzar, sin destruir el DOM
+    function actualizarVotosEnVivo(datos, anterior) {
+      const ley = datos.leyes[datos.leyActiva];
+      const votos = ley.votos;
+      const favor = ley.favor, contra = ley.contra, abst = ley.abstenciones;
+      const totalVotaron = favor + contra + abst;
+      const totalVotantes = VOTANTES_CONCLAVE.length;
+      const totalParaBars = totalVotaron || 1;
+
+      // Actualizar contadores con animación
+      _animarNumero('conclaveCountFavor',  favor);
+      _animarNumero('conclaveCountContra', contra);
+      _animarNumero('conclaveCountAbst',   abst);
+
+      // Actualizar barras con transición CSS (ya la tienen en el style)
+      const bFavor  = document.getElementById('conclaveBarFavor');
+      const bContra = document.getElementById('conclaveBarContra');
+      const bAbst   = document.getElementById('conclaveBarAbst');
+      const titulo  = document.getElementById('conclaveEscrutinioTitulo');
+      if (bFavor)  bFavor.style.width  = Math.round(favor  / totalParaBars * 100) + '%';
+      if (bContra) bContra.style.width = Math.round(contra / totalParaBars * 100) + '%';
+      if (bAbst)   bAbst.style.width   = Math.round(abst   / totalParaBars * 100) + '%';
+      if (titulo)  titulo.textContent  = `Escrutinio en vivo · ${totalVotaron}/${totalVotantes}`;
+
+      // Actualizar avatares con stagger animado
+      VOTANTES_CONCLAVE.forEach((nombre, i) => {
+        const el = document.getElementById('conclaveAv_' + nombre);
+        if (!el) return;
+        const v = votos[nombre];
+        const anteriorV = anterior && anterior.leyes && anterior.leyes[anterior.leyActiva]
+          ? anterior.leyes[anterior.leyActiva].votos[nombre] : undefined;
+        if (v === anteriorV) return; // no cambió, no animar
+        setTimeout(() => {
+          const border = v===1?'#4CAF50':v===2?'#C41E3A':v===3?'#C8A830':'rgba(255,255,255,0.15)';
+          const shadow = v===1?'0 0 8px rgba(76,175,80,0.5)':v===2?'0 0 8px rgba(196,30,58,0.5)':v===3?'0 0 8px rgba(200,168,48,0.4)':'none';
+          el.style.opacity = v ? '1' : '0.4';
+          el.style.borderColor = border;
+          el.style.boxShadow = shadow;
+          el.style.transform = 'scale(1.3)';
+          setTimeout(() => { el.style.transform = 'scale(1)'; }, 200);
+        }, i * 40);
+      });
+
+      // Actualizar botón avanzar si es admin
+      const todosVotaron = esSoloAdmin() ? totalVotaron >= 1 : totalVotaron >= totalVotantes;
+      const btnAvanzar = document.getElementById('btnAvanzarLey');
+      if (btnAvanzar) {
+        btnAvanzar.disabled = !todosVotaron;
+        btnAvanzar.style.borderColor = `rgba(196,30,58,${todosVotaron?'0.7':'0.3'})`;
+        btnAvanzar.style.color = todosVotaron ? '#C41E3A' : 'rgba(196,30,58,0.35)';
+        btnAvanzar.style.cursor = todosVotaron ? 'pointer' : 'not-allowed';
+        if (todosVotaron) btnAvanzar.innerHTML = '⚔ &nbsp; Siguiente Artículo &nbsp; ⚔';
+      }
+
+      // Actualizar botones de voto (por si el usuario acaba de votar en otro tab)
+      const usuario = getUsuarioActual();
+      if (usuario) {
+        const miVoto = votos[usuario.Nombre];
+        const anteriorMiVoto = anterior && anterior.leyes && anterior.leyes[anterior.leyActiva]
+          ? anterior.leyes[anterior.leyActiva].votos[usuario.Nombre] : undefined;
+        if (miVoto !== anteriorMiVoto) {
+          const container = document.getElementById('votoBtnsContainer');
+          if (container) container.innerHTML = renderVotoBtns(votos);
+        }
+      }
+
+      // Disparar suspenso si acaban de votar todos
+      const umbral = esSoloAdmin() ? 1 : totalVotantes;
+      const anteriorTotal = anterior && anterior.leyes && anterior.leyes[anterior.leyActiva]
+        ? (anterior.leyes[anterior.leyActiva].favor + anterior.leyes[anterior.leyActiva].contra + anterior.leyes[anterior.leyActiva].abstenciones) : 0;
+      if (totalVotaron >= umbral && anteriorTotal < umbral && !conclaveSuspensoDisparado) {
+        conclaveSuspensoDisparado = true;
+        setTimeout(() => iniciarSuspensoConclave({ favor, contra, abstenc: abst }), 2000);
+      }
+    }
+
+    // Anima un número de forma gradual (tipo contador)
+    function _animarNumero(elId, valorFinal) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const valorActual = parseInt(el.textContent) || 0;
+      if (valorActual === valorFinal) return;
+      const diff = valorFinal - valorActual;
+      const pasos = Math.min(Math.abs(diff), 8);
+      let paso = 0;
+      const iv = setInterval(() => {
+        paso++;
+        el.textContent = Math.round(valorActual + diff * (paso / pasos));
+        if (paso >= pasos) clearInterval(iv);
+      }, 60);
     }
 
     function renderLeyes() {
@@ -2629,13 +2729,13 @@ document.body.removeChild(waLink);
       const numRomano = ['I','II','III','IV','V','VI','VII','VIII','IX','X'];
       const progresoW = Math.round((leyActiva / leyes.length) * 100);
 
-      const avatarsHTML = VOTANTES_CONCLAVE.map(nombre => {
+      const avatarsHTML = VOTANTES_CONCLAVE.map((nombre, i) => {
         const v = votos[nombre];
         const clase = v === 1 ? 'favor' : v === 2 ? 'contra' : v === 3 ? 'abstenc' : 'pending';
         const av = AVATARES_CONCLAVE[nombre] || 'https://i.imgur.com/czObXpX.png';
         const border = clase==='favor'?'#4CAF50':clase==='contra'?'#C41E3A':clase==='abstenc'?'#C8A830':'rgba(255,255,255,0.15)';
         const shadow = clase==='pending'?'none':clase==='favor'?'0 0 8px rgba(76,175,80,0.5)':clase==='contra'?'0 0 8px rgba(196,30,58,0.5)':'0 0 8px rgba(200,168,48,0.4)';
-        return `<div style="width:28px;height:28px;border-radius:50%;background-image:url('${av}');background-size:cover;background-position:center top;border:2px solid ${border};opacity:${clase==='pending'?'0.4':'1'};transition:all 0.4s;box-shadow:${shadow};" title="${nombre}"></div>`;
+        return `<div id="conclaveAv_${nombre}" style="width:28px;height:28px;border-radius:50%;background-image:url('${av}');background-size:cover;background-position:center top;border:2px solid ${border};opacity:${clase==='pending'?'0.4':'1'};transition:all 0.4s;box-shadow:${shadow};" title="${nombre}"></div>`;
       }).join('');
 
       contenedor.innerHTML = toggleConclave + `
@@ -2670,11 +2770,11 @@ document.body.removeChild(waLink);
 
               <!-- Escrutinio -->
               <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(200,168,48,0.15);border-radius:4px;padding:14px;margin-bottom:20px;">
-                <div style="font-family:'Cinzel',serif;font-size:9px;color:rgba(200,168,48,0.4);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:12px;">Escrutinio en vivo · ${totalVotaron}/${totalVotantes}</div>
+                <div id="conclaveEscrutinioTitulo" style="font-family:'Cinzel',serif;font-size:9px;color:rgba(200,168,48,0.4);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:12px;">Escrutinio en vivo · ${totalVotaron}/${totalVotantes}</div>
                 <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
-                  <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:16px;">👍</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${pctFavor}%;background:linear-gradient(to right,#2d7a2d,#4CAF50);border-radius:3px;transition:width 0.8s cubic-bezier(0.2,0.8,0.4,1);"></div></div><span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#4CAF50;min-width:20px;text-align:right;">${favor}</span></div>
-                  <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:16px;">👎</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${pctContra}%;background:linear-gradient(to right,#7a1a1a,#C41E3A);border-radius:3px;transition:width 0.8s cubic-bezier(0.2,0.8,0.4,1);"></div></div><span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#C41E3A;min-width:20px;text-align:right;">${contra}</span></div>
-                  <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:16px;">🤷</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div style="height:100%;width:${pctAbst}%;background:linear-gradient(to right,#4a4a1a,#C8A830);border-radius:3px;transition:width 0.8s cubic-bezier(0.2,0.8,0.4,1);"></div></div><span style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#C8A830;min-width:20px;text-align:right;">${abst}</span></div>
+                  <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:16px;">👍</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div id="conclaveBarFavor"  style="height:100%;width:${pctFavor}%;background:linear-gradient(to right,#2d7a2d,#4CAF50);border-radius:3px;transition:width 0.8s cubic-bezier(0.2,0.8,0.4,1);"></div></div><span id="conclaveCountFavor"  style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#4CAF50;min-width:20px;text-align:right;">${favor}</span></div>
+                  <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:16px;">👎</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div id="conclaveBarContra" style="height:100%;width:${pctContra}%;background:linear-gradient(to right,#7a1a1a,#C41E3A);border-radius:3px;transition:width 0.8s cubic-bezier(0.2,0.8,0.4,1);"></div></div><span id="conclaveCountContra" style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#C41E3A;min-width:20px;text-align:right;">${contra}</span></div>
+                  <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:16px;">🤷</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;"><div id="conclaveBarAbst"   style="height:100%;width:${pctAbst}%;background:linear-gradient(to right,#4a4a1a,#C8A830);border-radius:3px;transition:width 0.8s cubic-bezier(0.2,0.8,0.4,1);"></div></div><span id="conclaveCountAbst"   style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#C8A830;min-width:20px;text-align:right;">${abst}</span></div>
                 </div>
                 <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;">${avatarsHTML}</div>
               </div>
@@ -2733,7 +2833,7 @@ document.body.removeChild(waLink);
       const usuario = getUsuarioActual();
       if (!usuario || !conclaveData) return;
 
-      // Feedback inmediato: deshabilitar todos los botones y marcar el seleccionado
+      // Feedback inmediato: deshabilitar botones y marcar el seleccionado
       const container = document.getElementById('votoBtnsContainer');
       if (container) {
         const btns = container.querySelectorAll('.conclave-voto-btn');
@@ -2742,27 +2842,41 @@ document.body.removeChild(waLink);
           btnEl.disabled = false;
           btnEl.style.opacity = '1';
           btnEl.classList.add('selected');
-          // Reemplazar contenido con spinner manteniendo el emoji
           const emoji = btnEl.querySelector('span:first-child').textContent;
           btnEl.innerHTML = `<span style="font-size:24px;">${emoji}</span><span style="display:flex;align-items:center;gap:4px;"><span class="conclave-spinner-inline"></span>enviando</span>`;
         }
       }
 
+      // Optimistic: mostrar mi avatar como votado inmediatamente
+      const avEl = document.getElementById('conclaveAv_' + usuario.Nombre);
+      if (avEl) {
+        const border = voto===1?'#4CAF50':voto===2?'#C41E3A':'#C8A830';
+        const shadow = voto===1?'0 0 8px rgba(76,175,80,0.5)':voto===2?'0 0 8px rgba(196,30,58,0.5)':'0 0 8px rgba(200,168,48,0.4)';
+        avEl.style.opacity = '1';
+        avEl.style.borderColor = border;
+        avEl.style.boxShadow = shadow;
+        avEl.style.transform = 'scale(1.3)';
+        setTimeout(() => { avEl.style.transform = 'scale(1)'; }, 250);
+      }
+
       const ley = conclaveData.leyes[conclaveData.leyActiva];
-      try {
-        await fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({
+
+      // Delay mínimo para que no se sienta instantáneo/brusco (suspenso leve)
+      const [res] = await Promise.allSettled([
+        fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({
           accion: 'votar_ley',
           nombre: usuario.Nombre,
           voto,
           leyIndex: ley.index
-        })});
+        })}),
+        new Promise(r => setTimeout(r, 900))
+      ]);
+
+      if (res.status === 'fulfilled') {
         await cargarConclave();
-      } catch(e) {
-        console.error('Error votar:', e);
-        // Restaurar botones si falló
-        if (container) {
-          container.innerHTML = renderVotoBtns(ley.votos);
-        }
+      } else {
+        console.error('Error votar');
+        if (container) container.innerHTML = renderVotoBtns(ley.votos);
       }
     }
 
