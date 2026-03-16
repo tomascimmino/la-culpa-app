@@ -3950,8 +3950,8 @@ function initBdayWidget() {
         }
         // Confetti
         spawnConfetti();
-        // Card en home
-        renderBdayHomeCard(esHoyAlguien);
+        // Card en home — animada para todos
+        renderBdayHomeCardAnimada(esHoyAlguien);
     } else {
         nameEl.textContent = proximo.n;
         daysEl.textContent = 'en ' + proximo.dias + ' día' + (proximo.dias===1?'':'s');
@@ -4005,6 +4005,216 @@ function renderBdayHomeCard(cumpleaneros) {
         el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
         starsEl.appendChild(el);
     }
+}
+
+// ── Helpers para la animación de cumpleaños ──
+function _bdayGetEmoji(terna) {
+    const t = (terna || '').toUpperCase();
+    if (t.includes('CULPOSO DE ORO'))  return '🏆';
+    if (t.includes('TROLO'))           return '🏳️‍🌈';
+    if (t.includes('DEPORT'))          return '⚽';
+    if (t.includes('ASISTENCIA'))      return '📋';
+    if (t.includes('EXITOSO'))         return '💼';
+    if (t.includes('CUMPLE'))          return '🎂';
+    return '🥇';
+}
+function _bdayEsOro(terna) {
+    return (terna || '').toUpperCase().includes('CULPOSO DE ORO');
+}
+function _bdayOrdenar(premios) {
+    const norm = premios.filter(p => !_bdayEsOro(p.Terna)).sort((a,b) => (a.Año||0)-(b.Año||0));
+    const oro  = premios.filter(p =>  _bdayEsOro(p.Terna)).sort((a,b) => (a.Año||0)-(b.Año||0));
+    return [...norm, ...oro];
+}
+
+function renderBdayHomeCardAnimada(cumpleaneros) {
+    const container = document.getElementById('bdayHomeCardContainer');
+    if (!container) return;
+
+    // Crear overlay de suspenso
+    const overlay = document.createElement('div');
+    overlay.id = 'bdaySuspensoOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:#0a0612;z-index:9800;display:flex;align-items:center;justify-content:center;overflow:hidden;opacity:1;transition:opacity 0.8s ease;';
+    overlay.innerHTML = `
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,0.75) 100%);pointer-events:none;z-index:1;"></div>
+        <div id="bdaySparks" style="position:absolute;inset:0;"></div>
+        <div id="bdayPremioSlot" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;width:min(340px,88vw);text-align:center;"></div>`;
+    document.body.appendChild(overlay);
+
+    // Flash de luz
+    let flashEl = document.getElementById('bdayLuzFlash');
+    if (!flashEl) {
+        flashEl = document.createElement('div');
+        flashEl.id = 'bdayLuzFlash';
+        flashEl.style.cssText = 'position:fixed;inset:0;z-index:9900;pointer-events:none;background:rgba(255,255,255,0);';
+        document.body.appendChild(flashEl);
+    }
+
+    // Partículas
+    const sparks = document.getElementById('bdaySparks');
+    for (let i = 0; i < 14; i++) {
+        const s = document.createElement('div');
+        s.style.cssText = `position:absolute;width:2px;height:2px;border-radius:50%;background:#C8A830;opacity:0;left:${Math.random()*100}%;animation:bdaySparkFloat ${4+Math.random()*5}s ease-in-out ${Math.random()*6}s infinite;`;
+        sparks.appendChild(s);
+    }
+
+    // Añadir keyframes de spark si no existen
+    if (!document.getElementById('bdayAnimStyles')) {
+        const st = document.createElement('style');
+        st.id = 'bdayAnimStyles';
+        st.textContent = `
+        @keyframes bdaySparkFloat {
+            0%   { opacity:0; transform:translateY(100vh) scale(0); }
+            15%  { opacity:.6; }
+            85%  { opacity:.2; }
+            100% { opacity:0; transform:translateY(-30px) scale(1.5); }
+        }
+        @keyframes bdayPremioEntrar {
+            0%   { opacity:0; transform:scale(0.7) translateY(30px); filter:blur(4px); }
+            60%  { filter:blur(0); }
+            100% { opacity:1; transform:scale(1) translateY(0); filter:blur(0); }
+        }
+        @keyframes bdayPremioSalir {
+            0%   { opacity:1; transform:scale(1) translateY(0); filter:blur(0); }
+            100% { opacity:0; transform:scale(1.1) translateY(-24px); filter:blur(3px); }
+        }
+        @keyframes bdayEmojiGlow {
+            from { filter:drop-shadow(0 0 0px rgba(200,168,48,0)); }
+            to   { filter:drop-shadow(0 0 18px rgba(200,168,48,0.55)); }
+        }
+        @keyframes bdayEmojiGlowOro {
+            0%,100% { filter:drop-shadow(0 0 14px rgba(255,215,0,0.5)) drop-shadow(0 0 30px rgba(255,165,0,0.2));transform:scale(1); }
+            50%     { filter:drop-shadow(0 0 30px rgba(255,215,0,0.9)) drop-shadow(0 0 60px rgba(255,165,0,0.4));transform:scale(1.06); }
+        }`;
+        document.head.appendChild(st);
+    }
+
+    // Obtener premios del culposo
+    const nombres = cumpleaneros.map(c => c.n);
+    const todosLosPremios = [];
+    nombres.forEach(nombre => {
+        const premios = (window.premiosData || [])
+            .filter(p => p.Ganador && p.Ganador.trim() === nombre && p.Tipo === 'Persona');
+        todosLosPremios.push(...premios);
+    });
+    const premiosOrdenados = _bdayOrdenar(todosLosPremios);
+
+    const DURACION_PREMIO = 2000;
+    const DURACION_SALIDA = 450;
+    let tids = [];
+    function later(fn, ms) { const id = setTimeout(fn, ms); tids.push(id); }
+
+    if (premiosOrdenados.length === 0) {
+        // Sin premios: ir directo a la card
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.remove();
+            renderBdayHomeCard(cumpleaneros);
+        }, 900);
+        return;
+    }
+
+    // Mostrar premios uno a uno
+    premiosOrdenados.forEach((premio, i) => {
+        const inicio = 400 + i * DURACION_PREMIO;
+        const oro = _bdayEsOro(premio.Terna);
+        const emoji = _bdayGetEmoji(premio.Terna);
+
+        later(() => {
+            const slot = document.getElementById('bdayPremioSlot');
+            if (!slot) return;
+            const prev = slot.querySelector('.bdayPremioItem');
+            if (prev) {
+                prev.style.animation = 'bdayPremioSalir 0.45s ease-in forwards';
+                setTimeout(() => prev.remove(), DURACION_SALIDA);
+            }
+            setTimeout(() => {
+                const el = document.createElement('div');
+                el.className = 'bdayPremioItem';
+                el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;opacity:0;position:absolute;text-align:center;';
+                el.innerHTML = `
+                    <div style="font-size:72px;line-height:1;animation:${oro?'bdayEmojiGlowOro 2s ease-in-out infinite':'bdayEmojiGlow 0.1s ease forwards'};animation-delay:0.3s;">${emoji}</div>
+                    <div style="font-family:'Cinzel',serif;font-size:clamp(13px,3vw,16px);color:${oro?'#FFD700':'rgba(200,168,48,0.7)'};letter-spacing:4px;text-transform:uppercase;${oro?'text-shadow:0 0 20px rgba(255,215,0,0.4);':''}">${oro?'Culposo de Oro':premio.Terna}</div>
+                    <div style="font-family:'Cinzel',serif;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:4px;">${premio.Año||''}</div>`;
+                slot.appendChild(el);
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    el.style.animation = 'bdayPremioEntrar 0.7s cubic-bezier(0.2,0.8,0.4,1) forwards';
+                    if (oro) {
+                        setTimeout(() => {
+                            flashEl.style.transition = 'none';
+                            flashEl.style.background = 'rgba(255,240,160,0.3)';
+                            setTimeout(() => {
+                                flashEl.style.transition = 'background 0.7s ease';
+                                flashEl.style.background = 'rgba(255,255,255,0)';
+                            }, 80);
+                        }, 350);
+                    }
+                }));
+            }, prev ? DURACION_SALIDA : 0);
+        }, inicio);
+    });
+
+    // Fade out → card final
+    const tiempoFinal = 400 + premiosOrdenados.length * DURACION_PREMIO + 800;
+    later(() => { overlay.style.opacity = '0'; }, tiempoFinal);
+    later(() => {
+        overlay.remove();
+        // Construir card con palmarés
+        const fotos = nombres.map(n => FOTOS[n] || '');
+        const avatarsHTML = nombres.map((n, i) =>
+            `<div style="width:70px;height:70px;border-radius:50%;background:url('${fotos[i]}') center top/cover;border:3px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.5);margin:0 auto 10px;position:relative;z-index:1;"></div>`
+        ).join('');
+        const titulo = nombres.length === 1 ? `¡Feliz cumple, ${nombres[0]}! 🎂` : `¡Felices cumples, ${nombres.join(' y ')}! 🎂`;
+
+        const palmaresHTML = premiosOrdenados.length > 0 ? `
+            <div style="background:rgba(0,0,0,0.22);border:1px solid rgba(200,168,48,0.18);border-radius:12px;padding:12px 14px;margin-bottom:16px;position:relative;z-index:1;text-align:left;">
+                ${premiosOrdenados.map((p, i) => `
+                <div id="bdayPalItem_${i}" style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:${i<premiosOrdenados.length-1?'1px solid rgba(255,255,255,0.05)':'none'};opacity:0;transform:translateX(-10px);transition:opacity 0.35s ease ${i*110+350}ms,transform 0.35s ease ${i*110+350}ms;">
+                    <span style="font-size:20px;flex-shrink:0;">${_bdayGetEmoji(p.Terna)}</span>
+                    <div>
+                        <div style="font-size:11px;font-weight:bold;color:${_bdayEsOro(p.Terna)?'#FFD700':'rgba(255,255,255,0.8)'};text-transform:uppercase;letter-spacing:0.5px;">${_bdayEsOro(p.Terna)?'🏆 Culposo de Oro':p.Terna}</div>
+                        <div style="font-size:10px;color:rgba(255,255,255,0.28);margin-top:1px;">${p.Año||''}</div>
+                    </div>
+                </div>`).join('')}
+            </div>` : '';
+
+        const card = document.createElement('div');
+        card.id = 'bdayHomeCard';
+        card.style.cssText = 'background:linear-gradient(135deg,#2a0e50 0%,#1a0830 50%,#2a1000 100%);border:2px solid #FFD700;border-radius:20px;padding:22px 20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;animation:cardPulse 2s ease-in-out infinite;opacity:0;transform:scale(0.93) translateY(16px);transition:opacity 0.8s cubic-bezier(0.2,0.8,0.4,1),transform 0.8s cubic-bezier(0.2,0.8,0.4,1);';
+        card.innerHTML = `
+            <div id="bdayCardStars" style="position:absolute;inset:0;pointer-events:none;"></div>
+            <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.04),transparent);background-size:200% 100%;animation:cardShimmer 3s linear infinite;pointer-events:none;"></div>
+            ${avatarsHTML}
+            <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:4px;position:relative;z-index:1;text-shadow:0 0 15px rgba(255,215,0,0.4);">${titulo}</div>
+            <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:${premiosOrdenados.length?'14px':'0'};position:relative;z-index:1;">¡LA CULPA TE SALUDA! 🎉</div>
+            ${palmaresHTML}
+            <div style="font-size:26px;letter-spacing:6px;position:relative;z-index:1;display:inline-block;animation:emojiWiggle 1.5s ease-in-out infinite;">🎉🎈🎁</div>`;
+
+        container.innerHTML = '';
+        container.appendChild(card);
+
+        // Estrellas
+        const starsEl = document.getElementById('bdayCardStars');
+        ['✨','⭐','🌟','💫','⚡','✨','⭐','🌟'].forEach(em => {
+            const el = document.createElement('div');
+            el.style.cssText = `position:absolute;font-size:12px;top:${Math.random()*80+5}%;left:${Math.random()*90+5}%;animation:starFloat ${Math.random()*2+1.5}s ease-in-out ${Math.random()*2}s infinite;`;
+            el.textContent = em;
+            starsEl.appendChild(el);
+        });
+
+        // Entrada de card
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1) translateY(0)';
+            // Palmares escalonado
+            premiosOrdenados.forEach((_, i) => {
+                setTimeout(() => {
+                    const el = document.getElementById('bdayPalItem_' + i);
+                    if (el) { el.style.opacity = '1'; el.style.transform = 'translateX(0)'; }
+                }, 350 + i * 110);
+            });
+        }));
+    }, tiempoFinal + 850);
 }
 
 function spawnConfetti() {
