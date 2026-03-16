@@ -994,13 +994,10 @@ function avHTML(nombre) {
     const agHTML = AGREGADOS.filter(n => culpososData.find(c=>c.Nombre===n)).map(avHTML).join('');
 
     return `<div style="background:rgba(0,0,0,0.25);border-radius:12px;padding:8px 10px;margin-bottom:12px;border:1px solid rgba(200,168,48,0.2);">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">
-            <span style="color:rgba(255,255,255,0.4);font-size:9px;letter-spacing:1px;text-transform:uppercase;">Confirmaciones</span>
-            <div style="display:flex;gap:5px;align-items:center;">
-                <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.35)':'rgba(255,152,0,0.3)'};">👑 ${reyesConf}/8${hayQ?' ✓':''}</div>
-                <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.25);">💎 ${reinasConf}/6</div>
-                <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:rgba(200,168,48,0.12);color:#C8A830;border:1px solid rgba(200,168,48,0.3);">👥 ${totalConf}/${culpososData.length}</div>
-            </div>
+        <div style="display:flex;gap:5px;align-items:center;margin-bottom:7px;">
+            <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:${hayQ?'rgba(76,175,80,0.15)':'rgba(255,152,0,0.12)'};color:${hayQ?'#4CAF50':'#FF9800'};border:1px solid ${hayQ?'rgba(76,175,80,0.35)':'rgba(255,152,0,0.3)'};">👑 ${reyesConf}/8${hayQ?' ✓':''}</div>
+            <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:rgba(100,180,255,0.1);color:#89CFF0;border:1px solid rgba(100,180,255,0.25);">💎 ${reinasConf}/6</div>
+            <div style="padding:1px 6px;border-radius:20px;font-size:10px;font-weight:bold;white-space:nowrap;background:rgba(200,168,48,0.12);color:#C8A830;border:1px solid rgba(200,168,48,0.3);">👥 ${totalConf}/${culpososData.length}</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;">
             <div style="display:flex;gap:4px;align-items:flex-start;flex-wrap:nowrap;">${reyesHTML}</div>
@@ -1087,6 +1084,7 @@ function avHTML(nombre) {
                         <div class="card-details" style="margin:10px 0;">
                             <span>🏠 ${getGuarida(proximaJuntada.Host)}</span>
                             ${proximaJuntada.Categoría || proximaJuntada.Categoria ? `<span>🏷️ ${proximaJuntada.Categoría || proximaJuntada.Categoria}</span>` : ''}
+                            ${proximaJuntada.Hora ? `<span>🕐 ${proximaJuntada.Hora.slice(0,5)}</span>` : ''}
                         </div>
                         ${renderContadorAsistencia(proximaJuntada)}
                         ${estadoHTML}${botonesProxima}
@@ -1129,7 +1127,7 @@ function avHTML(nombre) {
                         </div>
                         <div style="flex:1;min-width:0;">
                             <div style="color:white;font-size:13px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${desc}</div>
-                            <div style="color:rgba(255,255,255,0.4);font-size:11px;">🏠 ${getGuarida(j.Host)}</div>
+                            <div style="color:rgba(255,255,255,0.4);font-size:11px;">🏠 ${getGuarida(j.Host)}${j.Hora ? ' · 🕐 ' + j.Hora.slice(0,5) : ''}</div>
                         </div>
                         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">
                             ${estadoBadge}
