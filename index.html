@@ -1161,7 +1161,7 @@ function avHTML(nombre) {
             </button>` : '';
 
         // ── FEED ──
-        const ultimasJuntadas = juntadasPasadas.slice(-5).reverse();
+        const ultimasJuntadas = juntadasPasadas.slice(0, 5);
         const nuevoPosHTML = usuario ? `
         <div onclick="abrirModalNuevoPost()" style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(200,168,48,0.2);border-radius:14px;padding:13px;margin-bottom:14px;display:flex;gap:10px;align-items:center;cursor:pointer;">
             <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${fotoUsuario}') center top/cover;"></div>
