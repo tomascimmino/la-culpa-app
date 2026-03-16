@@ -1025,6 +1025,8 @@ function avHTML(nombre) {
 
         // Ordenar futuras por fecha asc
         juntadasFuturas.sort((a, b) => parseFecha(a.j.Fecha) - parseFecha(b.j.Fecha));
+        // Ordenar pasadas por fecha desc
+        juntadasPasadas.sort((a, b) => parseFecha(b.Fecha) - parseFecha(a.Fecha));
 
         if (juntadasFuturas.length > 0) {
             proximaJuntada = juntadasFuturas[0].j;
@@ -1732,7 +1734,7 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
         if (!j.Fecha) return false;
         const f = parseFecha(j.Fecha);
         return f && f < hoy && tieneQuorum(j);
-    }).slice().reverse();
+    }).slice().sort((a, b) => parseFecha(b.Fecha) - parseFecha(a.Fecha));
 
     let totalBannerHTML = '';
     if (nombreUsuario && pasadas.length > 0) {
