@@ -902,6 +902,7 @@ window.juntadasAsistenteActivo = null;
             culpososData = parseCSV(await cR.text());
 window.culpososData = culpososData;
             premiosData  = parseCSV(await pR.text());
+            window.premiosData = premiosData;
             await cargarInteraccionesJuntadas();
             window.juntadasMesActivo = null;
             window.juntadasVerMas = false;
@@ -3910,7 +3911,7 @@ loadSong(currentIndex);  let reproData = { total: 0, canciones: [] };  async fun
 // ── WIDGET CUMPLEAÑOS ─────────────────────────────────────
 const CUMPLES = [
     {n:'Sami',   d:17, m:1},  {n:'Santi',  d:3,  m:2},
-    {n:'Juli',   d:14, m:3},  {n:'Rama',   d:18, m:3},
+    {n:'Juli',   d:14, m:3},  {n:'Rama',   d:16, m:3},
     {n:'Caamaño',d:21, m:3},  {n:'Manu',   d:14, m:5},
     {n:'Cata',   d:5,  m:7},  {n:'Mateo',  d:18, m:7},
     {n:'Tirri',  d:9,  m:8},  {n:'Toti',   d:8,  m:9},
