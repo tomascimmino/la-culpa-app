@@ -4503,26 +4503,6 @@ function submitGuess() {
   const rowDone=currentRow;
   currentRow++; currentCol=0; currentGuess=[];
   updateAttemptsLabel();
-
-  // Guardar progreso parcial para resistir recarga (con delay para que estén las clases CSS)
-  const progressKey = 'wc_progress_' + getTodayStr();
-  if (!won && currentRow < MAX_ROWS) {
-    setTimeout(() => {
-      const progressGuesses = [];
-      for (let r = 0; r < currentRow; r++) {
-        const letters = [], states = [];
-        for (let c = 0; c < COLS; c++) {
-          const cell = document.getElementById(`cell-${r}-${c}`);
-          letters.push(cell ? cell.textContent : '');
-          states.push(cell ? (cell.classList.contains('correct') ? 'correct' : cell.classList.contains('present') ? 'present' : 'absent') : 'absent');
-        }
-        progressGuesses.push({ letters, states });
-      }
-      localStorage.setItem(progressKey, JSON.stringify({ guesses: progressGuesses, tiempo: timerSeconds }));
-    }, COLS * 100 + 500);
-  } else {
-    localStorage.removeItem(progressKey);
-  }
  
   const delay=COLS*100+400;
   setTimeout(()=>{
@@ -5005,35 +4985,7 @@ async function initWordle() {
         document.getElementById('modal-bg').classList.add('show');
         localStorage.setItem('wc_seen_instructions','1');
     }
-
-    // Restaurar progreso parcial si hay intentos guardados de hoy
-    const progressKey = 'wc_progress_' + today;
-    const savedProgress = localStorage.getItem(progressKey);
-    if (savedProgress) {
-        try {
-            const prog = JSON.parse(savedProgress);
-            startTimer();
-            // Restaurar tiempo
-            if (prog.tiempo) { timerSeconds = prog.tiempo; updateTimerDisplay(timerSeconds); }
-            // Restaurar cada fila
-            prog.guesses.forEach((row, r) => {
-                row.letters.forEach((letter, c) => {
-                    const cell = document.getElementById(`cell-${r}-${c}`);
-                    if (!cell) return;
-                    cell.textContent = letter;
-                    cell.classList.add('filled');
-                    if (row.states[c]) {
-                        cell.classList.remove('filled');
-                        cell.classList.add(row.states[c]);
-                    }
-                    updateKeyState(letter, row.states[c]);
-                });
-                currentRow = r + 1;
-            });
-            currentCol = 0;
-            updateAttemptsLabel();
-        } catch(e) { localStorage.removeItem(progressKey); }
-    }
+}
     
 </script>
 
