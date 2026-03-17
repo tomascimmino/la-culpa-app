@@ -47,15 +47,7 @@
             margin-bottom: 0; align-items: flex-end;
         }
         #mainApp > .tabs {
-            position: sticky; top: 0; z-index: 100;
-            background: rgba(10,6,24,0.92);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 10px 14px 8px;
-            margin: 0 -20px 16px;
-            border-radius: 0 0 18px 18px;
-            border-bottom: 1px solid rgba(200,168,48,0.12);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            margin-bottom: 0;
         }
         .tab {
             flex: 1 1 0;
@@ -585,6 +577,7 @@
     </div>
 </div>
 
+        <div id="tabsWrapper" style="position:sticky;top:0;z-index:100;margin:0 -20px 16px;background:rgba(10,6,24,0.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:0 0 18px 18px;border-bottom:1px solid rgba(200,168,48,0.12);box-shadow:0 4px 20px rgba(0,0,0,0.4);padding:10px 14px 8px;">
         <div class="tabs">
     <div class="tab active" onclick="showTab('home',this)"><span class="tab-emoji">🏠</span><span class="tab-label">Home</span></div>
     <div class="tab" onclick="showTab('ranking',this)"><span class="tab-emoji">👑</span><span class="tab-label">Culposos</span></div>
@@ -595,6 +588,7 @@
     <div class="tab" onclick="showTab('juegos',this)"><span class="tab-emoji">🎮</span><span class="tab-label">Wordle</span></div>
     <div class="tab" onclick="showTab('perfil',this)"><span class="tab-emoji">👤</span><span class="tab-label">Perfil</span></div>
 </div>
+        </div>
 
     <div class="content-wrapper">
         <!-- HOME -->
