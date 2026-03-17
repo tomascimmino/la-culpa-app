@@ -7,9 +7,10 @@
     <link rel="icon" type="image/png" href="https://i.imgur.com/czObXpX.png">
     <link rel="apple-touch-icon" href="https://i.imgur.com/qJl5bjR.png">
     <meta name="theme-color" content="#120D1F">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkxBIENVTFBBIiwgInNob3J0X25hbWUiOiAiTGEgQ3VscGEiLCAiZGVzY3JpcHRpb24iOiAiUmFua2luZyBkZSBBc2lzdGVuY2lhcyIsICJzdGFydF91cmwiOiAiL2xhLWN1bHBhLWFwcC8iLCAic2NvcGUiOiAiL2xhLWN1bHBhLWFwcC8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsICJ0aGVtZV9jb2xvciI6ICIjMTIwRDFGIiwgImljb25zIjogW3sic3JjIjogImh0dHBzOi8vaS5pbWd1ci5jb20vcUpsNWJqUi5wbmciLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9XX0=">
-    <style> 
+    <style>
+:root { --gold: #C8A830; } 
            * { margin: 0; padding: 0; box-sizing: border-box; }
            body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
@@ -46,20 +47,34 @@
         }
         .title { color: #FFD700; font-size: 32px; font-weight: bold; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .subtitle { color: rgba(255,255,255,0.9); font-size: 14px; }
+        /* ── TABS NUEVA ESTÉTICA ── */
         .tabs {
-            display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;
-            background: rgba(20,10,35,0.7); padding: 8px; border-radius: 15px; border: 1px solid rgba(107,45,145,0.3);
+            display: flex; gap: 4px;
+            background: transparent; padding: 0;
+            border-radius: 0; border: none;
+            margin-bottom: 0; align-items: flex-end;
         }
-       .tab {
-            flex: 1 1 calc(25% - 6px); max-width: calc(25% - 5px);
-            padding: 8px 4px; text-align: center; background: transparent;
-            border: 2px solid rgba(139,77,143,0.3); border-radius: 10px; color: rgba(255,255,255,0.6);
-            cursor: pointer; transition: all 0.3s; font-size: 11px; line-height: 1.3; min-width: 0;
-            box-sizing: border-box;
+        #mainApp > .tabs {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10,6,24,0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 10px 14px 8px;
+            margin: 0 -20px 16px;
+            border-bottom: 1px solid rgba(200,168,48,0.08);
+        }
+        .tab {
+            flex: 1 1 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-end;
+            gap: 0; padding: 6px 2px;
+            border-radius: 10px; border: 1px solid transparent;
+            cursor: pointer; min-width: 0; overflow: hidden;
+            transition: flex 0.35s cubic-bezier(0.2,0.8,0.4,1),
+                        background 0.3s ease, border-color 0.3s ease;
         }
        @media (max-width: 500px) {
-  .tabs { gap: 5px !important; padding: 6px !important; }
-  .tab { flex: 1 1 calc(25% - 8px) !important; padding: 7px 2px !important; font-size: 10px !important; border-radius: 8px !important; line-height: 1.3; box-sizing: border-box; }
+  #mainApp > .tabs { padding: 8px 12px 6px; margin: 0 -12px 14px; }
     .container { padding: 12px !important; min-height: 100vh !important; }
             .stats-grid { gap: 10px !important; }
             .stat-number { font-size: 24px !important; }
@@ -71,7 +86,38 @@
             img { max-width: 100% !important; height: auto !important; }
             .card { padding: 12px !important; }
         }
-        .tab.active { background: linear-gradient(135deg, #6B2D91 0%, #4A1D6B 100%); color: #C8A830; border-color: #C8A830; }
+        /* Emoji e label dentro de cada tab */
+        .tab-emoji {
+            font-size: 18px; line-height: 1; display: block;
+            opacity: 0.45;
+            transition: font-size 0.3s ease, opacity 0.3s ease, filter 0.3s ease;
+        }
+        .tab-label {
+            font-family: 'Cinzel', serif; font-size: 8px;
+            color: var(--gold, #C8A830); letter-spacing: 1px;
+            text-transform: uppercase; white-space: nowrap;
+            max-height: 0; overflow: hidden; opacity: 0; margin-top: 0;
+            transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
+        }
+        /* Tab activa */
+        .tab.active {
+            flex: 2.5 1 0;
+            background: linear-gradient(135deg, rgba(107,45,145,0.35), rgba(74,29,107,0.2));
+            border-color: rgba(200,168,48,0.25);
+        }
+        .tab.active .tab-emoji {
+            font-size: 22px; opacity: 1;
+            filter: drop-shadow(0 0 8px rgba(200,168,48,0.5));
+        }
+        .tab.active .tab-label {
+            max-height: 20px; opacity: 1; margin-top: 4px;
+        }
+        .tab.active::after {
+            content: ''; position: absolute;
+            bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 55%; height: 2px;
+            background: var(--gold, #C8A830); border-radius: 2px;
+        }
        .content {
             display: none;
             opacity: 0;
@@ -100,13 +146,25 @@
         .container { min-height: 100vh; position: relative; overflow-x: hidden; max-width: 100%; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .stat-card {
-            padding: 20px; border-radius: 15px; text-align: center; border: 2px solid rgba(107,45,145,0.35);
+            padding: 20px; border-radius: 15px; text-align: center;
+            border: 2px solid rgba(107,45,145,0.35);
+            position: relative; overflow: hidden;
         }
-        .stat-number { font-size: 32px; font-weight: bold; color: #FFD700; margin-bottom: 5px; }
-        .stat-label { color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; }
+        .stat-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(to right, transparent, rgba(200,168,48,0.3), transparent);
+        }
+        .stat-number { font-size: 32px; font-weight: bold; color: #FFD700; margin-bottom: 5px; font-family: 'Cinzel', serif; text-shadow: 0 0 20px rgba(200,168,48,0.25); }
+        .stat-label { color: rgba(255,255,255,0.5); font-size: 11px; text-transform: uppercase; font-family: 'Cinzel', serif; letter-spacing: 1px; }
         .section-title {
             color: #C8A830; font-size: 18px; font-weight: bold;
             margin: 25px 0 15px; display: flex; align-items: center; gap: 10px;
+            font-family: 'Cinzel', serif; letter-spacing: 1px;
+        }
+        .section-title::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(to right, rgba(200,168,48,0.35), transparent);
         }
         .card {
             background: linear-gradient(135deg, #0D0820 0%, #110C2A 100%);
@@ -202,11 +260,8 @@
     letter-spacing: 1px;
 }
 
-.tab:hover {
-    background: rgba(200,168,48,0.15);
-    color: #FFD700;
-    border-color: #FFD700;
-}
+.tab:not(.active):hover .tab-emoji { opacity: 0.75; }
+.tab:not(.active):hover { background: rgba(139,77,143,0.1); }
         @keyframes splashReveal {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -537,14 +592,14 @@
 </div>
 
         <div class="tabs">
-    <div class="tab active" onclick="showTab('home',this)">🏠<br>Home</div>
-    <div class="tab" onclick="showTab('ranking',this)">👑<br>Culposos</div>
-    <div class="tab" onclick="showTab('juntadas',this)">📅<br>Juntadas</div>
-    <div class="tab" onclick="showTab('awards',this)">🏆<br>LCA</div>
-    <div class="tab" onclick="showTab('calculadora',this)">💰<br>Cuentas</div>
-   <div class="tab" onclick="showTab('leyes',this)">⚖️<br>Ley</div>
-<div class="tab" onclick="showTab('juegos',this)">🎮<br>Wordle</div>
-<div class="tab" onclick="showTab('perfil',this)">👤<br>Perfil</div>
+    <div class="tab active" onclick="showTab('home',this)"><span class="tab-emoji">🏠</span><span class="tab-label">Home</span></div>
+    <div class="tab" onclick="showTab('ranking',this)"><span class="tab-emoji">👑</span><span class="tab-label">Culposos</span></div>
+    <div class="tab" onclick="showTab('juntadas',this)"><span class="tab-emoji">📅</span><span class="tab-label">Juntadas</span></div>
+    <div class="tab" onclick="showTab('awards',this)"><span class="tab-emoji">🏆</span><span class="tab-label">Awards</span></div>
+    <div class="tab" onclick="showTab('calculadora',this)"><span class="tab-emoji">💰</span><span class="tab-label">Cuentas</span></div>
+    <div class="tab" onclick="showTab('leyes',this)"><span class="tab-emoji">⚖️</span><span class="tab-label">Ley</span></div>
+    <div class="tab" onclick="showTab('juegos',this)"><span class="tab-emoji">🎮</span><span class="tab-label">Wordle</span></div>
+    <div class="tab" onclick="showTab('perfil',this)"><span class="tab-emoji">👤</span><span class="tab-label">Perfil</span></div>
 </div>
 
     <div class="content-wrapper">
