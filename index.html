@@ -4503,6 +4503,25 @@ function submitGuess() {
   const rowDone=currentRow;
   currentRow++; currentCol=0; currentGuess=[];
   updateAttemptsLabel();
+
+  // Guardar progreso parcial (con delay para que las clases CSS estén aplicadas)
+  if (!won && currentRow < MAX_ROWS) {
+    setTimeout(() => {
+      const prog = [];
+      for (let r = 0; r < currentRow; r++) {
+        const letters = [], states = [];
+        for (let c = 0; c < COLS; c++) {
+          const cell = document.getElementById(`cell-${r}-${c}`);
+          letters.push(cell ? cell.textContent : '');
+          states.push(cell ? (cell.classList.contains('correct') ? 'correct' : cell.classList.contains('present') ? 'present' : 'absent') : 'absent');
+        }
+        prog.push({ letters, states });
+      }
+      localStorage.setItem('wc_progress_' + getTodayStr(), JSON.stringify({ guesses: prog, tiempo: timerSeconds }));
+    }, COLS * 100 + 500);
+  } else {
+    localStorage.removeItem('wc_progress_' + getTodayStr());
+  }
  
   const delay=COLS*100+400;
   setTimeout(()=>{
@@ -4984,6 +5003,29 @@ async function initWordle() {
     if (!localStorage.getItem('wc_seen_instructions')) {
         document.getElementById('modal-bg').classList.add('show');
         localStorage.setItem('wc_seen_instructions','1');
+    }
+
+    // Restaurar progreso parcial si recargó a mitad de partida
+    const savedProgress = localStorage.getItem('wc_progress_' + today);
+    if (savedProgress) {
+        try {
+            const prog = JSON.parse(savedProgress);
+            startTimer();
+            if (prog.tiempo) { timerSeconds = prog.tiempo; updateTimerDisplay(timerSeconds); }
+            prog.guesses.forEach((row, r) => {
+                row.letters.forEach((letter, c) => {
+                    const cell = document.getElementById(`cell-${r}-${c}`);
+                    if (!cell || !letter) return;
+                    cell.textContent = letter;
+                    cell.classList.remove('filled');
+                    cell.classList.add(row.states[c] || 'absent');
+                    updateKeyState(letter, row.states[c] || 'absent');
+                });
+            });
+            currentRow = prog.guesses.length;
+            currentCol = 0;
+            updateAttemptsLabel();
+        } catch(e) { localStorage.removeItem('wc_progress_' + today); }
     }
 }
     
