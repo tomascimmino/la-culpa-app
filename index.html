@@ -4326,9 +4326,13 @@ function getTodayStr() {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function getWordOfDay() {
-  const start = new Date(2026,12,2);
-  const diff  = Math.floor((new Date() - start) / 86400000);
-  return norm(PALABRAS[((diff % PALABRAS.length) + PALABRAS.length) % PALABRAS.length]);
+  const today = getTodayStr();
+  // Seed determinista por fecha — misma palabra todo el día, distinta cada día
+  let seed = 0;
+  for (let i = 0; i < today.length; i++) seed = (seed * 31 + today.charCodeAt(i)) >>> 0;
+  // Hoy 2026-03-19 la palabra fue DETENDRAN — la fijamos para no romper partidas ya jugadas
+  if (today === '2026-03-19') return 'DETENDRAN';
+  return norm(PALABRAS[seed % PALABRAS.length]);
 }
 function getDayNumber() {
   return Math.floor((new Date() - new Date(2026,2,12)) / 86400000) + 1;
@@ -5011,8 +5015,16 @@ async function initWordle() {
     if (savedProgress) {
         try {
             const prog = JSON.parse(savedProgress);
-            startTimer();
-            if (prog.tiempo) { timerSeconds = prog.tiempo; updateTimerDisplay(timerSeconds); }
+            // Reanudar timer desde el tiempo ya jugado
+            timerSeconds = prog.tiempo || 0;
+            timerStarted = true;
+            timerStart = Date.now() - (timerSeconds * 1000);
+            updateTimerDisplay(timerSeconds);
+            document.getElementById('timer-display').classList.add('running');
+            timerInterval = setInterval(() => {
+                timerSeconds = Math.floor((Date.now() - timerStart) / 1000);
+                updateTimerDisplay(timerSeconds);
+            }, 500);
             prog.guesses.forEach((row, r) => {
                 row.letters.forEach((letter, c) => {
                     const cell = document.getElementById(`cell-${r}-${c}`);
