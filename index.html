@@ -1382,7 +1382,7 @@ function avHTML(nombre) {
                         ${driveBtn}
                         ${botonesAdmin}
                         <div style="display:flex;gap:8px;margin:18px 0 4px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.07);">
-                            <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.12)'};background:${yoLike?'rgba(255,80,80,0.15)':'rgba(255,255,255,0.05)'};color:${yoLike?'#ff6b6b':'rgba(255,255,255,0.5)'};">❤️ ${likes.length}</button>
+                            <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.12)'};background:${yoLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yoLike?'#C8A830':'rgba(255,255,255,0.5)'};"><img src='https://i.imgur.com/CASpnsx.png' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;mix-blend-mode:screen;'> ${likes.length}</button>
                             <button onclick="reaccionarJuntada(${ri},'corona')" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCorona?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.12)'};background:${yoCorona?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCorona?'#FFD700':'rgba(255,255,255,0.5)'};">👑 ${coronas.length}</button>
                         </div>
                         <div style="margin-top:16px;">
@@ -1407,7 +1407,7 @@ function avHTML(nombre) {
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid rgba(255,255,255,0.06);">
-                <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(255,80,80,0.4)':'rgba(255,255,255,0.1)'};background:${yoLike?'rgba(255,80,80,0.15)':'rgba(255,255,255,0.05)'};color:${yoLike?'#ff6b6b':'rgba(255,255,255,0.45)'};">❤️ ${likes.length}</button>
+                <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.1)'};background:${yoLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yoLike?'#C8A830':'rgba(255,255,255,0.45)'};"><img src='https://i.imgur.com/CASpnsx.png' style='width:18px;height:18px;object-fit:contain;vertical-align:middle;mix-blend-mode:screen;'> ${likes.length}</button>
                 <button onclick="reaccionarJuntada(${ri},'corona')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCorona?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.1)'};background:${yoCorona?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCorona?'#FFD700':'rgba(255,255,255,0.45)'};">👑 ${coronas.length}</button>
                 <button onclick="toggleComentariosJuntada('cj_${ri}_feed')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.45);">💬 ${comentarios.length}</button>
                 ${usuario ? `<span style="margin-left:auto;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.18);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
@@ -2857,7 +2857,7 @@ document.body.removeChild(waLink);
             ⚡ Forzar avance (admin)
           </button>
           <button onclick="resetConclave()"
-            style="width:100%;margin-top:4px;padding:7px;background:transparent;border:1px solid rgba(255,50,50,0.2);border-radius:4px;color:rgba(255,80,80,0.4);font-size:11px;cursor:pointer;margin-bottom:12px;">
+            style="width:100%;margin-top:4px;padding:7px;background:transparent;border:1px solid rgba(255,50,50,0.2);border-radius:4px;color:rgba(200,168,48,0.5);font-size:11px;cursor:pointer;margin-bottom:12px;">
             🔄 Reset (pruebas)
           </button>` : ''}
 
@@ -3274,7 +3274,7 @@ function showTab(tabName, el) {
                     </div>
                     <div style="color:rgba(255,255,255,0.9);font-size:14px;line-height:1.5;margin-bottom:10px;">${c.Texto}</div>
                     <button onclick="likearComentario('${c.ID}','${destinatario}')"
-                        style="background:${yaDiLike ? 'rgba(255,80,80,0.2)' : 'rgba(255,255,255,0.05)'};border:1.5px solid ${yaDiLike ? '#ff5050' : 'rgba(255,255,255,0.15)'};color:${yaDiLike ? '#ff5050' : 'rgba(255,255,255,0.5)'};padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;">
+                        style="background:${yaDiLike ? 'rgba(200,168,48,0.12)' : 'rgba(255,255,255,0.05)'};border:1.5px solid ${yaDiLike ? 'rgba(200,168,48,0.5)' : 'rgba(255,255,255,0.15)'};color:${yaDiLike ? '#C8A830' : 'rgba(255,255,255,0.5)'};padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;">
                         ❤️ ${likes.length || ''}
                     </button>
                 </div>`;
@@ -3320,9 +3320,9 @@ function showTab(tabName, el) {
         // Optimistic: toggle visual en el botón
         const btns = document.querySelectorAll(`#comentariosList_${destinatario} button`);
         btns.forEach(b => { if (b.getAttribute('onclick')?.includes(`'${id}'`)) {
-            const yaActivo = b.style.background.includes('255,80,80');
-            b.style.background = yaActivo ? 'rgba(255,255,255,0.05)' : 'rgba(255,80,80,0.2)';
-            b.style.color = yaActivo ? 'rgba(255,255,255,0.5)' : '#ff5050';
+            const yaActivo = b.style.background.includes('200,168,48');
+            b.style.background = yaActivo ? 'rgba(255,255,255,0.05)' : 'rgba(200,168,48,0.12)';
+            b.style.color = yaActivo ? 'rgba(255,255,255,0.5)' : '#C8A830';
         }});
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'likear_comentario', id, email:currentUser }) });
@@ -4091,34 +4091,28 @@ function renderBdayHomeCardAnimada(cumpleaneros) {
     const container = document.getElementById('bdayHomeCardContainer');
     if (!container) return;
 
-    // Crear overlay de suspenso
-    const overlay = document.createElement('div');
-    overlay.id = 'bdaySuspensoOverlay';
-    overlay.style.cssText = 'position:fixed;inset:0;background:#0a0612;z-index:9800;display:flex;align-items:center;justify-content:center;overflow:hidden;opacity:1;transition:opacity 0.8s ease;';
-    overlay.innerHTML = `
-        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,0.75) 100%);pointer-events:none;z-index:1;"></div>
-        <div id="bdaySparks" style="position:absolute;inset:0;"></div>
-        <div id="bdayPremioSlot" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;width:min(340px,88vw);text-align:center;"></div>`;
-    document.body.appendChild(overlay);
+    const MENSAJES_ESPECIALES = {
+        'Caamaño': 'DAMN MIKE!',
+        'Mateo':   'El de La Culpa...',
+        'Tirri':   'joven doctor',
+        'Santi':   'el duende verde',
+        'Rama':    'el japonés',
+        'Zabala':  'el niño cosmopolita',
+        'Toto':    'EL TOTORRO',
+        'Toti':    'el meriendas',
+    };
 
-    // Flash de luz
-    let flashEl = document.getElementById('bdayLuzFlash');
-    if (!flashEl) {
-        flashEl = document.createElement('div');
-        flashEl.id = 'bdayLuzFlash';
-        flashEl.style.cssText = 'position:fixed;inset:0;z-index:9900;pointer-events:none;background:rgba(255,255,255,0);';
-        document.body.appendChild(flashEl);
-    }
+    const nombres = cumpleaneros.map(c => c.n);
+    const todosLosPremios = [];
+    nombres.forEach(nombre => {
+        const premios = (window.premiosData || [])
+            .filter(p => p.Ganador && p.Ganador.trim() === nombre && p.Tipo === 'Persona');
+        todosLosPremios.push(...premios);
+    });
+    const premiosOrdenados = _bdayOrdenar(todosLosPremios);
+    const mensajeEspecial = nombres.length === 1 ? (MENSAJES_ESPECIALES[nombres[0]] || null) : null;
 
-    // Partículas
-    const sparks = document.getElementById('bdaySparks');
-    for (let i = 0; i < 14; i++) {
-        const s = document.createElement('div');
-        s.style.cssText = `position:absolute;width:2px;height:2px;border-radius:50%;background:#C8A830;opacity:0;left:${Math.random()*100}%;animation:bdaySparkFloat ${4+Math.random()*5}s ease-in-out ${Math.random()*6}s infinite;`;
-        sparks.appendChild(s);
-    }
-
-    // Añadir keyframes de spark si no existen
+    // Añadir keyframes si no existen
     if (!document.getElementById('bdayAnimStyles')) {
         const st = document.createElement('style');
         st.id = 'bdayAnimStyles';
@@ -4130,151 +4124,218 @@ function renderBdayHomeCardAnimada(cumpleaneros) {
             100% { opacity:0; transform:translateY(-30px) scale(1.5); }
         }
         @keyframes bdayPremioEntrar {
-            0%   { opacity:0; transform:scale(0.7) translateY(30px); filter:blur(4px); }
+            0%   { opacity:0; transform:scale(0.55) translateY(40px); filter:blur(8px); }
             60%  { filter:blur(0); }
             100% { opacity:1; transform:scale(1) translateY(0); filter:blur(0); }
         }
         @keyframes bdayPremioSalir {
             0%   { opacity:1; transform:scale(1) translateY(0); filter:blur(0); }
-            100% { opacity:0; transform:scale(1.1) translateY(-24px); filter:blur(3px); }
-        }
-        @keyframes bdayEmojiGlow {
-            from { filter:drop-shadow(0 0 0px rgba(200,168,48,0)); }
-            to   { filter:drop-shadow(0 0 18px rgba(200,168,48,0.55)); }
+            100% { opacity:0; transform:scale(1.1) translateY(-30px); filter:blur(4px); }
         }
         @keyframes bdayEmojiGlowOro {
-            0%,100% { filter:drop-shadow(0 0 14px rgba(255,215,0,0.5)) drop-shadow(0 0 30px rgba(255,165,0,0.2));transform:scale(1); }
-            50%     { filter:drop-shadow(0 0 30px rgba(255,215,0,0.9)) drop-shadow(0 0 60px rgba(255,165,0,0.4));transform:scale(1.06); }
+            0%,100% { filter:drop-shadow(0 0 14px rgba(255,215,0,.5)) drop-shadow(0 0 30px rgba(255,165,0,.2)); transform:scale(1); }
+            50%     { filter:drop-shadow(0 0 32px rgba(255,215,0,.9)) drop-shadow(0 0 60px rgba(255,165,0,.4)); transform:scale(1.07); }
+        }
+        @keyframes bdayEmojiGlow {
+            from { filter:drop-shadow(0 0 0 rgba(200,168,48,0)); }
+            to   { filter:drop-shadow(0 0 18px rgba(200,168,48,.55)); }
         }`;
         document.head.appendChild(st);
     }
 
-    // Obtener premios del culposo
-    const nombres = cumpleaneros.map(c => c.n);
-    const todosLosPremios = [];
-    nombres.forEach(nombre => {
-        const premios = (window.premiosData || [])
-            .filter(p => p.Ganador && p.Ganador.trim() === nombre && p.Tipo === 'Persona');
-        todosLosPremios.push(...premios);
-    });
-    const premiosOrdenados = _bdayOrdenar(todosLosPremios);
+    let flashEl = document.getElementById('bdayLuzFlash');
+    if (!flashEl) {
+        flashEl = document.createElement('div');
+        flashEl.id = 'bdayLuzFlash';
+        flashEl.style.cssText = 'position:fixed;inset:0;z-index:9900;pointer-events:none;background:rgba(255,255,255,0);';
+        document.body.appendChild(flashEl);
+    }
+    function bdayFlash(color, dur) {
+        flashEl.style.transition = 'none';
+        flashEl.style.background = color;
+        setTimeout(() => { flashEl.style.transition = `background ${dur}ms ease`; flashEl.style.background = 'rgba(255,255,255,0)'; }, 80);
+    }
 
-    const DURACION_PREMIO = 2000;
-    const DURACION_SALIDA = 450;
-    let tids = [];
-    function later(fn, ms) { const id = setTimeout(fn, ms); tids.push(id); }
+    // ── OVERLAY ──
+    const overlay = document.createElement('div');
+    overlay.id = 'bdaySuspensoOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:#060210;z-index:9800;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:opacity 0.85s ease,border-radius 0.85s ease;';
 
-    if (premiosOrdenados.length === 0) {
-        // Sin premios: ir directo a la card
-        overlay.style.opacity = '0';
+    const vignette = document.createElement('div');
+    vignette.style.cssText = 'position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 25%,rgba(0,0,0,0.85) 100%);pointer-events:none;z-index:1;';
+    overlay.appendChild(vignette);
+
+    const sparks = document.createElement('div');
+    sparks.style.cssText = 'position:absolute;inset:0;z-index:0;';
+    for (let i = 0; i < 18; i++) {
+        const s = document.createElement('div');
+        const sz = Math.random() > 0.5 ? 2 : 1;
+        s.style.cssText = `position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;background:#C8A830;opacity:0;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:bdaySparkFloat ${4+Math.random()*5}s ease-in-out ${Math.random()*4}s infinite;`;
+        sparks.appendChild(s);
+    }
+    overlay.appendChild(sparks);
+
+    const slot = document.createElement('div');
+    slot.style.cssText = 'position:relative;z-index:2;width:min(340px,88vw);min-height:220px;display:flex;align-items:center;justify-content:center;text-align:center;';
+    overlay.appendChild(slot);
+    document.body.appendChild(overlay);
+
+    const DURACION = 2200;
+    const SALIDA   = 450;
+
+    function mostrarItemSlot(html, esOroItem) {
+        const prev = slot.querySelector('.bdayPremioItem');
+        if (prev) {
+            prev.style.animation = 'bdayPremioSalir 0.45s ease-in forwards';
+            setTimeout(() => prev.remove(), SALIDA);
+        }
         setTimeout(() => {
-            overlay.remove();
-            renderBdayHomeCard(cumpleaneros);
-        }, 900);
+            const el = document.createElement('div');
+            el.className = 'bdayPremioItem';
+            el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0;position:absolute;width:100%;padding:0 24px;';
+            el.innerHTML = html;
+            slot.appendChild(el);
+            setTimeout(() => {
+                el.style.animation = 'bdayPremioEntrar 0.7s cubic-bezier(0.2,0.8,0.4,1) forwards';
+                if (esOroItem) bdayFlash('rgba(255,240,120,0.4)', 900);
+            }, 30);
+        }, prev ? SALIDA + 60 : 0);
+    }
+
+    // Sin premios y sin mensaje → directo a card
+    if (premiosOrdenados.length === 0 && !mensajeEspecial) {
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.remove(); _bdayMostrarCard(cumpleaneros, premiosOrdenados, container, false); }, 900);
         return;
     }
 
-    // Mostrar premios uno a uno
+    // Mostrar premios
     premiosOrdenados.forEach((premio, i) => {
-        const inicio = 400 + i * DURACION_PREMIO;
+        const inicio = 500 + i * DURACION;
         const oro = _bdayEsOro(premio.Terna);
         const emoji = _bdayGetEmoji(premio.Terna);
-
-        later(() => {
-            const slot = document.getElementById('bdayPremioSlot');
-            if (!slot) return;
-            const prev = slot.querySelector('.bdayPremioItem');
-            if (prev) {
-                prev.style.animation = 'bdayPremioSalir 0.45s ease-in forwards';
-                setTimeout(() => prev.remove(), DURACION_SALIDA);
-            }
-            setTimeout(() => {
-                const el = document.createElement('div');
-                el.className = 'bdayPremioItem';
-                el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:12px;opacity:0;position:absolute;text-align:center;';
-                el.innerHTML = `
-                    <div style="font-size:72px;line-height:1;animation:${oro?'bdayEmojiGlowOro 2s ease-in-out infinite':'bdayEmojiGlow 0.1s ease forwards'};animation-delay:0.3s;">${emoji}</div>
-                    <div style="font-family:'Cinzel',serif;font-size:clamp(13px,3vw,16px);color:${oro?'#FFD700':'rgba(200,168,48,0.7)'};letter-spacing:4px;text-transform:uppercase;${oro?'text-shadow:0 0 20px rgba(255,215,0,0.4);':''}">${oro?'Culposo de Oro':premio.Terna}</div>
-                    <div style="font-family:'Cinzel',serif;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:4px;">${premio.Año||''}</div>`;
-                slot.appendChild(el);
-                requestAnimationFrame(() => requestAnimationFrame(() => {
-                    el.style.animation = 'bdayPremioEntrar 0.7s cubic-bezier(0.2,0.8,0.4,1) forwards';
-                    if (oro) {
-                        setTimeout(() => {
-                            flashEl.style.transition = 'none';
-                            flashEl.style.background = 'rgba(255,240,160,0.3)';
-                            setTimeout(() => {
-                                flashEl.style.transition = 'background 0.7s ease';
-                                flashEl.style.background = 'rgba(255,255,255,0)';
-                            }, 80);
-                        }, 350);
-                    }
-                }));
-            }, prev ? DURACION_SALIDA : 0);
+        setTimeout(() => {
+            mostrarItemSlot(`
+                <div style="font-size:82px;line-height:1;animation:${oro?'bdayEmojiGlowOro 2s ease-in-out infinite':'bdayEmojiGlow 0.5s ease forwards'};animation-delay:0.2s;">${emoji}</div>
+                <div style="font-family:'Cinzel',serif;font-size:${oro?17:13}px;color:${oro?'#FFD700':'rgba(200,168,48,0.75)'};letter-spacing:4px;text-transform:uppercase;${oro?'text-shadow:0 0 20px rgba(255,215,0,.4);':''}">${oro?'Culposo de Oro':premio.Terna}</div>
+                <div style="font-family:'Cinzel',serif;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:5px;">${premio.Año||''}</div>`, oro);
         }, inicio);
     });
 
-    // Fade out → card final
-    const tiempoFinal = 400 + premiosOrdenados.length * DURACION_PREMIO + 800;
-    later(() => { overlay.style.opacity = '0'; }, tiempoFinal);
-    later(() => {
+    // Mensaje especial
+    const tiempoDespremios = 500 + premiosOrdenados.length * DURACION + 400;
+    const tiempoExtra = mensajeEspecial ? 3000 : 0;
+
+    if (mensajeEspecial) {
+        setTimeout(() => {
+            mostrarItemSlot(`
+                <div class="bdayMsgEspecial" style="font-family:'Cinzel',serif;font-size:clamp(22px,6vw,34px);font-weight:900;color:#C8A830;letter-spacing:3px;text-align:center;line-height:1.3;text-shadow:0 0 20px rgba(200,168,48,0.4);">${mensajeEspecial}</div>`, false);
+            // Leve crescendo
+            setTimeout(() => {
+                const txt = slot.querySelector('.bdayMsgEspecial');
+                if (txt) { txt.style.transition='transform 0.5s ease,text-shadow 0.5s ease'; txt.style.transform='scale(1.07)'; txt.style.textShadow='0 0 30px rgba(200,168,48,0.7)'; }
+                bdayFlash('rgba(200,168,48,0.15)', 800);
+            }, 1200);
+        }, tiempoDespremios);
+    }
+
+    // Colapsar overlay hacia la card
+    const tiempoFadeOut = tiempoDespremios + tiempoExtra;
+
+    setTimeout(() => {
+        // Insertar card invisible para medir su posición
+        _bdayMostrarCard(cumpleaneros, premiosOrdenados, container, true);
+        setTimeout(() => {
+            const rect = container.getBoundingClientRect();
+            overlay.style.top    = rect.top + 'px';
+            overlay.style.left   = rect.left + 'px';
+            overlay.style.right  = 'auto';
+            overlay.style.bottom = 'auto';
+            overlay.style.width  = rect.width + 'px';
+            overlay.style.height = rect.height + 'px';
+            overlay.style.borderRadius = '20px';
+            overlay.style.opacity = '0';
+            slot.style.transition = 'opacity 0.2s ease';
+            slot.style.opacity = '0';
+        }, 60);
+    }, tiempoFadeOut);
+
+    setTimeout(() => {
         overlay.remove();
-        // Construir card con palmarés
-        const fotos = nombres.map(n => FOTOS[n] || '');
-        const avatarsHTML = nombres.map((n, i) =>
-            `<div style="width:70px;height:70px;border-radius:50%;background:url('${fotos[i]}') center top/cover;border:3px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.5);margin:0 auto 10px;position:relative;z-index:1;"></div>`
-        ).join('');
-        const titulo = nombres.length === 1 ? `¡Feliz cumple, ${nombres[0]}! 🎂` : `¡Felices cumples, ${nombres.join(' y ')}! 🎂`;
+        const card = container.querySelector('.bdayHomeCard');
+        if (card) {
+            card.style.transition = 'opacity 0.7s ease, transform 0.7s cubic-bezier(0.2,0.8,0.4,1)';
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1) translateY(0)';
+                card.querySelectorAll('.bdayPalItem').forEach((el, i) => {
+                    setTimeout(() => { el.style.opacity='1'; el.style.transform='translateX(0)'; }, 350 + i * 120);
+                });
+            }, 50);
+        }
+    }, tiempoFadeOut + 900);
+}
 
-        const palmaresHTML = premiosOrdenados.length > 0 ? `
-            <div style="background:rgba(0,0,0,0.22);border:1px solid rgba(200,168,48,0.18);border-radius:12px;padding:12px 14px;margin-bottom:16px;position:relative;z-index:1;text-align:left;">
-                ${premiosOrdenados.map((p, i) => `
-                <div id="bdayPalItem_${i}" style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:${i<premiosOrdenados.length-1?'1px solid rgba(255,255,255,0.05)':'none'};opacity:0;transform:translateX(-10px);transition:opacity 0.35s ease ${i*110+350}ms,transform 0.35s ease ${i*110+350}ms;">
-                    <span style="font-size:20px;flex-shrink:0;">${_bdayGetEmoji(p.Terna)}</span>
-                    <div>
-                        <div style="font-size:11px;font-weight:bold;color:${_bdayEsOro(p.Terna)?'#FFD700':'rgba(255,255,255,0.8)'};text-transform:uppercase;letter-spacing:0.5px;">${_bdayEsOro(p.Terna)?'🏆 Culposo de Oro':p.Terna}</div>
-                        <div style="font-size:10px;color:rgba(255,255,255,0.28);margin-top:1px;">${p.Año||''}</div>
-                    </div>
-                </div>`).join('')}
-            </div>` : '';
+function _bdayMostrarCard(cumpleaneros, premiosOrdenados, container, invisible) {
+    const nombres = cumpleaneros.map(c => c.n);
+    const fotos = nombres.map(n => FOTOS[n] || '');
+    const titulo = nombres.length === 1 ? `¡Feliz cumple, ${nombres[0]}! 🎂` : `¡Felices cumples, ${nombres.join(' y ')}! 🎂`;
 
-        const card = document.createElement('div');
-        card.id = 'bdayHomeCard';
-        card.style.cssText = 'background:linear-gradient(135deg,#2a0e50 0%,#1a0830 50%,#2a1000 100%);border:2px solid #FFD700;border-radius:20px;padding:22px 20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;animation:cardPulse 2s ease-in-out infinite;opacity:0;transform:scale(0.93) translateY(16px);transition:opacity 0.8s cubic-bezier(0.2,0.8,0.4,1),transform 0.8s cubic-bezier(0.2,0.8,0.4,1);';
-        card.innerHTML = `
-            <div id="bdayCardStars" style="position:absolute;inset:0;pointer-events:none;"></div>
-            <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.04),transparent);background-size:200% 100%;animation:cardShimmer 3s linear infinite;pointer-events:none;"></div>
-            ${avatarsHTML}
-            <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:4px;position:relative;z-index:1;text-shadow:0 0 15px rgba(255,215,0,0.4);">${titulo}</div>
-            <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:${premiosOrdenados.length?'14px':'0'};position:relative;z-index:1;">¡LA CULPA TE SALUDA! 🎉</div>
-            ${palmaresHTML}
-            <div style="font-size:26px;letter-spacing:6px;position:relative;z-index:1;display:inline-block;animation:emojiWiggle 1.5s ease-in-out infinite;">🎉🎈🎁</div>`;
+    const palmaresHTML = premiosOrdenados.length ? `
+        <div style="background:rgba(0,0,0,0.22);border:1px solid rgba(200,168,48,0.18);border-radius:12px;padding:12px 14px;margin-bottom:14px;position:relative;z-index:1;text-align:left;">
+            ${premiosOrdenados.map((p, i) => `
+            <div class="bdayPalItem" style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:${i<premiosOrdenados.length-1?'1px solid rgba(255,255,255,0.05)':'none'};opacity:0;transform:translateX(-10px);transition:opacity 0.35s ease,transform 0.35s ease;">
+                <span style="font-size:20px;flex-shrink:0;">${_bdayGetEmoji(p.Terna)}</span>
+                <div>
+                    <div style="font-size:11px;font-weight:bold;color:${_bdayEsOro(p.Terna)?'#FFD700':'rgba(255,255,255,0.8)'};text-transform:uppercase;letter-spacing:.5px;">${_bdayEsOro(p.Terna)?'🏆 Culposo de Oro':p.Terna}</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:1px;">${p.Año||''}</div>
+                </div>
+            </div>`).join('')}
+        </div>` : '';
 
-        container.innerHTML = '';
-        container.appendChild(card);
+    const avatarsHTML = nombres.map((n, i) =>
+        `<div style="width:70px;height:70px;border-radius:50%;background:url('${fotos[i]}') center top/cover;border:3px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.5);margin:0 auto 10px;position:relative;z-index:1;"></div>`
+    ).join('');
 
-        // Estrellas
-        const starsEl = document.getElementById('bdayCardStars');
+    const card = document.createElement('div');
+    card.className = 'bdayHomeCard';
+    card.style.cssText = `background:linear-gradient(135deg,#2a0e50 0%,#1a0830 50%,#2a1000 100%);border:2px solid #FFD700;border-radius:20px;padding:22px 20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;animation:cardPulse 2s ease-in-out infinite;opacity:${invisible?'0':'1'};transform:${invisible?'scale(0.92) translateY(16px)':'scale(1) translateY(0)'};`;
+    card.innerHTML = `
+        <div id="bdayCardStars" style="position:absolute;inset:0;pointer-events:none;"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.04),transparent);background-size:200% 100%;animation:cardShimmer 3s linear infinite;pointer-events:none;"></div>
+        ${avatarsHTML}
+        <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:4px;position:relative;z-index:1;text-shadow:0 0 15px rgba(255,215,0,0.4);">${titulo}</div>
+        <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:${premiosOrdenados.length?'14px':'0'};position:relative;z-index:1;">¡LA CULPA TE SALUDA! 🎉</div>
+        ${palmaresHTML}
+        <div style="font-size:26px;letter-spacing:6px;position:relative;z-index:1;display:inline-block;animation:emojiWiggle 1.5s ease-in-out infinite;">🎉🎈🎁</div>`;
+
+    container.innerHTML = '';
+    container.appendChild(card);
+
+    // Estrellas
+    const starsEl = document.getElementById('bdayCardStars');
+    if (starsEl) {
         ['✨','⭐','🌟','💫','⚡','✨','⭐','🌟'].forEach(em => {
             const el = document.createElement('div');
             el.style.cssText = `position:absolute;font-size:12px;top:${Math.random()*80+5}%;left:${Math.random()*90+5}%;animation:starFloat ${Math.random()*2+1.5}s ease-in-out ${Math.random()*2}s infinite;`;
             el.textContent = em;
             starsEl.appendChild(el);
         });
+    }
 
-        // Entrada de card
-        requestAnimationFrame(() => requestAnimationFrame(() => {
+    // Si no es invisible, animar entrada directamente
+    if (!invisible) {
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.92) translateY(16px)';
+        card.style.transition = 'opacity 0.7s ease, transform 0.7s cubic-bezier(0.2,0.8,0.4,1)';
+        setTimeout(() => {
             card.style.opacity = '1';
             card.style.transform = 'scale(1) translateY(0)';
-            // Palmares escalonado
-            premiosOrdenados.forEach((_, i) => {
-                setTimeout(() => {
-                    const el = document.getElementById('bdayPalItem_' + i);
-                    if (el) { el.style.opacity = '1'; el.style.transform = 'translateX(0)'; }
-                }, 350 + i * 110);
+            card.querySelectorAll('.bdayPalItem').forEach((el, i) => {
+                setTimeout(() => { el.style.opacity='1'; el.style.transform='translateX(0)'; }, 350 + i * 120);
             });
-        }));
-    }, tiempoFinal + 850);
+        }, 50);
+    }
 }
 
 function spawnConfetti() {
@@ -4284,7 +4345,7 @@ function spawnConfetti() {
     container.id = 'confettiContainer';
     container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;';
     document.body.appendChild(container);
-    const colors = ['#FFD700','#C8A830','#ff6b6b','#a855f7','#60a5fa','#34d399','#f97316'];
+    const colors = ['#FFD700','#C8A830','#C8A830','#a855f7','#60a5fa','#34d399','#f97316'];
     for (let i = 0; i < 60; i++) {
         const el = document.createElement('div');
         el.style.cssText = `position:absolute;left:${Math.random()*100}vw;width:${Math.random()*8+4}px;height:${Math.random()*8+4}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'2px'};animation:confettiFall ${Math.random()*3+3}s ${Math.random()*5}s linear infinite;opacity:0;`;
@@ -4325,14 +4386,46 @@ function getTodayStr() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-function getWordOfDay() {
+function getWordOfDay(poolOverride) {
   const today = getTodayStr();
-  // Seed determinista por fecha — misma palabra todo el día, distinta cada día
+
+  // Palabras ya jugadas hardcodeadas — no vuelven a salir
+  const FIJAS = {
+    '2026-03-12': 'REYES',
+    '2026-03-13': 'CULPOSOS',
+    '2026-03-14': 'CULPA',
+    '2026-03-15': 'GUARIDA',
+    '2026-03-16': 'AWARDS',
+    '2026-03-17': 'TROLOS',
+    '2026-03-18': 'ABSTENCION',
+    '2026-03-19': 'DETENDRAN',
+  };
+  if (FIJAS[today]) return FIJAS[today];
+
+  // Pool: si viene del Sheet usarlo, sino usar todas menos las fijas
+  let pool;
+  if (poolOverride) {
+    pool = poolOverride;
+  } else {
+    const yaJugadas = new Set(Object.values(FIJAS).map(p => norm(p)));
+    pool = PALABRAS.filter(p => !yaJugadas.has(norm(p)));
+  }
+
+  if (!pool.length) pool = [...PALABRAS]; // fallback si se agotaron
+
+  // Seed de la fecha — impredecible, distinta cada día, igual para todos
   let seed = 0;
   for (let i = 0; i < today.length; i++) seed = (seed * 31 + today.charCodeAt(i)) >>> 0;
-  // Hoy 2026-03-19 la palabra fue DETENDRAN — la fijamos para no romper partidas ya jugadas
-  if (today === '2026-03-19') return 'DETENDRAN';
-  return norm(PALABRAS[seed % PALABRAS.length]);
+
+  function seededRandom(s) { let x=s; return ()=>{ x=(x*1664525+1013904223)>>>0; return x/4294967296; }; }
+  const rng = seededRandom(seed);
+  const shuffled = [...pool];
+  for (let i = shuffled.length-1; i > 0; i--) {
+    const j = Math.floor(rng() * (i+1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return norm(shuffled[0]);
 }
 function getDayNumber() {
   return Math.floor((new Date() - new Date(2026,2,12)) / 86400000) + 1;
@@ -4354,9 +4447,9 @@ function getNombreFromEmail(email) {
 // ══════════════════════════════════════════════
 // ESTADO DEL JUEGO
 // ══════════════════════════════════════════════
-const TARGET    = getWordOfDay();
+let TARGET    = getWordOfDay(); // se recalcula en initWordle con datos del Sheet
+let COLS      = TARGET.length;
 const MAX_ROWS  = 6;
-const COLS      = TARGET.length;
 let currentRow  = 0;
 let currentCol  = 0;
 let currentGuess = [];
@@ -4946,6 +5039,21 @@ function setHeader() {
 // ══════════════════════════════════════════════
 async function initWordle() {
     if (document.getElementById('grid-wrapper').children.length > 0) return;
+
+    // Recalcular TARGET con palabras ya jugadas del Sheet
+    try {
+        const rows = await cargarWordleSheet();
+        const yaUsadas = new Set(rows.map(r => norm(r.Palabra || '')).filter(Boolean));
+        // Sumar las fijas también
+        ['REYES','CULPOSOS','CULPA','GUARIDA','AWARDS','TROLOS','ABSTENCION','DETENDRAN'].forEach(p => yaUsadas.add(p));
+        const pool = PALABRAS.filter(p => !yaUsadas.has(norm(p)));
+        TARGET = getWordOfDay(pool.length ? pool : null);
+        COLS = TARGET.length;
+    } catch(e) {
+        console.warn('Error calculando palabra del día:', e);
+        // TARGET ya tiene el valor por defecto de getWordOfDay()
+    }
+
     buildGrid();
     buildKeyboard();
     setHeader();
