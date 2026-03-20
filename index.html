@@ -4422,6 +4422,7 @@ function getWordOfDay(poolOverride) {
     '2026-03-17': 'TROLOS',
     '2026-03-18': 'ABSTENCION',
     '2026-03-19': 'DETENDRAN',
+    '2026-03-20': 'PROTEINA',
   };
   if (FIJAS[today]) return FIJAS[today];
 
@@ -5063,18 +5064,29 @@ function setHeader() {
 async function initWordle() {
     if (document.getElementById('grid-wrapper').children.length > 0) return;
 
-    // Recalcular TARGET con palabras ya jugadas del Sheet
+    // Recalcular TARGET con palabras ya jugadas del Sheet (por fecha, no por jugador)
     try {
         const rows = await cargarWordleSheet();
-        const yaUsadas = new Set(rows.map(r => norm(r.Palabra || '')).filter(Boolean));
-        // Sumar las fijas también
-        ['REYES','CULPOSOS','CULPA','GUARIDA','AWARDS','TROLOS','ABSTENCION','DETENDRAN'].forEach(p => yaUsadas.add(p));
-        const pool = PALABRAS.filter(p => !yaUsadas.has(norm(p)));
-        TARGET = getWordOfDay(pool.length ? pool : null);
-        COLS = TARGET.length;
+        // ¿Ya hubo alguien que jugó HOY? Si sí, esa es la palabra del día para todos
+        const hoyStr = getTodayStr();
+        const filaHoy = rows.find(r => r.Fecha === hoyStr && r.Palabra);
+        if (filaHoy) {
+            TARGET = norm(filaHoy.Palabra);
+            COLS = TARGET.length;
+        } else {
+            // Nadie jugó hoy todavía → calcular palabra nueva excluyendo fechas pasadas
+            const palabrasPorFecha = {};
+            rows.forEach(r => {
+                if (r.Fecha && r.Palabra && r.Fecha !== hoyStr) palabrasPorFecha[r.Fecha] = norm(r.Palabra);
+            });
+            const yaUsadas = new Set(Object.values(palabrasPorFecha));
+            ['REYES','CULPOSOS','CULPA','GUARIDA','AWARDS','TROLOS','ABSTENCION','DETENDRAN','PROTEINA','POMBOKO','FUTBOL','CULPAPP'].forEach(p => yaUsadas.add(p));
+            const pool = PALABRAS.filter(p => !yaUsadas.has(norm(p)));
+            TARGET = getWordOfDay(pool.length ? pool : null);
+            COLS = TARGET.length;
+        }
     } catch(e) {
         console.warn('Error calculando palabra del día:', e);
-        // TARGET ya tiene el valor por defecto de getWordOfDay()
     }
 
     buildGrid();
