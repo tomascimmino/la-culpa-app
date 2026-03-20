@@ -5066,24 +5066,35 @@ async function initWordle() {
 
     // Recalcular TARGET con palabras ya jugadas del Sheet (por fecha, no por jugador)
     try {
-        const rows = await cargarWordleSheet();
-        // ¿Ya hubo alguien que jugó HOY? Si sí, esa es la palabra del día para todos
         const hoyStr = getTodayStr();
-        const filaHoy = rows.find(r => r.Fecha === hoyStr && r.Palabra);
-        if (filaHoy) {
-            TARGET = norm(filaHoy.Palabra);
+        // Las FIJAS tienen prioridad absoluta — no consultar el Sheet para estas fechas
+        const FIJAS_HOY = {
+            '2026-03-12':'REYES','2026-03-13':'CULPOSOS','2026-03-14':'CULPA',
+            '2026-03-15':'GUARIDA','2026-03-16':'AWARDS','2026-03-17':'TROLOS',
+            '2026-03-18':'ABSTENCION','2026-03-19':'DETENDRAN','2026-03-20':'PROTEINA',
+        };
+        if (FIJAS_HOY[hoyStr]) {
+            TARGET = FIJAS_HOY[hoyStr];
             COLS = TARGET.length;
         } else {
-            // Nadie jugó hoy todavía → calcular palabra nueva excluyendo fechas pasadas
-            const palabrasPorFecha = {};
-            rows.forEach(r => {
-                if (r.Fecha && r.Palabra && r.Fecha !== hoyStr) palabrasPorFecha[r.Fecha] = norm(r.Palabra);
-            });
-            const yaUsadas = new Set(Object.values(palabrasPorFecha));
-            ['REYES','CULPOSOS','CULPA','GUARIDA','AWARDS','TROLOS','ABSTENCION','DETENDRAN','PROTEINA','POMBOKO','FUTBOL','CULPAPP'].forEach(p => yaUsadas.add(p));
-            const pool = PALABRAS.filter(p => !yaUsadas.has(norm(p)));
-            TARGET = getWordOfDay(pool.length ? pool : null);
-            COLS = TARGET.length;
+            const rows = await cargarWordleSheet();
+            // ¿Ya hubo alguien que jugó HOY? Si sí, esa es la palabra del día para todos
+            const filaHoy = rows.find(r => r.Fecha === hoyStr && r.Palabra);
+            if (filaHoy) {
+                TARGET = norm(filaHoy.Palabra);
+                COLS = TARGET.length;
+            } else {
+                // Nadie jugó hoy todavía → calcular palabra nueva excluyendo fechas pasadas
+                const palabrasPorFecha = {};
+                rows.forEach(r => {
+                    if (r.Fecha && r.Palabra && r.Fecha !== hoyStr) palabrasPorFecha[r.Fecha] = norm(r.Palabra);
+                });
+                const yaUsadas = new Set(Object.values(palabrasPorFecha));
+                ['REYES','CULPOSOS','CULPA','GUARIDA','AWARDS','TROLOS','ABSTENCION','DETENDRAN','PROTEINA','POMBOKO','FUTBOL','CULPAPP'].forEach(p => yaUsadas.add(p));
+                const pool = PALABRAS.filter(p => !yaUsadas.has(norm(p)));
+                TARGET = getWordOfDay(pool.length ? pool : null);
+                COLS = TARGET.length;
+            }
         }
     } catch(e) {
         console.warn('Error calculando palabra del día:', e);
