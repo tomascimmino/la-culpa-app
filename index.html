@@ -3622,8 +3622,8 @@ function showTab(tabName, el) {
   .kb-row { display:flex; gap:4px; justify-content:center; }
   .key {
     height:min(50px,10.5vw); min-width:min(34px,7.2vw); padding:0 min(8px,1.8vw);
-    border-radius:7px; border:none;
-    background:rgba(255,255,255,0.1); color:white;
+    border-radius:7px; border:1px solid rgba(200,168,48,0.3);
+    background:rgba(200,168,48,0.12); color:rgba(255,255,255,0.95);
     font-family:'Bebas Neue',sans-serif; font-size:clamp(14px,3.5vw,18px); letter-spacing:1px;
     cursor:pointer; transition:background .15s, transform .08s;
     display:flex; align-items:center; justify-content:center;
@@ -3631,9 +3631,14 @@ function showTab(tabName, el) {
   }
   .key:active { transform:scale(.93); }
   .key.wide { min-width:min(56px,11.5vw); font-size:clamp(10px,2.6vw,13px); }
-  .key.correct { background:var(--green); }
-  .key.present { background:var(--yellow); }
-  .key.absent  { background:var(--gray); color:rgba(255,255,255,0.35); }
+  .key.correct { background:var(--green); border-color:var(--green); color:white; }
+  .key.present { background:var(--yellow); border-color:var(--yellow); color:white; }
+  .key.absent  {
+    background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.08);
+    color:rgba(255,255,255,0.25);
+    text-decoration:line-through;
+    text-decoration-color:rgba(255,255,255,0.3);
+  }
  
   /* RESULT PANEL */
   #result-panel {
@@ -4361,6 +4366,10 @@ const PALABRAS = [
   "ONLYFANS","PEPINO","LEON","PERON","ESTATUTO","JUNTADAS","FUTBOL","PORTUARIO",
   "PARTIDO","ESCRIBANO","GUILLOTE","TOTORRO","DOCTOR","JAPON","OCHO","CONCLAVE","RABONA",
   "PROTEINA","PASTOR",
+  "MARBLE","CORREGIDORES","MALKA","TOMAS","RAMIRO","CAAMANO","CATALINA","JULIETA",
+  "MANUELA","MATEO","TASSARA","SANTIAGO","GONZALO","ASISTENTE","EXITOSO","PAJERO",
+  "DEPORTISTA","POLLERA","DAMAJUANA","ROMPEBOLAS","ROMPELA","MONTE","PROYECTO",
+  "SECUENCIA","MARIHUANA","ESCABIO","DOMINADAS","TIRRIDOJO","CHICAS","SALUDOS",
 ];
  
 function norm(s) {
@@ -4600,7 +4609,7 @@ function submitGuess() {
         }
         prog.push({ letters, states });
       }
-      localStorage.setItem('wc_progress_' + getTodayStr(), JSON.stringify({ guesses: prog, tiempo: timerSeconds }));
+      localStorage.setItem('wc_progress_' + getTodayStr(), JSON.stringify({ guesses: prog, tiempo: timerSeconds, savedAt: Date.now() }));
     }, COLS * 100 + 500);
   } else {
     localStorage.removeItem('wc_progress_' + getTodayStr());
@@ -4716,7 +4725,7 @@ async function recordAndShow(won, attempts) {
       }
       if (line) gridEmojis += line + '\n';
     }
-    localStorage.setItem(playedKey, JSON.stringify({ gano: won, intentos: attempts, tiempo: finalTime, grid: gridEmojis }));
+    localStorage.setItem(playedKey, JSON.stringify({ gano: won, intentos: attempts, tiempo: finalTime, grid: gridEmojis, palabra: TARGET }));
   }, animDelay);
 
 // Guardar en Sheet
@@ -5088,10 +5097,17 @@ async function initWordle() {
         setTimeout(() => loadRankingHoy(nombre), 300);
     }
 
-    // 1) Chequeo local (rápido)
+    // 1) Chequeo local (rápido) — solo válido si la palabra coincide con la de hoy
     if (saved) {
-        mostrarResultadoBloqueado(JSON.parse(saved));
-        return;
+        const savedData = JSON.parse(saved);
+        // Si la palabra guardada no coincide con TARGET, ignorar y dejar jugar
+        if (savedData.palabra && norm(savedData.palabra) !== TARGET) {
+            localStorage.removeItem(playedKey);
+            localStorage.removeItem('wc_progress_' + today);
+        } else {
+            mostrarResultadoBloqueado(savedData);
+            return;
+        }
     }
 
     // 2) Chequeo cross-device: buscar en el Sheet si este nombre ya jugó hoy
@@ -5130,8 +5146,10 @@ async function initWordle() {
     if (savedProgress) {
         try {
             const prog = JSON.parse(savedProgress);
-            // Reanudar timer desde el tiempo ya jugado
-            timerSeconds = prog.tiempo || 0;
+            // Reanudar timer: sumar el tiempo ya jugado + tiempo transcurrido desde que se guardó
+            const tiempoGuardado = prog.tiempo || 0;
+            const deltaDesdeGuardado = prog.savedAt ? Math.floor((Date.now() - prog.savedAt) / 1000) : 0;
+            timerSeconds = tiempoGuardado + deltaDesdeGuardado;
             timerStarted = true;
             timerStart = Date.now() - (timerSeconds * 1000);
             updateTimerDisplay(timerSeconds);
