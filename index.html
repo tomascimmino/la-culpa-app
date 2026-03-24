@@ -574,11 +574,11 @@
     <!-- 8 Reyes -->
     <div style="position:relative;z-index:1;font-family:'Cinzel',Georgia,serif;color:#C8A830;font-size:11px;letter-spacing:5px;text-transform:uppercase;margin-top:10px;opacity:0.85;animation:splashReveal 0.8s ease-out 0.9s both;">8 &nbsp; R E Y E S</div>
     <!-- Gang sign culposo -->
-    <img src="https://i.imgur.com/CASpnsx.png"
+    <img src="https://i.imgur.com/I1Ljart.png"
          style="position:absolute;top:calc(50% + 80px);right:8px;width:160px;height:160px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;opacity:0;z-index:2;animation:gangSign 1s cubic-bezier(0.2,0.8,0.4,1) 1.1s forwards, gangFloat 3.5s ease-in-out 2.2s infinite;">
     <!-- Gang sign espejado izquierda -->
     <div style="position:absolute;top:calc(50% + 80px);left:8px;width:160px;height:160px;opacity:0;z-index:2;animation:gangSignIzq 1s cubic-bezier(0.2,0.8,0.4,1) 1.1s forwards, gangFloatIzq 3.5s ease-in-out 2.2s infinite;">
-        <img src="https://i.imgur.com/CASpnsx.png" style="width:100%;height:100%;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;">
+        <img src="https://i.imgur.com/I1Ljart.png" style="width:100%;height:100%;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;">
     </div>
 </div>
 
@@ -1344,7 +1344,7 @@ function avHTML(nombre) {
       const driveFolderId = driveLink ? (driveLink.match(/folders\/([^?]+)/)||[])[1] : null;
         const driveBtn = modoDetalle ? (driveLink
             ? `<div style="margin-top:16px;" id="carrusel_${ri}">
-                <div style="position:relative;border-radius:14px;overflow:hidden;background:#0a0614;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;">
+                <div style="position:relative;border-radius:14px;overflow:hidden;background:#0a0614;display:flex;align-items:center;justify-content:center;min-height:200px;max-height:520px;">
                     <div id="carruselSlides_${ri}" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
                         <div style="color:rgba(255,255,255,0.3);font-size:13px;">⏳ Cargando fotos...</div>
                     </div>
@@ -1405,7 +1405,7 @@ function avHTML(nombre) {
                         ${driveBtn}
                         ${botonesAdmin}
                         <div style="display:flex;gap:8px;margin:18px 0 4px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.07);">
-                            <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.12)'};background:${yoLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yoLike?'#C8A830':'rgba(255,255,255,0.5)'};"><img src='https://i.imgur.com/CASpnsx.png' style='width:26px;height:26px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:4px;flex-shrink:0;'> ${likes.length}</button>
+                            <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.12)'};background:${yoLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yoLike?'#C8A830':'rgba(255,255,255,0.5)'};"><img src='https://i.imgur.com/I1Ljart.png' style='width:26px;height:26px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:4px;flex-shrink:0;'> ${likes.length}</button>
                             <button onclick="reaccionarJuntada(${ri},'corona')" style="display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCorona?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.12)'};background:${yoCorona?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCorona?'#FFD700':'rgba(255,255,255,0.5)'};">👑 ${coronas.length}</button>
                         </div>
                         <div style="margin-top:16px;">
@@ -1430,7 +1430,7 @@ function avHTML(nombre) {
                 </div>
             </div>
             <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid rgba(255,255,255,0.06);">
-                <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.1)'};background:${yoLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yoLike?'#C8A830':'rgba(255,255,255,0.45)'};"><img src='https://i.imgur.com/CASpnsx.png' style='width:26px;height:26px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:4px;flex-shrink:0;'> ${likes.length}</button>
+                <button onclick="reaccionarJuntada(${ri},'like')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.1)'};background:${yoLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yoLike?'#C8A830':'rgba(255,255,255,0.45)'};"><img src='https://i.imgur.com/I1Ljart.png' style='width:26px;height:26px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:4px;flex-shrink:0;'> ${likes.length}</button>
                 <button onclick="reaccionarJuntada(${ri},'corona')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yoCorona?'rgba(255,215,0,0.3)':'rgba(255,255,255,0.1)'};background:${yoCorona?'rgba(255,215,0,0.12)':'rgba(255,255,255,0.05)'};color:${yoCorona?'#FFD700':'rgba(255,255,255,0.45)'};">👑 ${coronas.length}</button>
                 <button onclick="toggleComentariosJuntada('cj_${ri}_feed')" style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.45);">💬 ${comentarios.length}</button>
                 ${usuario ? `<span style="margin-left:auto;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;${asistio?'background:rgba(76,175,80,0.2);color:#4CAF50;':'background:rgba(244,67,54,0.18);color:#f44336;'}">${asistio?'✅ FUISTE':'❌ NO FUISTE'}</span>` : ''}
@@ -3298,7 +3298,7 @@ function showTab(tabName, el) {
                     <div style="color:rgba(255,255,255,0.9);font-size:14px;line-height:1.5;margin-bottom:10px;">${c.Texto}</div>
                     <button onclick="likearComentario('${c.ID}','${destinatario}')"
                         style="background:${yaDiLike ? 'rgba(200,168,48,0.12)' : 'rgba(255,255,255,0.05)'};border:1.5px solid ${yaDiLike ? 'rgba(200,168,48,0.5)' : 'rgba(255,255,255,0.15)'};color:${yaDiLike ? '#C8A830' : 'rgba(255,255,255,0.5)'};padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;">
-                        <img src='https://i.imgur.com/CASpnsx.png' style='width:22px;height:22px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:3px;vertical-align:middle;'> ${likes.length || ''}
+                        <img src='https://i.imgur.com/I1Ljart.png' style='width:22px;height:22px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:3px;vertical-align:middle;'> ${likes.length || ''}
                     </button>
                 </div>`;
             }).join('');
@@ -3967,9 +3967,9 @@ loadSong(currentIndex);  let reproData = { total: 0, canciones: [] };  async fun
         if (!slidesEl) return;
 
         const foto = fotos[idx];
-        slidesEl.innerHTML = `<a href="${foto.full}" target="_blank" style="display:block;width:100%;height:100%;">
+        slidesEl.innerHTML = `<a href="${foto.full}" target="_blank" style="display:block;width:100%;">
             <img src="${foto.thumb}" 
-                style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;transition:opacity 0.25s;"
+                style="width:100%;height:auto;max-height:520px;object-fit:contain;display:block;transition:opacity 0.25s;"
                 onerror="this.style.display='none';this.parentElement.parentElement.querySelector('div').style.display='flex'">
         </a>`;
 
@@ -5059,7 +5059,14 @@ async function initWordle() {
                 rows.forEach(r => {
                     if (r.Fecha && r.Palabra && r.Fecha !== hoyStr) palabrasPorFecha[r.Fecha] = norm(r.Palabra);
                 });
-                const yaUsadas = new Set(Object.values(palabrasPorFecha));
+                // MATUKA y RABONA salieron por bug (solo a un jugador) — devolverlas al pool
+                delete palabrasPorFecha['2026-03-21']; // era PORTUARIO el oficial, MATUKA fue el bug
+                // Pero sí excluir PORTUARIO y AMIGOS que sí salieron bien
+                // Reconstruir solo con las palabras correctas de esas fechas
+                const palabrasBug = new Set(['MATUKA','RABONA']);
+                const yaUsadas = new Set(
+                    Object.values(palabrasPorFecha).filter(p => !palabrasBug.has(p))
+                );
                 ['REYES','CULPOSOS','CULPA','GUARIDA','AWARDS','TROLOS','ABSTENCION','DETENDRAN','PROTEINA','POMBOKO','FUTBOL','CULPAPP'].forEach(p => yaUsadas.add(p));
                 const pool = PALABRAS.filter(p => !yaUsadas.has(norm(p)));
                 TARGET = getWordOfDay(pool.length ? pool : null);
