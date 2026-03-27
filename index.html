@@ -4827,7 +4827,7 @@ async function loadRankingHoy(nombreParam) {
           <div class="rank-name">${p.Nombre}${esYo?' <span style="color:var(--gold);font-size:11px;">(vos)</span>':''}</div>
           <div class="rank-detail">${detalle}</div>
         </div>
-        ${i===0?'<div class="rank-badge">👑 REY HOY</div>':''}
+        ${i===0?`<div class="rank-badge">${['Cata','Lola','Sami','Leila','Juli','Manu'].includes(p.Nombre)?'💎 REINA HOY':'👑 REY HOY'}</div>`:''}
       </div>`;
     }).join('');
 
