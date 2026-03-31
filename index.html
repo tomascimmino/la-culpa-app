@@ -1254,7 +1254,7 @@ function avHTML(nombre) {
         const feedLabel = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div><div style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:2px;text-transform:uppercase;">feed reciente</div><div style="flex:1;height:1px;background:rgba(255,255,255,0.08);"></div></div>`;
 
         const allRows = await cargarMuroHome();
-        const posts = allRows.filter(c => c.Tipo === 'post' && c.Destinatario === 'MURO');
+        const posts = allRows.filter(c => (c.Tipo === 'post' || c.Tipo === 'encuesta') && c.Destinatario === 'MURO');
 
         const feedItems = [];
         ultimasJuntadas.forEach(j => {
@@ -1590,31 +1590,61 @@ async function reaccionarComentario(id, tipo, destinatario) {
     // ═══════════════════════════════════════
     // MURO
     // ═══════════════════════════════════════
-    let muroPostsCache = [];
+    
+let muroPostsCache = [];
+window._pollVoting = window._pollVoting || new Set();
 
-    function abrirModalNuevoPost() {
-        const usuario = getUsuarioActual();
-        if (!usuario) return;
-        const foto = FOTOS[usuario.Nombre] || '';
-        const modal = document.createElement('div');
-        modal.id = 'modalNuevoPost';
-        modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;';
-        modal.innerHTML = `<div style="background:linear-gradient(135deg,#1E1040,#2A1455);border:1.5px solid rgba(200,168,48,0.3);border-radius:20px;padding:24px;width:100%;max-width:420px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-                <div style="color:#C8A830;font-size:16px;font-weight:bold;">✍️ Nueva publicación</div>
-                <button onclick="document.getElementById('modalNuevoPost').remove()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;">✕</button>
-            </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-                <div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${foto}') center top/cover;"></div>
-                <textarea id="nuevoPostTexto" placeholder="que procede, loko?" style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:10px;color:white;font-size:14px;padding:10px;resize:none;height:100px;font-family:inherit;width:100%;"></textarea>
-            </div>
-            <div style="display:flex;justify-content:flex-end;margin-top:14px;gap:10px;">
-                <div id="nuevoPostMsg" style="flex:1;font-size:13px;align-self:center;"></div>
-                <button onclick="publicarPost()" style="background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#1E1E3F;padding:10px 24px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">✉️ Publicar</button>
-            </div>
-        </div>`;
-        document.body.appendChild(modal);
-    }
+   function abrirModalNuevoPost() {
+    const usuario = getUsuarioActual();
+    if (!usuario) return;
+    const foto = FOTOS[usuario.Nombre] || '';
+    const modal = document.createElement('div');
+    modal.id = 'modalNuevoPost';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px;';
+    modal.innerHTML = `<div style="background:linear-gradient(135deg,#1E1040,#2A1455);border:1.5px solid rgba(200,168,48,0.3);border-radius:20px;padding:24px;width:100%;max-width:420px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div style="color:#C8A830;font-size:16px;font-weight:bold;">✍️ Nueva publicación</div>
+            <button onclick="document.getElementById('modalNuevoPost').remove()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;">✕</button>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+            <div style="width:38px;height:38px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${foto}') center top/cover;"></div>
+            <textarea id="nuevoPostTexto" placeholder="que procede, loko?" style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:10px;color:white;font-size:14px;padding:10px;resize:none;height:100px;font-family:inherit;width:100%;"></textarea>
+        </div>
+       <div style="margin-top:12px;display:flex;align-items:center;gap:8px;">
+    <input type="hidden" id="nuevoPostEsEncuesta" value="0">
+    <button id="btnModoEncuesta" onclick="toggleEncuestaFields()"
+        style="background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.35);color:rgba(255,255,255,0.75);padding:7px 12px;border-radius:999px;font-size:12px;font-weight:bold;cursor:pointer;">
+        📊 Encuesta
+    </button>
+</div>
+        <div id="encuestaFields" style="display:none;margin-top:10px;">
+            <input id="encuestaOp1" placeholder="Opción 1" style="width:100%;margin-bottom:8px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:10px;color:white;font-size:13px;padding:9px;font-family:inherit;">
+            <input id="encuestaOp2" placeholder="Opción 2" style="width:100%;margin-bottom:8px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:10px;color:white;font-size:13px;padding:9px;font-family:inherit;">
+            <input id="encuestaOp3" placeholder="Opción 3 (opcional)" style="width:100%;margin-bottom:8px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:10px;color:white;font-size:13px;padding:9px;font-family:inherit;">
+            <input id="encuestaOp4" placeholder="Opción 4 (opcional)" style="width:100%;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:10px;color:white;font-size:13px;padding:9px;font-family:inherit;">
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:14px;gap:10px;">
+            <div id="nuevoPostMsg" style="flex:1;font-size:13px;align-self:center;"></div>
+            <button onclick="publicarPost()" style="background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#1E1E3F;padding:10px 24px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">✉️ Publicar</button>
+        </div>
+    </div>`;
+    document.body.appendChild(modal);
+}
+
+function toggleEncuestaFields() {
+    const hidden = document.getElementById('nuevoPostEsEncuesta');
+    const fields = document.getElementById('encuestaFields');
+    const btn = document.getElementById('btnModoEncuesta');
+    if (!hidden || !fields || !btn) return;
+
+    const activo = hidden.value === '1';
+    hidden.value = activo ? '0' : '1';
+    fields.style.display = activo ? 'none' : 'block';
+
+    btn.style.borderColor = activo ? 'rgba(139,77,143,0.35)' : 'rgba(200,168,48,0.55)';
+    btn.style.background = activo ? 'rgba(255,255,255,0.05)' : 'rgba(200,168,48,0.14)';
+    btn.style.color = activo ? 'rgba(255,255,255,0.75)' : '#C8A830';
+}
 
     async function cargarMuroHome() {
     try {
@@ -1626,75 +1656,122 @@ async function reaccionarComentario(id, tipo, destinatario) {
     } catch(e) { console.error(e); return []; }
 }
 function renderPostFeedHTML(p, allRows, idx) {
-        const safeId = idx;
-        const postId = p.ID2 || p.ID || p.id || Object.values(p).find(v => v && (v.startsWith('post_') || v.startsWith('com_'))) || '';
-        const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
-        const nombreAutor = cu ? cu.Nombre : p.Autor;
-        const fotoAutor = FOTOS[nombreAutor] || '';
-        const esMio = p.Autor === currentUser;
-        const esAdmin = currentUser === ADMIN_EMAIL;
-        const comentarios = allRows.filter(c => c.Tipo === 'comentario' && c.Destinatario === postId);
-        const usuario = getUsuarioActual();
-        const fotoYo = usuario ? (FOTOS[usuario.Nombre] || '') : '';
+    const safeId = idx;
+    const postId = p.ID2 || p.ID || p.id || '';
+    const esEncuesta = p.Tipo === 'encuesta';
 
-       const comentariosHTML = comentarios.map(c => {
-    const cuC = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
-    const nomC = cuC ? cuC.Nombre : c.Autor;
-    const fotoC = FOTOS[nomC] || '';
-    const esMioC = c.Autor === currentUser;
-    return `<div style="display:flex;gap:8px;margin:8px 0;">
-        <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoC}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
-        <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
-            <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nomC}</div>
-            <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;margin-bottom:6px;">${c.Texto}</div>
-            ${renderCommentReactionButtons(c, postId)}
-            <div style="display:flex;justify-content:flex-end;margin-top:6px;">
-                ${esMioC ? `<button onclick="eliminarComentarioMuro('${getRegistroId(c)}','${postId}')" style="background:none;border:none;color:rgba(244,67,54,0.45);font-size:12px;cursor:pointer;">🗑</button>` : ''}
-            </div>
-        </div>
-    </div>`;
-}).join('');
+    const cu = culpososData.find(c => c.Email && c.Email.toLowerCase() === p.Autor);
+    const nombreAutor = cu ? cu.Nombre : p.Autor;
+    const fotoAutor = FOTOS[nombreAutor] || '';
+    const esMio = p.Autor === currentUser;
+    const esAdmin = currentUser === ADMIN_EMAIL;
 
-      return `<div id="post_${safeId}" style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(107,45,145,0.3);border-radius:16px;margin-bottom:12px;overflow:hidden;">
-            <div style="display:flex;align-items:center;gap:10px;padding:12px 14px 9px;">
-                <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${fotoAutor}') center top/cover;cursor:pointer;" onclick="verPerfilCulposo('${nombreAutor}')"></div>
-                <div style="flex:1;">
-                    <div style="color:#C8A830;font-size:13px;font-weight:bold;cursor:pointer;" onclick="verPerfilCulposo('${nombreAutor}')">${nombreAutor}</div>
-                    <div style="color:rgba(255,255,255,0.3);font-size:11px;">${formatFechaPost(p.Fecha)}</div>
-                </div>
-                <div style="font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(139,77,143,0.2);color:rgba(200,168,48,0.7);border:1px solid rgba(139,77,143,0.3);">✍️ post</div>
-                ${(esMio||esAdmin) ? `<button onclick="eliminarPost('${postId}')" style="background:none;border:1px solid rgba(244,67,54,0.2);color:rgba(244,67,54,0.5);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;margin-left:4px;">🗑</button>` : ''}
-            </div>
-            <div style="color:rgba(255,255,255,0.88);font-size:14px;line-height:1.55;padding:0 14px 12px;">${p.Texto}</div>
-            <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);">
-                ${(() => {
-                    const likes = getReacciones(p, 'Likes');
-                    const coronas = getReacciones(p, 'Coronas');
-                    const yaLike = likes.includes(currentUser);
-                    const yaCorona = coronas.includes(currentUser);
-                    const postIdSafe = String(postId).replace(/'/g, "\\'");
-                    return `
-                        <button onclick="reaccionarComentario('${postIdSafe}','like','${postIdSafe}')"
-                            style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:bold;cursor:pointer;border:1.5px solid ${yaLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.12)'};background:${yaLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yaLike?'#C8A830':'rgba(255,255,255,0.45)'};">
-                            <img src='https://i.imgur.com/I1Ljart.png' style='width:14px;height:14px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:2px;flex-shrink:0;'> ${likes.length || 0}
-                        </button>
-                        <button onclick="reaccionarComentario('${postIdSafe}','corona','${postIdSafe}')"
-                            style="padding:5px 10px;border-radius:999px;font-size:11px;cursor:pointer;border:1.5px solid ${yaCorona?'#FFD700':'rgba(255,255,255,0.12)'};background:${yaCorona?'rgba(255,215,0,0.18)':'rgba(255,255,255,0.05)'};color:${yaCorona?'#FFD700':'rgba(255,255,255,0.7)'};">
-                            👑 ${coronas.length || 0}
-                        </button>
-                        <button onclick="toggleComentariosMuro('feed_${safeId}')" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;margin-left:auto;">💬 ${comentarios.length}</button>`;
-                })()}
-            </div>
-          <div id="feed_${safeId}" style="display:none;padding:0 14px 12px;border-top:1px solid rgba(255,255,255,0.04);">
-                <div id="feedComList_${safeId}">${comentariosHTML}</div>
-                <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
-                    <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoYo}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div>
-                    <input id="feedComInput_${safeId}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
-                    <button onclick="comentarPost('${postId}','feed_${safeId}','feedComInput_${safeId}')" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
+    const comentarios = allRows.filter(c => c.Tipo === 'comentario' && c.Destinatario === postId);
+    const usuario = getUsuarioActual();
+    const fotoYo = usuario ? (FOTOS[usuario.Nombre] || '') : '';
+
+    // ---- Encuesta data ----
+    const opciones = esEncuesta
+        ? String(p.Opciones || '').split('|').map(x => x.trim()).filter(Boolean)
+        : [];
+
+    const votosRaw = esEncuesta
+        ? String(p.Votos || '').split(',').map(x => x.trim()).filter(Boolean)
+        : [];
+
+    const votosPorEmail = {};
+    votosRaw.forEach(v => {
+        const [email, idxStr] = v.split(':');
+        if (!email || idxStr === undefined) return;
+        votosPorEmail[email] = parseInt(idxStr, 10);
+    });
+
+    const totalVotos = Object.keys(votosPorEmail).length;
+    const conteos = opciones.map((_, i) => Object.values(votosPorEmail).filter(v => v === i).length);
+    const maxConteo = conteos.length ? Math.max(...conteos) : 0;
+const miVoto = Object.prototype.hasOwnProperty.call(votosPorEmail, currentUser) ? votosPorEmail[currentUser] : null;
+const votando = window._pollVoting.has(postId);
+    const comentariosHTML = comentarios.map(c => {
+        const cuC = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
+        const nomC = cuC ? cuC.Nombre : c.Autor;
+        const fotoC = FOTOS[nomC] || '';
+        const esMioC = c.Autor === currentUser;
+        return `<div style="display:flex;gap:8px;margin:8px 0;">
+            <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoC}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
+            <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
+                <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nomC}</div>
+                <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;margin-bottom:6px;">${c.Texto}</div>
+                ${renderCommentReactionButtons(c, postId)}
+                <div style="display:flex;justify-content:flex-end;margin-top:6px;">
+                    ${esMioC ? `<button onclick="eliminarComentarioMuro('${getRegistroId(c)}','${postId}')" style="background:none;border:none;color:rgba(244,67,54,0.45);font-size:12px;cursor:pointer;">🗑</button>` : ''}
                 </div>
             </div>
         </div>`;
-    }
+    }).join('');
+
+    const likes = getReacciones(p, 'Likes');
+    const coronas = getReacciones(p, 'Coronas');
+    const yaLike = likes.includes(currentUser);
+    const yaCorona = coronas.includes(currentUser);
+    const postIdSafe = String(postId).replace(/'/g, "\\'");
+
+    return `<div id="post_${safeId}" style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(107,45,145,0.3);border-radius:16px;margin-bottom:12px;overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px 9px;">
+            <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url('${fotoAutor}') center top/cover;cursor:pointer;" onclick="verPerfilCulposo('${nombreAutor}')"></div>
+            <div style="flex:1;">
+                <div style="color:#C8A830;font-size:13px;font-weight:bold;cursor:pointer;" onclick="verPerfilCulposo('${nombreAutor}')">${nombreAutor}</div>
+                <div style="color:rgba(255,255,255,0.3);font-size:11px;">${formatFechaPost(p.Fecha)}</div>
+            </div>
+            <div style="font-size:10px;padding:3px 9px;border-radius:10px;background:${esEncuesta?'rgba(200,168,48,0.15)':'rgba(139,77,143,0.2)'};color:${esEncuesta?'#C8A830':'rgba(200,168,48,0.7)'};border:1px solid ${esEncuesta?'rgba(200,168,48,0.35)':'rgba(139,77,143,0.3)'};">${esEncuesta ? '📊 encuesta' : '✍️ post'}</div>
+            ${(esMio||esAdmin) ? `<button onclick="eliminarPost('${postId}')" style="background:none;border:1px solid rgba(244,67,54,0.2);color:rgba(244,67,54,0.5);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;margin-left:4px;">🗑</button>` : ''}
+        </div>
+
+        <div style="color:rgba(255,255,255,0.9);font-size:15px;line-height:1.5;padding:0 14px 12px;font-weight:${esEncuesta ? 'bold' : 'normal'};">
+            ${p.Texto}
+        </div>
+
+        ${esEncuesta ? `
+        <div style="padding:0 14px 12px;display:flex;flex-direction:column;gap:9px;">
+            ${opciones.map((op, i) => {
+                const count = conteos[i] || 0;
+                const pct = totalVotos > 0 ? Math.round((count / totalVotos) * 100) : 0;
+                const voted = miVoto === i;
+                const winner = count === maxConteo && count > 0;
+                return `
+                <button onclick="votarEncuesta('${postIdSafe}',${i})"
+                    style="position:relative;overflow:hidden;text-align:left;border-radius:12px;padding:0;border:1.5px solid ${voted?'rgba(200,168,48,0.55)':(winner?'rgba(255,215,0,0.5)':'rgba(107,45,145,0.4)')};background:rgba(255,255,255,0.03);cursor:pointer;">
+                    <div style="position:absolute;inset:0;background:${voted?'rgba(200,168,48,0.16)':(winner?'rgba(255,215,0,0.1)':'rgba(107,45,145,0.2)')};width:${miVoto!==null?pct:0}%;transition:width .3s;"></div>
+                    <div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;">
+                        <span style="font-size:13px;color:white;">${voted ? '✓ ' : ''}${op}</span>
+                        <span style="font-size:12px;color:#C8A830;font-weight:bold;">${miVoto!==null ? (pct + '%') : (count + ' votos')}</span>
+                    </div>
+                </button>`;
+            }).join('')}
+            <div style="font-size:11px;color:rgba(255,255,255,0.35);padding-left:2px;">${totalVotos} voto${totalVotos===1?'':'s'} totales</div>
+        </div>` : ''}
+
+        <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);">
+            <button onclick="reaccionarComentario('${postIdSafe}','like','${postIdSafe}')"
+                style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:bold;cursor:pointer;border:1.5px solid ${yaLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.12)'};background:${yaLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yaLike?'#C8A830':'rgba(255,255,255,0.45)'};">
+                <img src='https://i.imgur.com/I1Ljart.png' style='width:14px;height:14px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:2px;flex-shrink:0;'> ${likes.length || 0}
+            </button>
+            <button onclick="reaccionarComentario('${postIdSafe}','corona','${postIdSafe}')"
+                style="padding:5px 10px;border-radius:999px;font-size:11px;cursor:pointer;border:1.5px solid ${yaCorona?'#FFD700':'rgba(255,255,255,0.12)'};background:${yaCorona?'rgba(255,215,0,0.18)':'rgba(255,255,255,0.05)'};color:${yaCorona?'#FFD700':'rgba(255,255,255,0.7)'};">
+                👑 ${coronas.length || 0}
+            </button>
+            <button onclick="toggleComentariosMuro('feed_${safeId}')" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;margin-left:auto;">💬 ${comentarios.length}</button>
+        </div>
+
+        <div id="feed_${safeId}" style="display:none;padding:0 14px 12px;border-top:1px solid rgba(255,255,255,0.04);">
+            <div id="feedComList_${safeId}">${comentariosHTML}</div>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+                <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoYo}') center top/cover;border:1.5px solid rgba(200,168,48,0.3);"></div>
+                <input id="feedComInput_${safeId}" placeholder="Comentar..." style="flex:1;background:rgba(255,255,255,0.05);border:1.5px solid rgba(139,77,143,0.3);border-radius:20px;color:white;font-size:13px;padding:7px 13px;font-family:inherit;">
+                <button onclick="comentarPost('${postId}','feed_${safeId}','feedComInput_${safeId}')" style="background:linear-gradient(135deg,#6B2D91,#4A1D6B);border:none;color:#C8A830;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;">➤</button>
+            </div>
+        </div>
+    </div>`;
+}
 
 function formatFechaPost(fechaStr) {
     if (!fechaStr) return '';
@@ -1717,20 +1794,57 @@ function formatFechaPost(fechaStr) {
         el.style.display = el.style.display === 'none' ? 'block' : 'none';
     }
 
-    async function publicarPost() {
-        const texto = document.getElementById('nuevoPostTexto') ? document.getElementById('nuevoPostTexto').value.trim() : '';
-        const msg = document.getElementById('nuevoPostMsg');
-        if (!texto) return;
-        if (msg) { msg.style.color = '#FFD700'; msg.textContent = '⏳ Publicando...'; }
-        try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'crear_post', autor:currentUser, texto }) });
-            const res = await r.json();
-            if (res.success) {
-                if (msg) { msg.style.color = '#4CAF50'; msg.textContent = '✅ Publicado'; }
-                setTimeout(() => { document.getElementById('modalNuevoPost')?.remove(); renderHome(); }, 800);
-            } else { if (msg) { msg.style.color = '#f44336'; msg.textContent = '❌ ' + res.error; } }
-        } catch { if (msg) { msg.style.color = '#f44336'; msg.textContent = '❌ Error de conexión'; } }
+  async function publicarPost() {
+    const texto = document.getElementById('nuevoPostTexto') ? document.getElementById('nuevoPostTexto').value.trim() : '';
+    const msg = document.getElementById('nuevoPostMsg');
+    if (!texto) return;
+
+    const esEncuesta = document.getElementById('nuevoPostEsEncuesta')?.value === '1';
+    const opciones = esEncuesta
+        ? ['encuestaOp1', 'encuestaOp2', 'encuestaOp3', 'encuestaOp4']
+            .map(id => (document.getElementById(id)?.value || '').trim())
+            .filter(Boolean)
+        : [];
+
+    if (esEncuesta && opciones.length < 2) {
+        if (msg) { msg.style.color = '#f44336'; msg.textContent = '❌ Cargá al menos 2 opciones'; }
+        return;
     }
+
+    if (msg) { msg.style.color = '#FFD700'; msg.textContent = '⏳ Publicando...'; }
+
+    try {
+        const payload = esEncuesta
+            ? { accion:'crear_encuesta', autor:currentUser, pregunta:texto, opciones }
+            : { accion:'crear_post', autor:currentUser, texto };
+
+        const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(payload) });
+        const res = await r.json();
+
+        if (res.success) {
+            if (msg) { msg.style.color = '#4CAF50'; msg.textContent = '✅ Publicado'; }
+            setTimeout(() => { document.getElementById('modalNuevoPost')?.remove(); renderHome(); }, 800);
+        } else {
+            if (msg) { msg.style.color = '#f44336'; msg.textContent = '❌ ' + res.error; }
+        }
+    } catch {
+        if (msg) { msg.style.color = '#f44336'; msg.textContent = '❌ Error de conexión'; }
+    }
+}
+
+    async function votarEncuesta(postId, opcionIdx) {
+    try {
+        const r = await fetch(APPS_SCRIPT_URL, {
+            method:'POST',
+            body:JSON.stringify({ accion:'votar_encuesta', id:postId, email:currentUser, opcionIdx })
+        });
+        const res = await r.json();
+        if (!res.success) throw new Error(res.error || 'No se pudo votar');
+        await renderHome();
+    } catch (e) {
+        alert('❌ ' + (e.message || 'Error al votar'));
+    }
+}
 
    async function reaccionarPost(postId, tipo) {
         // Optimistic: toggle en cache local
