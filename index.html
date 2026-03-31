@@ -873,6 +873,31 @@
         return null;
     }
 
+    // ── SUBIR FOTO A IMGUR ─────────────────────────────────────
+async function subirFotoImgur(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    try {
+        const response = await fetch('https://api.imgur.com/3/image', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Client-ID 7b3b8b2c5e9f1a4' // Reemplazar con Client ID real después
+            },
+            body: formData
+        });
+        const data = await response.json();
+        if (data.success) {
+            return data.data.link;
+        } else {
+            throw new Error(data.data.error);
+        }
+    } catch (error) {
+        console.error('Error subiendo a Imgur:', error);
+        throw error;
+    }
+}
+
     let currentUser = null;
     let juntadasData = [];
     let culpososData = [];
@@ -920,6 +945,34 @@ window.juntadasAsistenteActivo = null;
         const d = new Date(s);
         return isNaN(d.getTime()) ? null : d;
     }
+
+    // ── VERIFICAR SI SE PUEDE CONFIRMAR JUNTADA ─────────────────
+// ── VERIFICAR SI SE PUEDE CONFIRMAR JUNTADA ─────────────────
+function puedeConfirmarJuntada(j) {
+    if (!j.Fecha) return false;
+    // Ya tiene foto → no mostrar botón
+    if (j['Foto Juntada'] || j['Foto juntada']) return false;
+    
+    // Verificar quorum (4 de los 8 originales)
+    const REYES = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+    let reyesConf = 0;
+    REYES.forEach(r => {
+        if (esConfirmadoPositivo(j[r])) reyesConf++;
+    });
+    if (reyesConf < 4) return false;
+    
+    // Verificar fecha/hora
+    const fechaJ = parseFecha(j.Fecha);
+    if (!fechaJ) return false;
+    if (j.Hora) {
+        const [hh, mm] = j.Hora.split(':').map(Number);
+        if (!isNaN(hh)) fechaJ.setHours(hh, mm || 0, 0, 0);
+    } else {
+        fechaJ.setHours(0, 0, 0, 0);
+    }
+    return fechaJ <= new Date();
+}
+
     function esConfirmadoPositivo(val) { return val === 'TRUE' || val === '✓' || val === '1' || val === 1; }
     function esConfirmadoNegativo(val) { return val === 'FALSE' || val === '✗' || val === '2' || val === 2; }
   function estaConfirmado(val)       { return esConfirmadoPositivo(val) || esConfirmadoNegativo(val); }
@@ -1095,16 +1148,27 @@ function avHTML(nombre) {
         const juntadasFuturas = [];
         const juntadasPasadas = [];
 
-        juntadasData.forEach((j, i) => {
-            if (!j.Fecha) return;
-            const f = parseFecha(j.Fecha);
-            if (!f) return;
-            if (f >= hoy) {
-                juntadasFuturas.push({ j, i });
-            } else if (tieneQuorum(j)) {
-                juntadasPasadas.push(j);
-            }
-        });
+   juntadasData.forEach((j, i) => {
+    if (!j.Fecha) return;
+    const f = parseFecha(j.Fecha);
+    if (!f) return;
+    
+    const tieneFoto = j['Foto Juntada'] || j['Foto juntada'];
+    
+    // Una juntada es "realizada" (pasada) si:
+    // - tiene foto (y quorum) [confirmación temprana], o
+    // - la fecha ya pasó (y quorum) [normal]
+    if (tieneFoto && tieneQuorum(j)) {
+        juntadasPasadas.push(j);
+    }
+    else if (!tieneFoto && f < hoy && tieneQuorum(j)) {
+        juntadasPasadas.push(j);
+    }
+    // Las que no son realizadas y son futuras (sin foto) van a agenda
+    else if (!tieneFoto && f >= hoy) {
+        juntadasFuturas.push({ j, i });
+    }
+});
 
         // Ordenar futuras por fecha asc
         juntadasFuturas.sort((a, b) => parseFecha(a.j.Fecha) - parseFecha(b.j.Fecha));
@@ -1172,7 +1236,13 @@ function avHTML(nombre) {
                             ${proximaJuntada.Hora ? `<span>🕐 ${proximaJuntada.Hora.slice(0,5)}</span>` : ''}
                         </div>
                         ${renderContadorAsistencia(proximaJuntada)}
-                        ${estadoHTML}${botonesProxima}
+${estadoHTML}${botonesProxima}
+${puedeConfirmarJuntada(proximaJuntada) ? `
+    <button onclick="abrirModalSubirFoto(${proximaIndex})" 
+        style="width:100%;margin-top:10px;background:linear-gradient(135deg,#4CAF50 0%,#2E7D32 100%);border:none;color:white;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
+        📸 CONFIRMAR JUNTADA CON FOTO
+    </button>
+` : ''}
                     </div>`;
             }
         }
@@ -1988,12 +2058,15 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
     const nombreUsuario = usuario ? usuario.Nombre : '';
     const hoy = new Date(); hoy.setHours(0,0,0,0);
 
-    const pasadas = juntadasData.filter(j => {
-        if (!j.Fecha) return false;
-        const f = parseFecha(j.Fecha);
-        return f && f < hoy && tieneQuorum(j);
-    }).slice().sort((a, b) => parseFecha(b.Fecha) - parseFecha(a.Fecha));
-
+   const pasadas = juntadasData.filter(j => {
+    if (!j.Fecha) return false;
+    const f = parseFecha(j.Fecha);
+    if (!f) return false;
+    const tieneFoto = j['Foto Juntada'] || j['Foto juntada'];
+    
+    // Incluir si tiene foto (y quorum) o si la fecha ya pasó (y quorum)
+    return (tieneFoto && tieneQuorum(j)) || (f < hoy && tieneQuorum(j));
+}).slice().sort((a, b) => parseFecha(b.Fecha) - parseFecha(a.Fecha));
     let totalBannerHTML = '';
     if (nombreUsuario && pasadas.length > 0) {
         const asistTot = pasadas.filter(j => esConfirmadoPositivo(j[nombreUsuario])).length;
@@ -2350,6 +2423,158 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
 
     function cerrarModalProponerJuntada() { document.getElementById('modalProponerJuntada').style.display = 'none'; }
 
+// ── MODAL SUBIR FOTO PARA CONFIRMAR JUNTADA ─────────────────
+// ── MODAL CONFIRMAR JUNTADA CON LINK MANUAL ─────────────────
+function abrirModalSubirFoto(indexJuntada) {
+    const j = juntadasData[indexJuntada];
+    window.juntadaConfirmando = indexJuntada;
+    
+    const modal = document.createElement('div');
+    modal.id = 'modalSubirFoto';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
+    
+    modal.innerHTML = `
+        <div style="background:linear-gradient(135deg,#1e1e3f 0%,#2a2a4f 100%);padding:28px;border-radius:20px;border:2px solid rgba(200,168,48,0.4);max-width:450px;width:100%;text-align:center;">
+            <div style="font-size:48px;margin-bottom:12px;">📸</div>
+            <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:8px;">Confirmar Juntada</div>
+            <div style="color:white;font-size:16px;margin-bottom:4px;">${(j.Descripción || j.Descripcion || 'Juntada').replace(/'/g, "\\'")}</div>
+            <div style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px;">${j.Fecha}</div>
+            
+            <div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:20px;margin-bottom:20px;">
+                <div style="color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:12px;">🔗 Pegá el link de la foto (Imgur, Google Drive, etc)</div>
+                <input type="text" id="fotoLinkInput" placeholder="https://i.imgur.com/..." 
+                    style="width:100%;padding:12px;border-radius:10px;border:2px solid rgba(200,168,48,0.3);background:rgba(30,30,63,0.5);color:white;font-size:14px;">
+                <div id="previewFotoLink" style="margin-top:10px;display:none;">
+                    <img id="previewImgLink" style="max-width:100%;max-height:150px;border-radius:10px;border:2px solid #C8A830;">
+                </div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:12px;">💡 Podés usar Imgur, Google Drive (con link público), o cualquier hosting</div>
+            </div>
+            
+            <div id="subirFotoMsg" style="margin-bottom:12px;font-size:13px;"></div>
+            
+            <div style="display:flex;gap:10px;">
+                <button onclick="cerrarModalSubirFoto()" 
+                    style="flex:1;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);color:white;padding:12px;border-radius:10px;cursor:pointer;">
+                    Cancelar
+                </button>
+                <button onclick="procesarSubirFotoLink()" 
+                    style="flex:1;background:linear-gradient(135deg,#4CAF50 0%,#2E7D32 100%);border:none;color:white;padding:12px;border-radius:10px;font-weight:bold;cursor:pointer;">
+                    ✅ Confirmar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Preview al pegar el link
+    const linkInput = document.getElementById('fotoLinkInput');
+    linkInput.oninput = function() {
+        const url = this.value.trim();
+        const previewDiv = document.getElementById('previewFotoLink');
+        const previewImg = document.getElementById('previewImgLink');
+        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+            previewImg.src = url;
+            previewDiv.style.display = 'block';
+        } else {
+            previewDiv.style.display = 'none';
+        }
+    };
+}
+
+function cerrarModalSubirFoto() {
+    const modal = document.getElementById('modalSubirFoto');
+    if (modal) modal.remove();
+}
+
+async function procesarSubirFotoLink() {
+    console.log('=== INICIANDO procesarSubirFotoLink ===');
+    
+    const linkInput = document.getElementById('fotoLinkInput');
+    const fotoUrl = linkInput ? linkInput.value.trim() : '';
+    
+    console.log('1. fotoUrl:', fotoUrl);
+    
+    if (!fotoUrl) {
+        const msgDiv = document.getElementById('subirFotoMsg');
+        if (msgDiv) msgDiv.innerHTML = '<div style="color:#f44336;">❌ Pegá un link de imagen válido</div>';
+        return;
+    }
+    
+    if (!fotoUrl.startsWith('http://') && !fotoUrl.startsWith('https://')) {
+        const msgDiv = document.getElementById('subirFotoMsg');
+        if (msgDiv) msgDiv.innerHTML = '<div style="color:#f44336;">❌ El link debe empezar con http:// o https://</div>';
+        return;
+    }
+    
+    const modal = document.getElementById('modalSubirFoto');
+    console.log('2. modal existe?', !!modal);
+    
+    const btn = modal ? modal.querySelector('button:last-child') : null;
+    const msgDiv = document.getElementById('subirFotoMsg');
+    const index = window.juntadaConfirmando;
+    
+    console.log('3. index:', index, 'fila a enviar:', index + 2);
+    
+    if (!btn) {
+        console.error('Botón no encontrado');
+        if (msgDiv) msgDiv.innerHTML = '<div style="color:#f44336;">❌ Error interno: botón no encontrado</div>';
+        return;
+    }
+    
+    if (index === undefined) {
+        console.error('index undefined');
+        if (msgDiv) msgDiv.innerHTML = '<div style="color:#f44336;">❌ Error: No se pudo identificar la juntada</div>';
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.textContent = '⏳ Guardando...';
+    if (msgDiv) msgDiv.innerHTML = '<div style="color:#FFD700;">📤 Enviando... <span class="spinner-sm"></span></div>';
+    
+    try {
+        const payload = {
+            accion: 'confirmar_juntada_con_foto',
+            fila: index + 2,
+            fotoUrl: fotoUrl
+        };
+        console.log('4. Enviando payload:', JSON.stringify(payload));
+        
+        const r = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        
+        console.log('5. Response status:', r.status);
+        
+        const res = await r.json();
+        console.log('6. Response completa:', JSON.stringify(res));
+        
+        if (res.success) {
+            if (msgDiv) msgDiv.innerHTML = '<div style="color:#4CAF50;">✅ ¡Juntada confirmada! 🎉</div>';
+            btn.textContent = '✅ Confirmada';
+            
+            setTimeout(() => {
+                cerrarModalSubirFoto();
+                recargarJuntadas().then(() => {
+                    renderHome();
+                    renderJuntadas();
+                });
+            }, 1500);
+        } else {
+            throw new Error(res.error || 'Error al guardar');
+        }
+        
+    } catch (error) {
+        console.error('❌ ERROR COMPLETO:', error);
+        console.error('Stack:', error.stack);
+        if (msgDiv) msgDiv.innerHTML = `<div style="color:#f44336;">❌ Error: ${error.message}</div>`;
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Reintentar';
+        }
+    }
+}
     async function enviarPropuesta() {
         const fecha=document.getElementById('propFecha').value, host=document.getElementById('propHost').value;
 const hora=document.getElementById('propHora').value;
