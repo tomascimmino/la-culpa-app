@@ -1442,6 +1442,62 @@ function avHTML(nombre) {
 
     function getJuntadaId(ri) { return 'juntada_' + (ri + 2); } // fila en sheet = ri+2
 
+function getRegistroId(row) {
+    // Soporta ambos formatos: IDs nuevos (ID2 con prefijo post_/com_/juntada_) e IDs viejos (timestamp simple en ID)
+    // Pre-fila 38: ID era timestamp directo (1772546354414)
+    // Post-fila 38: ID2 tiene prefijo (post_1772547903682, com_1772547780830)
+    if (!row) return '';
+    const id = String(row.ID2 || row.ID || row.id || row.Id || row.Id2 || row.id2 || row.Fila || row.fila || row.Row || row.row || '').trim();
+    if (id) return id;
+    // Fallback para comentarios sin ID (construir uno único basado en contenido)
+    return `${String(row.Destinatario || '').trim()}|${String(row.Autor || '').trim()}|${String(row.Fecha || '').trim()}|${String(row.Texto || '').trim().slice(0,24)}`;
+}
+
+function getReacciones(row, key) {
+    return String(row[key] || '').split(',').map(v => v.trim()).filter(Boolean);
+}
+
+function renderCommentReactionButtons(comment, destinatario) {
+    const likes = getReacciones(comment, 'Likes');
+    const coronas = getReacciones(comment, 'Coronas');
+    const yaLike = likes.includes(currentUser);
+    const yaCorona = coronas.includes(currentUser);
+    const commentId = getRegistroId(comment).replace(/'/g, "\\'");
+    const destSafe = String(destinatario || '').replace(/'/g, "\\'");
+
+    return `
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;">
+            <button onclick="reaccionarComentario('${commentId}','like','${destSafe}')"
+                style="display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:20px;font-size:12px;font-weight:bold;cursor:pointer;border:1.5px solid ${yaLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.12)'};background:${yaLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yaLike?'#C8A830':'rgba(255,255,255,0.5)'};">
+                <img src='https://i.imgur.com/I1Ljart.png' style='width:16px;height:16px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:3px;flex-shrink:0;'> ${likes.length || 0}
+            </button>
+            <button onclick="reaccionarComentario('${commentId}','corona','${destSafe}')"
+                style="padding:7px 12px;border-radius:999px;font-size:12px;cursor:pointer;border:1.5px solid ${yaCorona?'#FFD700':'rgba(255,255,255,0.12)'};background:${yaCorona?'rgba(255,215,0,0.18)':'rgba(255,255,255,0.05)'};color:${yaCorona?'#FFD700':'rgba(255,255,255,0.8)'};">
+                👑 ${coronas.length || 0}
+            </button>
+        </div>`;
+}
+
+async function reaccionarComentario(id, tipo, destinatario) {
+    if (!id || !currentUser) return;
+    try {
+        const r = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ accion: 'reaccionar_comentario', id, tipo, email: currentUser })
+        });
+        const res = await r.json();
+        if (!res.success) throw new Error(res.error || 'Error de reacción');
+    } catch (e) {
+        console.error('reaccionarComentario', e);
+    }
+    if (destinatario && document.getElementById('comentariosList_' + destinatario)) {
+        cargarComentarios(destinatario);
+    }
+    if (destinatario && destinatario.startsWith('post_')) {
+        renderHome();
+    }
+}
+
    async function cargarInteraccionesJuntadas() {
         try {
             const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'get_muro' }) });
@@ -1514,21 +1570,22 @@ function avHTML(nombre) {
     }
 
     function renderComentariosJuntadaEnEl(el, jid) {
-        const data = window.juntadasInteracciones[jid] || {};
-        const comentarios = data.comentarios || [];
-        el.innerHTML = comentarios.map(c => {
-            const cu = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
-            const nom = cu ? cu.Nombre : c.Autor;
-            const foto = FOTOS[nom] || '';
-            return `<div style="display:flex;gap:8px;margin:8px 0;">
-                <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${foto}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
-                <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
-                    <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nom}</div>
-                    <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;">${c.Texto}</div>
-                </div>
-            </div>`;
-        }).join('') || '<p style="color:rgba(255,255,255,0.35);font-size:12px;padding:8px 0;">Sin comentarios todavía.</p>';
-    }
+    const data = window.juntadasInteracciones[jid] || {};
+    const comentarios = data.comentarios || [];
+    el.innerHTML = comentarios.map(c => {
+        const cu = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
+        const nom = cu ? cu.Nombre : c.Autor;
+        const foto = FOTOS[nom] || '';
+        return `<div style="display:flex;gap:8px;margin:8px 0;">
+            <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${foto}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
+            <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
+                <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nom}</div>
+                <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;">${c.Texto}</div>
+                ${renderCommentReactionButtons(c, jid)}
+            </div>
+        </div>`;
+    }).join('') || '<p style="color:rgba(255,255,255,0.35);font-size:12px;padding:8px 0;">Sin comentarios todavía.</p>';
+}
 
     // ═══════════════════════════════════════
     // MURO
@@ -1580,22 +1637,23 @@ function renderPostFeedHTML(p, allRows, idx) {
         const usuario = getUsuarioActual();
         const fotoYo = usuario ? (FOTOS[usuario.Nombre] || '') : '';
 
-        const comentariosHTML = comentarios.map(c => {
-            const cuC = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
-            const nomC = cuC ? cuC.Nombre : c.Autor;
-            const fotoC = FOTOS[nomC] || '';
-            const esMioC = c.Autor === currentUser;
-            return `<div style="display:flex;gap:8px;margin:8px 0;">
-                <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoC}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
-                <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
-                    <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nomC}</div>
-                    <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;margin-bottom:6px;">${c.Texto}</div>
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        ${esMioC ? `<button onclick="eliminarComentarioMuro('${c.ID}','${postId}')" style="background:none;border:none;color:rgba(244,67,54,0.45);font-size:12px;cursor:pointer;">🗑</button>` : ''}
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
+       const comentariosHTML = comentarios.map(c => {
+    const cuC = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
+    const nomC = cuC ? cuC.Nombre : c.Autor;
+    const fotoC = FOTOS[nomC] || '';
+    const esMioC = c.Autor === currentUser;
+    return `<div style="display:flex;gap:8px;margin:8px 0;">
+        <div style="width:26px;height:26px;border-radius:50%;flex-shrink:0;background:url('${fotoC}') center top/cover;border:1.5px solid rgba(200,168,48,0.25);"></div>
+        <div style="background:rgba(0,0,0,0.22);border-radius:10px;padding:7px 11px;flex:1;">
+            <div style="color:#C8A830;font-size:10px;font-weight:bold;margin-bottom:2px;">${nomC}</div>
+            <div style="color:rgba(255,255,255,0.85);font-size:13px;line-height:1.4;margin-bottom:6px;">${c.Texto}</div>
+            ${renderCommentReactionButtons(c, postId)}
+            <div style="display:flex;justify-content:flex-end;margin-top:6px;">
+                ${esMioC ? `<button onclick="eliminarComentarioMuro('${getRegistroId(c)}','${postId}')" style="background:none;border:none;color:rgba(244,67,54,0.45);font-size:12px;cursor:pointer;">🗑</button>` : ''}
+            </div>
+        </div>
+    </div>`;
+}).join('');
 
       return `<div id="post_${safeId}" style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(107,45,145,0.3);border-radius:16px;margin-bottom:12px;overflow:hidden;">
             <div style="display:flex;align-items:center;gap:10px;padding:12px 14px 9px;">
@@ -1609,7 +1667,23 @@ function renderPostFeedHTML(p, allRows, idx) {
             </div>
             <div style="color:rgba(255,255,255,0.88);font-size:14px;line-height:1.55;padding:0 14px 12px;">${p.Texto}</div>
             <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);">
-                <button onclick="toggleComentariosMuro('feed_${safeId}')" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;">💬 ${comentarios.length} comentario${comentarios.length!==1?'s':''}</button>
+                ${(() => {
+                    const likes = getReacciones(p, 'Likes');
+                    const coronas = getReacciones(p, 'Coronas');
+                    const yaLike = likes.includes(currentUser);
+                    const yaCorona = coronas.includes(currentUser);
+                    const postIdSafe = String(postId).replace(/'/g, "\\'");
+                    return `
+                        <button onclick="reaccionarComentario('${postIdSafe}','like','${postIdSafe}')"
+                            style="display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:bold;cursor:pointer;border:1.5px solid ${yaLike?'rgba(200,168,48,0.5)':'rgba(255,255,255,0.12)'};background:${yaLike?'rgba(200,168,48,0.12)':'rgba(255,255,255,0.05)'};color:${yaLike?'#C8A830':'rgba(255,255,255,0.45)'};">
+                            <img src='https://i.imgur.com/I1Ljart.png' style='width:14px;height:14px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:2px;flex-shrink:0;'> ${likes.length || 0}
+                        </button>
+                        <button onclick="reaccionarComentario('${postIdSafe}','corona','${postIdSafe}')"
+                            style="padding:5px 10px;border-radius:999px;font-size:11px;cursor:pointer;border:1.5px solid ${yaCorona?'#FFD700':'rgba(255,255,255,0.12)'};background:${yaCorona?'rgba(255,215,0,0.18)':'rgba(255,255,255,0.05)'};color:${yaCorona?'#FFD700':'rgba(255,255,255,0.7)'};">
+                            👑 ${coronas.length || 0}
+                        </button>
+                        <button onclick="toggleComentariosMuro('feed_${safeId}')" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:12px;cursor:pointer;margin-left:auto;">💬 ${comentarios.length}</button>`;
+                })()}
             </div>
           <div id="feed_${safeId}" style="display:none;padding:0 14px 12px;border-top:1px solid rgba(255,255,255,0.04);">
                 <div id="feedComList_${safeId}">${comentariosHTML}</div>
@@ -1676,22 +1750,9 @@ function formatFechaPost(fechaStr) {
         } catch(e) { console.error(e); }
     }
 
-   async function likearComentarioMuro(id) {
-        // Optimistic: toggle like en cache local
-        const com = muroPostsCache.find(r => (r.ID2||r.ID||r.id) === id);
-        if (com) {
-            const arr = com.Likes ? com.Likes.split(',').filter(Boolean) : [];
-            const idx = arr.indexOf(currentUser);
-            if (idx > -1) arr.splice(idx, 1); else arr.push(currentUser);
-            com.Likes = arr.join(',');
-            renderHome();
-        }
-        try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'likear_comentario', id, email:currentUser }) });
-            const res = await r.json();
-            if (res.success) cargarMuroHome();
-        } catch(e) { console.error(e); }
-    }
+   async function likearComentarioMuro(id, postId) {
+    return reaccionarComentario(id, 'like', postId);
+}
 
    async function eliminarComentarioMuro(id, postId) {
         if (!confirm('¿Eliminar comentario?')) return;
@@ -3267,43 +3328,41 @@ function showTab(tabName, el) {
         }
     }
 
- async function cargarComentarios(destinatario) {
-        const el = document.getElementById('comentariosList_' + destinatario);
-        if (!el) return;
-        try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'get_muro' }) });
-            const res = await r.json();
-            const rows = res.rows || [];
-            const mios = rows.filter(c => c.Destinatario === destinatario);
-            if (!mios.length) {
-                el.innerHTML = '<p style="color:rgba(255,255,255,0.4);font-size:13px;text-align:center;padding:10px;">Nadie comentó todavía. Sean los primeros, culposos.</p>';
-                return;
-            }
-            el.innerHTML = mios.map(c => {
-                const likes = c.Likes ? c.Likes.split(',').filter(Boolean) : [];
-                const yaDiLike = likes.includes(currentUser);
-                const esMio = c.Autor === currentUser;
-                const cu = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
-                const fotoAutor = cu ? (FOTOS[cu.Nombre] || '') : '';
-                const nombreAutor = cu ? cu.Nombre : c.Autor;
-                return `<div style="background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border-radius:12px;padding:14px;margin-bottom:10px;border:1.5px solid rgba(107,45,145,0.35);">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-                        <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;${fotoAutor ? `background:url('${fotoAutor}') center top/cover` : 'background:linear-gradient(135deg,#8B4D8F,#6B3870)'};"></div>
-                        <div style="flex:1;">
-                            <div style="color:#C8A830;font-size:12px;font-weight:bold;">${nombreAutor}</div>
-                            <div style="color:rgba(255,255,255,0.35);font-size:10px;">${formatFechaPost(c.Fecha)}</div>
-                        </div>
-                        ${esMio ? `<button onclick="eliminarComentario('${c.ID}','${destinatario}')" style="background:none;border:none;color:rgba(244,67,54,0.6);font-size:16px;cursor:pointer;padding:2px 6px;">🗑</button>` : ''}
+async function cargarComentarios(destinatario) {
+    const el = document.getElementById('comentariosList_' + destinatario);
+    if (!el) return;
+    try {
+        const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'get_muro' }) });
+        const res = await r.json();
+        const rows = res.rows || [];
+        const mios = rows.filter(c => c.Destinatario === destinatario);
+        if (!mios.length) {
+            el.innerHTML = '<p style="color:rgba(255,255,255,0.4);font-size:13px;text-align:center;padding:10px;">Nadie comentó todavía. Sean los primeros, culposos.</p>';
+            return;
+        }
+        el.innerHTML = mios.map(c => {
+            const likes = getReacciones(c, 'Likes');
+            const coronas = getReacciones(c, 'Coronas');
+            const yaLike = likes.includes(currentUser);
+            const esMio = c.Autor === currentUser;
+            const cu = culpososData.find(x => x.Email && x.Email.toLowerCase() === c.Autor);
+            const fotoAutor = cu ? (FOTOS[cu.Nombre] || '') : '';
+            const nombreAutor = cu ? cu.Nombre : c.Autor;
+            return `<div style="background:linear-gradient(135deg,#160D2E 0%,#1E1040 100%);border-radius:12px;padding:14px;margin-bottom:10px;border:1.5px solid rgba(107,45,145,0.35);">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                    <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;${fotoAutor ? `background:url('${fotoAutor}') center top/cover` : 'background:linear-gradient(135deg,#8B4D8F,#6B3870)'};"></div>
+                    <div style="flex:1;">
+                        <div style="color:#C8A830;font-size:12px;font-weight:bold;">${nombreAutor}</div>
+                        <div style="color:rgba(255,255,255,0.35);font-size:10px;">${formatFechaPost(c.Fecha)}</div>
                     </div>
-                    <div style="color:rgba(255,255,255,0.9);font-size:14px;line-height:1.5;margin-bottom:10px;">${c.Texto}</div>
-                    <button onclick="likearComentario('${c.ID}','${destinatario}')"
-                        style="background:${yaDiLike ? 'rgba(200,168,48,0.12)' : 'rgba(255,255,255,0.05)'};border:1.5px solid ${yaDiLike ? 'rgba(200,168,48,0.5)' : 'rgba(255,255,255,0.15)'};color:${yaDiLike ? '#C8A830' : 'rgba(255,255,255,0.5)'};padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;">
-                        <img src='https://i.imgur.com/I1Ljart.png' style='width:22px;height:22px;object-fit:cover;object-position:50% 30%;mix-blend-mode:screen;border-radius:3px;vertical-align:middle;'> ${likes.length || ''}
-                    </button>
-                </div>`;
-            }).join('');
-        } catch(e) { console.error(e); }
-    }
+                    ${esMio ? `<button onclick="eliminarComentario('${getRegistroId(c)}','${destinatario}')" style="background:none;border:none;color:rgba(244,67,54,0.6);font-size:16px;cursor:pointer;padding:2px 6px;">🗑</button>` : ''}
+                </div>
+                <div style="color:rgba(255,255,255,0.9);font-size:14px;line-height:1.5;margin-bottom:10px;">${c.Texto}</div>
+                ${renderCommentReactionButtons(c, destinatario)}
+            </div>`;
+        }).join('');
+    } catch(e) { console.error(e); }
+}
 
    async function enviarComentario(destinatario) {
         const ta = document.getElementById('nuevoComentario_' + destinatario);
@@ -3340,19 +3399,8 @@ function showTab(tabName, el) {
         if (ta) ta.disabled = false;
     }
    async function likearComentario(id, destinatario) {
-        // Optimistic: toggle visual en el botón
-        const btns = document.querySelectorAll(`#comentariosList_${destinatario} button`);
-        btns.forEach(b => { if (b.getAttribute('onclick')?.includes(`'${id}'`)) {
-            const yaActivo = b.style.background.includes('200,168,48');
-            b.style.background = yaActivo ? 'rgba(255,255,255,0.05)' : 'rgba(200,168,48,0.12)';
-            b.style.color = yaActivo ? 'rgba(255,255,255,0.5)' : '#C8A830';
-        }});
-        try {
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'likear_comentario', id, email:currentUser }) });
-            const res = await r.json();
-            if (res.success) cargarComentarios(destinatario);
-        } catch(e) { console.error(e); }
-    }
+    return reaccionarComentario(id, 'like', destinatario);
+}
    async function eliminarComentario(id, destinatario) {
         if (!confirm('¿Eliminar este comentario?')) return;
         // Optimistic: sacar del DOM
