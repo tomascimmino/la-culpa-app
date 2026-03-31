@@ -2551,17 +2551,19 @@ async function procesarSubirFotoLink() {
         console.log('6. Response completa:', JSON.stringify(res));
         
         if (res.success) {
-            if (msgDiv) msgDiv.innerHTML = '<div style="color:#4CAF50;">✅ ¡Juntada confirmada! 🎉</div>';
-            btn.textContent = '✅ Confirmada';
-            
-            setTimeout(() => {
-                cerrarModalSubirFoto();
-                recargarJuntadas().then(() => {
-                    renderHome();
-                    renderJuntadas();
-                });
-            }, 1500);
-        } else {
+    if (msgDiv) msgDiv.innerHTML = '<div style="color:#4CAF50;">✅ ¡Juntada confirmada! 🎉</div>';
+    btn.textContent = '✅ Confirmada';
+    
+    tocarGongConclave(true);
+    
+    setTimeout(() => {
+        cerrarModalSubirFoto();
+        recargarJuntadas().then(() => {
+            renderHome();
+            renderJuntadas();
+        });
+    }, 1500);
+    } else {
             throw new Error(res.error || 'Error al guardar');
         }
         
