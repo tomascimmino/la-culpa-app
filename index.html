@@ -277,11 +277,9 @@
     to   { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
 }
      @keyframes splaShPulse {
-    0%   { transform: scale(2.5) translateX(-80px) rotate(-8deg); filter: drop-shadow(0 0 60px rgba(107,45,145,0.8)) drop-shadow(0 0 120px rgba(107,45,145,0.3)); opacity: 0; }
-    15%  { opacity: 1; }
-    40%  { transform: scale(1.8) translateX(-30px) rotate(3deg); filter: drop-shadow(0 0 50px rgba(200,168,48,0.9)) drop-shadow(0 0 100px rgba(200,168,48,0.4)); }
-    70%  { transform: scale(1.2) translateX(10px) rotate(-2deg); filter: drop-shadow(0 0 40px rgba(255,215,0,0.8)) drop-shadow(0 0 80px rgba(255,215,0,0.3)); }
-    100% { transform: scale(1.0) translateX(0) rotate(0deg); filter: drop-shadow(0 0 30px rgba(200,168,48,0.6)) drop-shadow(0 0 60px rgba(200,168,48,0.2)); opacity: 1; }
+    0%   { transform: scale(0.4); filter: drop-shadow(0 0 5px rgba(107,45,145,0.3)); opacity: 0; }
+    60%  { transform: scale(1.08); filter: drop-shadow(0 0 40px rgba(200,168,48,0.8)); opacity: 1; }
+    100% { transform: scale(1.0);  filter: drop-shadow(0 0 25px rgba(200,168,48,0.5)); opacity: 1; }
 }
 @keyframes splashFade {
     0%,100% { opacity: 1; }
