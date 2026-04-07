@@ -10,7 +10,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIkxBIENVTFBBIiwgInNob3J0X25hbWUiOiAiTGEgQ3VscGEiLCAiZGVzY3JpcHRpb24iOiAiUmFua2luZyBkZSBBc2lzdGVuY2lhcyIsICJzdGFydF91cmwiOiAiL2xhLWN1bHBhLWFwcC8iLCAic2NvcGUiOiAiL2xhLWN1bHBhLWFwcC8iLCAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwgImJhY2tncm91bmRfY29sb3IiOiAiIzEyMEQxRiIsICJ0aGVtZV9jb2xvciI6ICIjMTIwRDFGIiwgImljb25zIjogW3sic3JjIjogImh0dHBzOi8vaS5pbWd1ci5jb20vcUpsNWJqUi5wbmciLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9XX0=">
     <style>
-:root { --gold: #C8A830; } 
+:root { 
+    --gold: #C8A830; 
+    --gold-light: rgba(200, 168, 48, 0.15);
+    --gold-medium: rgba(200, 168, 48, 0.3);
+    --purple-primary: #6B2D91;
+    --purple-dark: #4A1D6B;
+    --purple-darker: #3A1555;
+    --bg-primary: #120D1F;
+    --bg-card: #160D2E;
+    --bg-card-alt: #1E1040;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.45);
+    --success: #4CAF50;
+    --error: #f44336;
+    --warning: #FF9800;
+    --info: #89CFF0;
+    /* Transiciones */
+    --transition-fast: 150ms ease;
+    --transition-normal: 250ms ease;
+    --transition-slow: 400ms ease;
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --shadow-gold: 0 0 20px rgba(200, 168, 48, 0.3);
+}
            * { margin: 0; padding: 0; box-sizing: border-box; }
            body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
@@ -75,9 +101,10 @@
             transition: flex 0.35s cubic-bezier(0.2,0.8,0.4,1),
                         background 0.3s ease, border-color 0.3s ease;
         }
-       @media (max-width: 500px) {
-  #mainApp > .tabs { padding: 8px 12px 6px; margin: 0 -12px 14px; }
-    .container { padding: 12px !important; min-height: 100vh !important; }
+        /* ── RESPONSIVE: Móvil pequeño ── */
+        @media (max-width: 500px) {
+            #mainApp > .tabs { padding: 8px 12px 6px; margin: 0 -12px 14px; }
+            .container { padding: 12px !important; min-height: 100vh !important; }
             .stats-grid { gap: 10px !important; }
             .stat-number { font-size: 24px !important; }
             .ranking-item { gap: 10px !important; padding: 12px !important; }
@@ -88,6 +115,40 @@
             img { max-width: 100% !important; height: auto !important; }
             .card { padding: 12px !important; }
         }
+
+        /* ── RESPONSIVE: Tablet (768px+) ── */
+        /* Mantenemos el ancho móvil original para consistencia */
+        @media (min-width: 768px) {
+            /* No expandimos el contenedor, mantenemos el diseño móvil */
+            .container { max-width: 480px !important; margin: 0 auto; }
+            #mainApp { max-width: 480px; margin: 0 auto; }
+        }
+
+        /* ── RESPONSIVE: Desktop (1024px+) ── */
+        @media (min-width: 1024px) {
+            /* Mantenemos el ancho original, solo centramos */
+            .container { max-width: 480px !important; margin: 0 auto; }
+            #mainApp { max-width: 480px; margin: 0 auto; }
+        }
+
+        /* ── Skeleton Loading ── */
+        @keyframes skeletonShimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.04) 0%, 
+                rgba(255,255,255,0.08) 50%, 
+                rgba(255,255,255,0.04) 100%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.5s ease-in-out infinite;
+            border-radius: 8px;
+        }
+        .skeleton-text { height: 14px; margin-bottom: 8px; }
+        .skeleton-text.short { width: 60%; }
+        .skeleton-avatar { width: 45px; height: 45px; border-radius: 50%; }
+        .skeleton-card { height: 120px; }
         /* Emoji e label dentro de cada tab */
         .tab-emoji {
             font-size: 18px; line-height: 1; display: block;
@@ -1075,25 +1136,267 @@ function puedeConfirmarJuntada(j) {
         document.getElementById('errorMessage').textContent = '';
     }
 
+    // ══════════════════════════════════════════════
+    // CACHE INTELIGENTE CON INDEXEDDB
+    // ══════════════════════════════════════════════
+    let db = null;
+    const DB_VERSION = 3; // Incrementar cuando cambie schema
+    const CACHE_TIMEOUT = 5 * 60 * 1000; // 5 minutos
+
+    async function initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open('culpaDB', DB_VERSION);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => { db = request.result; resolve(db); };
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                // Stores para caché
+                if (!db.objectStoreNames.contains('juntadas')) db.createObjectStore('juntadas', { keyPath: 'id' });
+                if (!db.objectStoreNames.contains('culposos')) db.createObjectStore('culposos', { keyPath: 'id' });
+                if (!db.objectStoreNames.contains('premios')) db.createObjectStore('premios', { keyPath: 'id' });
+                if (!db.objectStoreNames.contains('interacciones')) db.createObjectStore('interacciones', { keyPath: 'id' });
+                if (!db.objectStoreNames.contains('metadata')) db.createObjectStore('metadata', { keyPath: 'key' });
+                // Store para acciones offline
+                if (!db.objectStoreNames.contains('colaOffline')) {
+                    const store = db.createObjectStore('colaOffline', { keyPath: 'id', autoIncrement: true });
+                    store.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+            };
+        });
+    }
+
+    async function getCachedData(storeName) {
+        if (!db) return null;
+        return new Promise((resolve, reject) => {
+            try {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => resolve([]); // Fallback silencioso
+            } catch { resolve([]); }
+        });
+    }
+
+    async function setCachedData(storeName, data) {
+        if (!db) return;
+        return new Promise((resolve) => {
+            try {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.clear(); // Limpiar cache anterior
+                data.forEach(item => {
+                    if (item && typeof item === 'object') {
+                        // Agregar timestamp para tracking
+                        item._cachedAt = Date.now();
+                        store.put(item);
+                    }
+                });
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => resolve();
+            } catch { resolve(); }
+        });
+    }
+
+    async function updateMetadata(key, value) {
+        if (!db) return;
+        return new Promise((resolve) => {
+            try {
+                const tx = db.transaction('metadata', 'readwrite');
+                const store = tx.objectStore('metadata');
+                store.put({ key, value, timestamp: Date.now() });
+                tx.oncomplete = () => resolve();
+            } catch { resolve(); }
+        });
+    }
+
+    async function getMetadata(key) {
+        if (!db) return null;
+        return new Promise((resolve) => {
+            try {
+                const tx = db.transaction('metadata', 'readonly');
+                const store = tx.objectStore('metadata');
+                const request = store.get(key);
+                request.onsuccess = () => resolve(request.result?.value || null);
+                request.onerror = () => resolve(null);
+            } catch { resolve(null); }
+        });
+    }
+
+    async function addToOfflineQueue(action, data) {
+        if (!db) return;
+        return new Promise((resolve) => {
+            try {
+                const tx = db.transaction('colaOffline', 'readwrite');
+                const store = tx.objectStore('colaOffline');
+                store.add({ action, data, timestamp: Date.now(), attempts: 0 });
+                tx.oncomplete = () => resolve();
+            } catch { resolve(); }
+        });
+    }
+
+    async function processOfflineQueue() {
+        if (!db || !navigator.onLine) return;
+        try {
+            const tx = db.transaction('colaOffline', 'readwrite');
+            const store = tx.objectStore('colaOffline');
+            const request = store.getAll();
+            request.onsuccess = async () => {
+                const items = request.result || [];
+                for (const item of items) {
+                    if (item.attempts >= 3) {
+                        store.delete(item.id);
+                        continue;
+                    }
+                    try {
+                        await fetch(APPS_SCRIPT_URL, {
+                            method: 'POST',
+                            body: JSON.stringify(item.data)
+                        });
+                        store.delete(item.id);
+                    } catch {
+                        item.attempts++;
+                        store.put(item);
+                    }
+                }
+            };
+        } catch {}
+    }
+
     async function loadData() {
         try {
-            const [jR, cR, pR] = await Promise.all([
-                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Hoja%201`),
-                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`),
-                fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PREMIOS`)
+            // Inicializar DB si no existe
+            if (!db) await initDB();
+
+            // Verificar si estamos online
+            const isOnline = navigator.onLine;
+
+            // Estrategia: cache-first con revalidación en background
+            let needsRender = false;
+
+            // Cargar datos cacheados inmediatamente si existen
+            const [cachedJuntadas, cachedCulposos, cachedPremios] = await Promise.all([
+                getCachedData('juntadas'),
+                getCachedData('culposos'),
+                getCachedData('premios')
             ]);
-            juntadasData = parseCSV(await jR.text());        
-            culpososData = parseCSV(await cR.text());
-window.culpososData = culpososData;
-            premiosData  = parseCSV(await pR.text());
-            window.premiosData = premiosData;
-            await cargarInteraccionesJuntadas();
+
+            // Si hay cache válido (< 5 min), mostrar inmediatamente
+            const lastUpdate = await getMetadata('lastUpdate');
+            const cacheValid = lastUpdate && (Date.now() - lastUpdate) < CACHE_TIMEOUT;
+
+            if (cachedJuntadas.length && cachedCulposos.length && cacheValid) {
+                juntadasData = cachedJuntadas;
+                culpososData = cachedCulposos;
+                premiosData = cachedPremios;
+                window.culpososData = culpososData;
+                window.premiosData = premiosData;
+                needsRender = true;
+                renderHome(); renderRanking(); renderJuntadas(); renderAwards(); renderPerfil();
+            }
+
+            // Si estamos online, refrescar datos en background
+            if (isOnline) {
+                try {
+                    const [jR, cR, pR] = await Promise.all([
+                        fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Hoja%201`),
+                        fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=CULPOSOS`),
+                        fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=PREMIOS`)
+                    ]);
+
+                    const newJuntadas = parseCSV(await jR.text());
+                    const newCulposos = parseCSV(await cR.text());
+                    const newPremios = parseCSV(await pR.text());
+
+                    // Solo actualizar si hay cambios
+                    const changed = JSON.stringify(newJuntadas) !== JSON.stringify(cachedJuntadas) ||
+                                  JSON.stringify(newCulposos) !== JSON.stringify(cachedCulposos) ||
+                                  JSON.stringify(newPremios) !== JSON.stringify(cachedPremios);
+
+                    if (changed) {
+                        juntadasData = newJuntadas;
+                        culpososData = newCulposos;
+                        premiosData = newPremios;
+                        window.culpososData = culpososData;
+                        window.premiosData = premiosData;
+
+                        // Actualizar cache
+                        await Promise.all([
+                            setCachedData('juntadas', newJuntadas),
+                            setCachedData('culposos', newCulposos),
+                            setCachedData('premios', newPremios),
+                            updateMetadata('lastUpdate', Date.now())
+                        ]);
+
+                        needsRender = true;
+                    }
+
+                    // Cargar interacciones
+                    await cargarInteraccionesJuntadas();
+
+                    // Procesar cola offline
+                    await processOfflineQueue();
+
+                } catch (error) {
+                    console.warn('Error refrescando datos, usando cache:', error);
+                    // Si falló la red pero tenemos cache, mantenerlo
+                    if (!juntadasData.length && cachedJuntadas.length) {
+                        juntadasData = cachedJuntadas;
+                        culpososData = cachedCulposos;
+                        premiosData = cachedPremios;
+                        window.culpososData = culpososData;
+                        window.premiosData = premiosData;
+                        needsRender = true;
+                    }
+                }
+            } else {
+                // Offline: cargar interacciones desde cache si existen
+                const cachedInteracciones = await getCachedData('interacciones');
+                if (cachedInteracciones.length) {
+                    window.juntadasInteracciones = {};
+                    cachedInteracciones.forEach(item => {
+                        if (item.juntadaId) {
+                            window.juntadasInteracciones[item.juntadaId] = item.data;
+                        }
+                    });
+                }
+            }
+
+            // Renderizar si no se hizo antes
+            if (!needsRender) {
+                await cargarInteraccionesJuntadas();
+                renderHome(); renderRanking(); renderJuntadas(); renderAwards(); renderPerfil();
+            }
+
+            // Resetear estados
             window.juntadasMesActivo = null;
             window.juntadasVerMas = false;
             window.juntadasHostActivo = null;
-window.juntadasAsistenteActivo = null;
-            renderHome(); renderRanking(); renderJuntadas(); renderAwards(); renderPerfil();
-        } catch(e) { console.error(e); alert('Error conectando con Google Sheets.'); }
+            window.juntadasAsistenteActivo = null;
+
+        } catch(e) {
+            console.error(e);
+            // Fallback extremo: intentar usar cualquier cache disponible
+            if (db) {
+                try {
+                    const [j, c, p] = await Promise.all([
+                        getCachedData('juntadas'),
+                        getCachedData('culposos'),
+                        getCachedData('premios')
+                    ]);
+                    if (j.length && c.length) {
+                        juntadasData = j;
+                        culpososData = c;
+                        premiosData = p;
+                        window.culpososData = c;
+                        window.premiosData = p;
+                        renderHome(); renderRanking(); renderJuntadas(); renderAwards(); renderPerfil();
+                        return;
+                    }
+                } catch {}
+            }
+            alert('Error conectando con Google Sheets. Verificá tu conexión a internet.');
+        }
     }
 
   function parseCSV(csv) {
@@ -3807,8 +4110,176 @@ async function cargarComentarios(destinatario) {
         } catch { alert('❌ Error de conexión'); }
     }
 
+    // ═══════════════════════════════════════════════════
+    // SERVICE WORKER PARA OFFLINE
+    // ═══════════════════════════════════════════════════
+    let swRegistration = null;
+
+    async function registerServiceWorker() {
+        if (!('serviceWorker' in navigator)) {
+            console.log('Service Worker no soportado');
+            return;
+        }
+
+        try {
+            // Registrar SW inline (no necesita archivo externo)
+            const swCode = `
+                const CACHE_NAME = 'culpa-cache-v3';
+                const STATIC_ASSETS = [
+                    './',
+                    'index.html'
+                ];
+
+                // Install: precache assets estáticos
+                self.addEventListener('install', (event) => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => cache.addAll(STATIC_ASSETS))
+                            .then(() => self.skipWaiting())
+                    );
+                });
+
+                // Activate: limpiar caches viejos
+                self.addEventListener('activate', (event) => {
+                    event.waitUntil(
+                        caches.keys()
+                            .then(keys => Promise.all(
+                                keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+                            ))
+                            .then(() => self.clients.claim())
+                    );
+                });
+
+                // Fetch: estrategia cache-first con fallback a network
+                self.addEventListener('fetch', (event) => {
+                    // Ignorar requests que no sean GET o que sean de APIs externas
+                    if (event.request.method !== 'GET') return;
+                    
+                    // Requests a Google Sheets / Apps Script → network first (datos frescos)
+                    if (event.request.url.includes('googleapis.com') || 
+                        event.request.url.includes('script.google.com') ||
+                        event.request.url.includes('drive.google.com')) {
+                        event.respondWith(
+                            fetch(event.request)
+                                .then(response => {
+                                    // Clonar respuesta para cachear
+                                    const responseClone = response.clone();
+                                    caches.open(CACHE_NAME).then(cache => {
+                                        cache.put(event.request, responseClone);
+                                    });
+                                    return response;
+                                })
+                                .catch(() => {
+                                    // Fallback a cache si existe
+                                    return caches.match(event.request);
+                                })
+                        );
+                        return;
+                    }
+
+                    // Assets estáticos → cache first
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(cached => {
+                                if (cached) return cached;
+                                
+                                return fetch(event.request)
+                                    .then(response => {
+                                        // No cachear si no es response válido
+                                        if (!response || response.status !== 200) return response;
+                                        
+                                        const responseClone = response.clone();
+                                        caches.open(CACHE_NAME).then(cache => {
+                                            cache.put(event.request, responseClone);
+                                        });
+                                        return response;
+                                    })
+                                    .catch(() => {
+                                        // Fallback: página offline
+                                        return caches.match('./index.html');
+                                    });
+                            })
+                    );
+                });
+
+                // Background sync para acciones offline
+                self.addEventListener('sync', (event) => {
+                    if (event.tag === 'culpa-sync') {
+                        event.waitUntil(processOfflineQueue());
+                    }
+                });
+
+                async function processOfflineQueue() {
+                    // Esta función se comunica con la app principal vía postMessage
+                    self.clients.matchAll().then(clients => {
+                        clients.forEach(client => {
+                            client.postMessage({ type: 'SYNC_OFFLINE_QUEUE' });
+                        });
+                    });
+                }
+            `;
+
+            // Crear blob URL para el SW inline
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
+
+            swRegistration = await navigator.serviceWorker.register(swUrl);
+            console.log('✅ Service Worker registrado');
+
+            // Escuchar mensajes del SW
+            navigator.serviceWorker.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'SYNC_OFFLINE_QUEUE') {
+                    processOfflineQueue();
+                }
+            });
+
+        } catch (error) {
+            console.log('❌ Error registrando Service Worker:', error);
+        }
+    }
+
+    // Detectar estado online/offline y mostrar indicador
+    function setupOnlineOfflineIndicator() {
+        const indicator = document.createElement('div');
+        indicator.id = 'connectionIndicator';
+        indicator.style.cssText = `
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            display: none;
+        `;
+
+        function updateIndicator() {
+            if (navigator.onLine) {
+                indicator.style.display = 'none';
+                // Re-sincronizar cuando vuelve online
+                processOfflineQueue();
+            } else {
+                indicator.style.display = 'block';
+                indicator.style.background = 'rgba(255, 152, 0, 0.95)';
+                indicator.style.color = '#1a1a2e';
+                indicator.textContent = '⚠️ Sin conexión - Los cambios se guardarán cuando te reconectes';
+            }
+        }
+
+        window.addEventListener('online', updateIndicator);
+        window.addEventListener('offline', updateIndicator);
+        document.body.appendChild(indicator);
+        updateIndicator();
+    }
+
     window.onload = function() {
     initFirebase();
+    registerServiceWorker();
+    setupOnlineOfflineIndicator();
+    
     setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         splash.style.opacity = '0';
@@ -5417,6 +5888,28 @@ document.getElementById('ranking-hoy').classList.add('show');
 // ══════════════════════════════════════════════
 // COMPARTIR
 // ══════════════════════════════════════════════
+// Función para agregar victoria manual a Rama (ejecutar una sola vez)
+async function agregarVictoriaRama() {
+  const today = getTodayStr();
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        accion: 'guardar_wordle',
+        nombre: 'Rama',
+        fecha: today,
+        intentos: 4,
+        tiempo: 120,
+        gano: true,
+        palabra: TARGET
+      })
+    });
+    console.log('✅ Victoria agregada a Rama');
+  } catch(e) {
+    console.error('❌ Error:', e);
+  }
+}
+
 function compartir() {
   const today = new Date().toLocaleDateString('es-AR');
   const won = gameOver && currentRow <= MAX_ROWS;
