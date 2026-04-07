@@ -5498,15 +5498,9 @@ async function initWordle() {
                 rows.forEach(r => {
                     if (r.Fecha && r.Palabra && r.Fecha !== hoyStr) palabrasPorFecha[r.Fecha] = norm(r.Palabra);
                 });
-                // MATUKA y RABONA salieron por bug (solo a un jugador) — devolverlas al pool
-                delete palabrasPorFecha['2026-03-21']; // era PORTUARIO el oficial, MATUKA fue el bug
-                // Pero sí excluir PORTUARIO y AMIGOS que sí salieron bien
-                // Reconstruir solo con las palabras correctas de esas fechas
-                const palabrasBug = new Set(['MATUKA','RABONA']);
-                const yaUsadas = new Set(
-                    Object.values(palabrasPorFecha).filter(p => !palabrasBug.has(p))
-                );
-                ['REYES','CULPOSOS','CULPA','GUARIDA','AWARDS','TROLOS','ABSTENCION','DETENDRAN','PROTEINA','POMBOKO','FUTBOL','CULPAPP'].forEach(p => yaUsadas.add(p));
+                const yaUsadas = new Set(Object.values(palabrasPorFecha));
+                ['REYES','CULPOSOS','CULPA','GUARIDA','AWARDS','TROLOS',
+                 'ABSTENCION','DETENDRAN','PROTEINA'].forEach(p => yaUsadas.add(p));
                 const pool = PALABRAS.filter(p => !yaUsadas.has(norm(p)));
                 TARGET = getWordOfDay(pool.length ? pool : null);
                 COLS = TARGET.length;
@@ -5573,7 +5567,8 @@ async function initWordle() {
                 const dataSynced = {
                     gano: yaJugo['Gano'] === 'SI',
                     intentos: parseInt(yaJugo.Intentos),
-                    tiempo: parseInt(yaJugo.Tiempo)
+                    tiempo: parseInt(yaJugo.Tiempo),
+                    palabra: norm(yaJugo.Palabra || '')
                 };
                 localStorage.setItem(playedKey, JSON.stringify(dataSynced));
                 mostrarResultadoBloqueado(dataSynced);
