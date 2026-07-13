@@ -830,7 +830,7 @@ body {
         </header>
         <main>
             <div class="top-bar">
-                <div class="word-info">Día #<span id="word-num"></span> · <span id="word-len"></span> <span>letras</span></div>
+                <div class="word-info">Día #<span id="word-num"></span> · <span id="word-len"></span> <span>letras</span> · <span id="word-progress" style="color:var(--gold);"></span></div>
                 <div class="attempts-pill" id="attempts-left">6 intentos</div>
             </div>
             <div id="grid-wrapper"></div>
@@ -4908,17 +4908,7 @@ initBdayWidget();
 // PALABRAS
 // ══════════════════════════════════════════════
 const PALABRAS = [
-  "REYES","CULPOSOS","CULPA","GUARIDA","AWARDS","TROLOS", "ABSTENCION", "WORDLE", "ESCOLLERA", "PARRILLA", "ASADO",
-  "QUEQUEN","TOMBOLA","ZABALA","CREATINA","POMBOKO", "AUTISTA", "QUEJOSO", "MEDALLA", "HAEDO", "SANTANA", "BURGERS",
-  "SOKOTROSKI","FIERO","BACHI","COSMOPOLITA","KADRI","QUORUM", "TERNA", "ABSTENERSE", "SAMIRA", "PROCEDA", "MILKAUT",
-  "AMIGOS","DETENDRAN","CULPAPP","MATUKA","PORRO","REINAS","NICOLE", "GOFFINS", "NOVIAS", "CASTELAR", "LOKO",
-  "ONLYFANS","PEPINO","LEON","PERON","ESTATUTO","JUNTADAS","FUTBOL","PORTUARIO", "SUSTANCIA", "RAMOS", "MUELLE",
-  "PARTIDO","ESCRIBANO","GUILLOTE","TOTORRO","DOCTOR","JAPON","OCHO","CONCLAVE","RABONA", "CHIVADITA", "PIBARDOS",
-  "PROTEINA","PASTOR","CERAMICA","VOMITOTO", "SICALO", "CHEF", "HADAS", "ÑOQUI", "GYMBRO", "TOTY", "TIRRI", 
-  "MARBLE","CORREGIDORES","MALKA","TOMAS","RAMIRO","CAAMANO","CATALINA","JULIETA", "LOLA", "LEILA", "LOCRO",
-  "MANUELA","MATEO","TASSARA","SANTIAGO","GONZALO","ASISTENTE","EXITOSO","PAJERO", "DINOSAURIOS", "QATAR", "MUNDIAL",
-  "DEPORTISTA","POLLERA","DAMAJUANA","ROMPEBOLAS","ROMPELA","MONTE","PROYECTO", "CIENCIA", "MIKE", "COMUNICA",
-  "SECUENCIA","MARIHUANA","ESCABIO","DOMINADAS","TIRRIDOJO","CHICAS","SALUDOS", "ACEVEDO", "PALIDA", "ARGENTINA", "RASPBERRY",
+  "TOQUETON", "AKINATOR", "OXON", "AYUDIN",
 ];
  
 function norm(s) {
@@ -5580,6 +5570,35 @@ function setHeader() {
 // ══════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════
+
+    async function actualizarProgresoWordle(target) {
+  try {
+    const rows = await cargarWordleSheet();
+    const unicas = new Set(rows.map(r => norm(r.Palabra||'')));
+    unicas.add(target);
+    const total = Math.min(unicas.size, 124);
+    const el = document.getElementById('word-progress');
+    if (el) el.textContent = total + '/124';
+    if (total >= 124) setTimeout(mostrarFinWordle, 1000);
+  } catch(e) {}
+}
+
+function mostrarFinWordle() {
+  if (document.getElementById('wordleFinOverlay')) return;
+  spawnConfetti();
+  const ov = document.createElement('div');
+  ov.id = 'wordleFinOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9990;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;';
+  ov.innerHTML = `
+    <div style="font-size:60px;margin-bottom:14px;animation:emojiWiggle 1.5s ease-in-out infinite;">🏆</div>
+    <div style="font-family:'Cinzel',serif;font-size:24px;color:#FFD700;letter-spacing:3px;margin-bottom:10px;">WORDLE CULPOSO</div>
+    <div style="color:white;font-size:16px;margin-bottom:6px;">¡Se jugaron las 124 palabras!</div>
+    <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:24px;">Gracias por bancarse cada día, culposos 👑</div>
+    <button onclick="document.getElementById('wordleFinOverlay').remove()" style="background:linear-gradient(135deg,#FFD700,#FFA500);border:none;color:#1E1E3F;padding:12px 28px;border-radius:10px;font-weight:bold;cursor:pointer;">Cerrar</button>
+  `;
+  document.body.appendChild(ov);
+}
+    
 async function initWordle() {
     if (document.getElementById('grid-wrapper').children.length > 0) return;
 
@@ -5624,6 +5643,7 @@ async function initWordle() {
     buildKeyboard();
     setHeader();
     updateAttemptsLabel();
+    actualizarProgresoWordle(TARGET);
 
     const today = getTodayStr();
     const playedKey = 'wc_played_' + today;
