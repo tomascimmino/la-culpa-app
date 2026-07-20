@@ -1807,8 +1807,6 @@ Gracias a todos los que participaron. 👑
         return res.rows;
     } catch(e) { console.error(e); return []; }
 }
-    } catch(e) { console.error(e); return []; }
-}
 function renderPostFeedHTML(p, allRows, idx) {
     const safeId = idx;
     const postId = p.ID2 || p.ID || p.id || '';
@@ -3964,7 +3962,8 @@ async function cargarComentarios(destinatario) {
   font-weight: 500;
   letter-spacing: 0.5px;
 }
-    #volume {
+
+#volume {
   -webkit-appearance: none;
   height: 4px;
   border-radius: 5px;
@@ -3981,14 +3980,15 @@ async function cargarComentarios(destinatario) {
   cursor: pointer;
 }
 
-    @keyframes spinVinyl {
+@keyframes spinVinyl {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 #vinylDisc.playing {
   animation: spinVinyl 4s linear infinite;
 }
-    
+</style>
+
 <audio id="player"></audio>
 
 <script>
@@ -4009,7 +4009,6 @@ const songs = [
   { src: BASE + "7.Siempre.juntos.feat.Bad.Bunny.mp3", name: "Siempre juntos feat. Bad Bunny" },
   { src: BASE + "8.CULPA.AWARDS.2024.ending.mp3", name: "CULPA AWARDS 2024 ending" },
   { src: BASE + "La.cola.contra.la.pared.-.INEDITO.-.LA.CULPA.mp3", name: "La cola contra la pared - INÉDITO" },
-      
 ];
 
 let currentIndex = 0;
@@ -4043,7 +4042,6 @@ async function registrarReproduccion() {
     const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'registrar_reproduccion', cancion }) });
     const res = await r.json();
     if (res.success) {
-      // Actualizar local sin re-fetch
       const idx = reproData.canciones.findIndex(c => c.cancion === cancion);
       if (idx > -1) reproData.canciones[idx].reproducciones = res.reproducciones;
       else reproData.canciones.push({ cancion, reproducciones: res.reproducciones });
@@ -4085,21 +4083,20 @@ function prevSong() {
   yaContado = false;
   registrarReproduccion(indexAnterior);
 }
-    function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return mins + ":" + (secs < 10 ? "0" : "") + secs;
+
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return mins + ":" + (secs < 10 ? "0" : "") + secs;
 }
 
 player.onended = nextSong;
 
-    player.ontimeupdate = function() {
+player.ontimeupdate = function() {
   const progressBar = document.getElementById("progressBar");
   const currentTimeEl = document.getElementById("currentTime");
-
   progressBar.max = player.duration;
   progressBar.value = player.currentTime;
-
   currentTimeEl.textContent = formatTime(player.currentTime);
 };
 
@@ -4113,468 +4110,416 @@ volume.addEventListener("input", () => {
 });
 
 const progressBar = document.getElementById("progressBar");
-
 player.addEventListener("loadedmetadata", () => {
   progressBar.max = Math.floor(player.duration);
 });
-
 player.addEventListener("timeupdate", () => {
   progressBar.value = Math.floor(player.currentTime);
 });    
-
-    progressBar.addEventListener("input", () => {
+progressBar.addEventListener("input", () => {
   player.currentTime = progressBar.value;
 });
-    
-loadSong(currentIndex);  let reproData = { total: 0, canciones: [] };  async function cargarReproducciones() {   try {     const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'get_reproducciones' }) });     const res = await r.json();     if (res.success) {       reproData = res;       actualizarContadorUI();     }   } catch(e) { console.error(e); } }  function actualizarContadorUI() {   const el = document.getElementById('reproCounter');   if (!el) return;   const cancionActual = songs[currentIndex].name;   const datoCancion = reproData.canciones.find(c => c.cancion === cancionActual);   const countCancion = datoCancion ? datoCancion.reproducciones : 0;   el.innerHTML = `<span title="Total global">▶ ${reproData.total.toLocaleString('es-AR')}</span> <span style="color:rgba(255,255,255,0.35)">|</span> <span title="Esta canción" style="color:rgba(200,168,48,0.7)">🎵 ${countCancion}</span>`; }  cargarReproducciones();
 
-     // ── CARRUSEL DRIVE ────────────────────────────────────────
-    window._carruselData = {}; // { ri: { fotos:[], idx:0 } }
+loadSong(currentIndex);
 
-    async function cargarCarruselDrive(ri, folderId) {
-        const slidesEl = document.getElementById('carruselSlides_' + ri);
-        const dotsEl   = document.getElementById('carruselDots_' + ri);
-        const countEl  = document.getElementById('carruselCount_' + ri);
-        if (!slidesEl) return;
+let reproData = { total: 0, canciones: [] };
 
-        try {
-            // Usamos el RSS público de Drive para listar imágenes sin API key
-            const url = `https://drive.google.com/drive/folders/${folderId}`;
-            // Fallback: construimos thumbnails directamente desde el folder embed
-            // Técnica: feed público de Drive
-            const feedUrl = `https://drive.google.com/embeddedfolderview?id=${folderId}#list`;
-            const resp = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name)&key=AIzaSyBtqBg0uCiOjzMDRZAX5pxHGuVWZc0ul6U`);
-            
-            let fotos = [];
-           if (resp.ok) {
-                const data = await resp.json();
-                fotos = (data.files || []).map(f => ({
-                    id: f.id,
-                    thumb: `https://lh3.googleusercontent.com/d/${f.id}=w800`,
-                    full: `https://drive.google.com/file/d/${f.id}/view`
-                }));
-            }
-
-            // Si no hay fotos via API, mostrar placeholder con link
-            if (!fotos.length) {
-                slidesEl.innerHTML = `<div style="text-align:center;padding:20px;">
-                    <div style="font-size:32px;margin-bottom:8px;">📷</div>
-                    <div style="color:rgba(255,255,255,0.5);font-size:13px;">Las fotos están en Drive</div>
-                </div>`;
-                if (countEl) countEl.textContent = '';
-                return;
-            }
-
-            window._carruselData[ri] = { fotos, idx: 0 };
-            renderCarruselSlide(ri);
-
-        } catch(e) {
-            console.error('Error carrusel:', e);
-            if (slidesEl) slidesEl.innerHTML = `<div style="text-align:center;padding:20px;">
-                <div style="font-size:32px;margin-bottom:8px;">📷</div>
-                <div style="color:rgba(255,255,255,0.5);font-size:13px;">Abrí Drive para ver las fotos</div>
-            </div>`;
-        }
+async function cargarReproducciones() {
+  try {
+    const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'get_reproducciones' }) });
+    const res = await r.json();
+    if (res.success) {
+      reproData = res;
+      actualizarContadorUI();
     }
+  } catch(e) { console.error(e); }
+}
 
-    function renderCarruselSlide(ri) {
-        const { fotos, idx } = window._carruselData[ri];
-        const slidesEl = document.getElementById('carruselSlides_' + ri);
-        const dotsEl   = document.getElementById('carruselDots_' + ri);
-        const countEl  = document.getElementById('carruselCount_' + ri);
-        if (!slidesEl) return;
+function actualizarContadorUI() {
+  const el = document.getElementById('reproCounter');
+  if (!el) return;
+  const cancionActual = songs[currentIndex].name;
+  const datoCancion = reproData.canciones.find(c => c.cancion === cancionActual);
+  const countCancion = datoCancion ? datoCancion.reproducciones : 0;
+  el.innerHTML = `<span title="Total global">▶ ${reproData.total.toLocaleString('es-AR')}</span> <span style="color:rgba(255,255,255,0.35)">|</span> <span title="Esta canción" style="color:rgba(200,168,48,0.7)">🎵 ${countCancion}</span>`;
+}
 
-        const foto = fotos[idx];
-        slidesEl.innerHTML = `<a href="${foto.full}" target="_blank" style="display:block;width:100%;">
-            <img src="${foto.thumb}" 
-                style="width:100%;height:auto;max-height:520px;object-fit:contain;display:block;transition:opacity 0.25s;"
-                onerror="this.style.display='none';this.parentElement.parentElement.querySelector('div').style.display='flex'">
-        </a>`;
+cargarReproducciones();
 
-        if (countEl) countEl.textContent = `${idx+1} / ${fotos.length}`;
+// ── CARRUSEL DRIVE ────────────────────────────────────────
+window._carruselData = {};
 
-        if (dotsEl) {
-            dotsEl.innerHTML = fotos.map((_, i) =>
-                `<div onclick="irASlide(${ri},${i})" style="width:${i===idx?'18px':'7px'};height:7px;border-radius:10px;background:${i===idx?'white':'rgba(255,255,255,0.4)'};cursor:pointer;transition:all 0.2s;"></div>`
-            ).join('');
-        }
+async function cargarCarruselDrive(ri, folderId) {
+  const slidesEl = document.getElementById('carruselSlides_' + ri);
+  const dotsEl   = document.getElementById('carruselDots_' + ri);
+  const countEl  = document.getElementById('carruselCount_' + ri);
+  if (!slidesEl) return;
+  try {
+    const resp = await fetch(`https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType+contains+'image/'&fields=files(id,name)&key=AIzaSyBtqBg0uCiOjzMDRZAX5pxHGuVWZc0ul6U`);
+    let fotos = [];
+    if (resp.ok) {
+      const data = await resp.json();
+      fotos = (data.files || []).map(f => ({
+        id: f.id,
+        thumb: `https://lh3.googleusercontent.com/d/${f.id}=w800`,
+        full: `https://drive.google.com/file/d/${f.id}/view`
+      }));
     }
-
-    function moverCarrusel(ri, dir) {
-        if (!window._carruselData[ri]) return;
-        const d = window._carruselData[ri];
-        d.idx = (d.idx + dir + d.fotos.length) % d.fotos.length;
-        renderCarruselSlide(ri);
+    if (!fotos.length) {
+      slidesEl.innerHTML = `<div style="text-align:center;padding:20px;"><div style="font-size:32px;margin-bottom:8px;">📷</div><div style="color:rgba(255,255,255,0.5);font-size:13px;">Las fotos están en Drive</div></div>`;
+      if (countEl) countEl.textContent = '';
+      return;
     }
+    window._carruselData[ri] = { fotos, idx: 0 };
+    renderCarruselSlide(ri);
+  } catch(e) {
+    console.error('Error carrusel:', e);
+    slidesEl.innerHTML = `<div style="text-align:center;padding:20px;"><div style="font-size:32px;margin-bottom:8px;">📷</div><div style="color:rgba(255,255,255,0.5);font-size:13px;">Abrí Drive para ver las fotos</div></div>`;
+  }
+}
 
-    function irASlide(ri, idx) {
-        if (!window._carruselData[ri]) return;
-        window._carruselData[ri].idx = idx;
-        renderCarruselSlide(ri);
-    }
+function renderCarruselSlide(ri) {
+  const { fotos, idx } = window._carruselData[ri];
+  const slidesEl = document.getElementById('carruselSlides_' + ri);
+  const dotsEl   = document.getElementById('carruselDots_' + ri);
+  const countEl  = document.getElementById('carruselCount_' + ri);
+  if (!slidesEl) return;
+  const foto = fotos[idx];
+  slidesEl.innerHTML = `<a href="${foto.full}" target="_blank" style="display:block;width:100%;"><img src="${foto.thumb}" style="width:100%;height:auto;max-height:520px;object-fit:contain;display:block;transition:opacity 0.25s;" onerror="this.style.display='none';this.parentElement.parentElement.querySelector('div').style.display='flex'"></a>`;
+  if (countEl) countEl.textContent = `${idx+1} / ${fotos.length}`;
+  if (dotsEl) {
+    dotsEl.innerHTML = fotos.map((_, i) =>
+      `<div onclick="irASlide(${ri},${i})" style="width:${i===idx?'18px':'7px'};height:7px;border-radius:10px;background:${i===idx?'white':'rgba(255,255,255,0.4)'};cursor:pointer;transition:all 0.2s;"></div>`
+    ).join('');
+  }
+}
+
+function moverCarrusel(ri, dir) {
+  if (!window._carruselData[ri]) return;
+  const d = window._carruselData[ri];
+  d.idx = (d.idx + dir + d.fotos.length) % d.fotos.length;
+  renderCarruselSlide(ri);
+}
+
+function irASlide(ri, idx) {
+  if (!window._carruselData[ri]) return;
+  window._carruselData[ri].idx = idx;
+  renderCarruselSlide(ri);
+}
 
 // ── WIDGET CUMPLEAÑOS ─────────────────────────────────────
 const CUMPLES = [
-    {n:'Sami',   d:17, m:1},  {n:'Santi',  d:3,  m:2},
-    {n:'Juli',   d:14, m:3},  {n:'Rama',   d:18, m:3},
-    {n:'Caamaño',d:21, m:3},  {n:'Manu',   d:14, m:5},
-    {n:'Cata',   d:5,  m:7},  {n:'Mateo',  d:18, m:7},
-    {n:'Tirri',  d:9,  m:8},  {n:'Toti',   d:8,  m:9},
-    {n:'Leila',  d:24, m:9},  {n:'Matu',   d:1,  m:10},
-    {n:'Toto',   d:18, m:11}, {n:'Zabala', d:20, m:11},
-    {n:'Lola',   d:23, m:11}
+  {n:'Sami',   d:17, m:1},  {n:'Santi',  d:3,  m:2},
+  {n:'Juli',   d:14, m:3},  {n:'Rama',   d:18, m:3},
+  {n:'Caamaño',d:21, m:3},  {n:'Manu',   d:14, m:5},
+  {n:'Cata',   d:5,  m:7},  {n:'Mateo',  d:18, m:7},
+  {n:'Tirri',  d:9,  m:8},  {n:'Toti',   d:8,  m:9},
+  {n:'Leila',  d:24, m:9},  {n:'Matu',   d:1,  m:10},
+  {n:'Toto',   d:18, m:11}, {n:'Zabala', d:20, m:11},
+  {n:'Lola',   d:23, m:11}
 ];
 
 function diasHasta(d, m) {
-    const hoy = new Date(); hoy.setHours(0,0,0,0);
-    let fecha = new Date(hoy.getFullYear(), m-1, d);
-    if (fecha < hoy) fecha = new Date(hoy.getFullYear()+1, m-1, d);
-    return Math.round((fecha - hoy) / 86400000);
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  let fecha = new Date(hoy.getFullYear(), m-1, d);
+  if (fecha < hoy) fecha = new Date(hoy.getFullYear()+1, m-1, d);
+  return Math.round((fecha - hoy) / 86400000);
 }
 
 function initBdayWidget() {
-    const ordenados = [...CUMPLES]
-        .map(c => ({ ...c, dias: diasHasta(c.d, c.m) }))
-        .sort((a,b) => a.dias - b.dias);
-
-    const proximo = ordenados[0];
-    const esHoyAlguien = ordenados.filter(c => c.dias === 0);
-
-    const nameEl = document.getElementById('bdayName');
-    const daysEl = document.getElementById('bdayDays');
-    if (!nameEl || !daysEl) return;
-
-    if (proximo.dias === 0) {
-        nameEl.textContent = '¡Hoy ' + proximo.n + '! 🎉';
-        daysEl.textContent = '¡Feliz cumple!';
-        // Chip pulsante
-        const chip = document.getElementById('bdayChip');
-        if (chip) {
-            chip.style.animation = 'chipGlow 1.8s ease-in-out infinite, chipScale 1.8s ease-in-out infinite';
-            chip.style.border = '2px solid #FFD700';
-            chip.querySelector('span').style.animation = 'emojiWiggle 1.2s ease-in-out infinite';
-        }
-        // Confetti
-        spawnConfetti();
-        // Card en home — animada para todos
-        renderBdayHomeCardAnimada(esHoyAlguien);
-    } else {
-        nameEl.textContent = proximo.n;
-        daysEl.textContent = 'en ' + proximo.dias + ' día' + (proximo.dias===1?'':'s');
+  const ordenados = [...CUMPLES].map(c => ({ ...c, dias: diasHasta(c.d, c.m) })).sort((a,b) => a.dias - b.dias);
+  const proximo = ordenados[0];
+  const esHoyAlguien = ordenados.filter(c => c.dias === 0);
+  const nameEl = document.getElementById('bdayName');
+  const daysEl = document.getElementById('bdayDays');
+  if (!nameEl || !daysEl) return;
+  if (proximo.dias === 0) {
+    nameEl.textContent = '¡Hoy ' + proximo.n + '! 🎉';
+    daysEl.textContent = '¡Feliz cumple!';
+    const chip = document.getElementById('bdayChip');
+    if (chip) {
+      chip.style.animation = 'chipGlow 1.8s ease-in-out infinite, chipScale 1.8s ease-in-out infinite';
+      chip.style.border = '2px solid #FFD700';
+      chip.querySelector('span').style.animation = 'emojiWiggle 1.2s ease-in-out infinite';
     }
-
-    const listEl = document.getElementById('bdayList');
-    if (listEl) {
-        listEl.innerHTML = ordenados.slice(0, 5).map((c, i) => {
-            const foto = FOTOS[c.n] || '';
-            const esHoy = c.dias === 0;
-            return `<div style="display:flex;align-items:center;gap:9px;padding:5px 0;${i<4?'border-bottom:1px solid rgba(255,255,255,0.05);':''}">
-                <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;background:url('${foto}') center top/cover;border:1.5px solid ${esHoy?'#FFD700':'rgba(200,168,48,0.3)'};" ></div>
-                <div style="flex:1;">
-                    <div style="color:${esHoy?'#FFD700':'white'};font-size:12px;font-weight:bold;">${c.n}${esHoy?' 🎉':''}</div>
-                    <div style="color:rgba(255,255,255,0.4);font-size:10px;">${c.d}/${c.m}</div>
-                </div>
-                <div style="color:${esHoy?'#FFD700':'rgba(255,255,255,0.5)'};font-size:11px;font-weight:bold;">${esHoy?'¡HOY!':c.dias+'d'}</div>
-            </div>`;
-        }).join('');
-    }
+    spawnConfetti();
+    renderBdayHomeCardAnimada(esHoyAlguien);
+  } else {
+    nameEl.textContent = proximo.n;
+    daysEl.textContent = 'en ' + proximo.dias + ' día' + (proximo.dias===1?'':'s');
+  }
+  const listEl = document.getElementById('bdayList');
+  if (listEl) {
+    listEl.innerHTML = ordenados.slice(0,5).map((c,i) => {
+      const foto = FOTOS[c.n] || '';
+      const esHoy = c.dias === 0;
+      return `<div style="display:flex;align-items:center;gap:9px;padding:5px 0;${i<4?'border-bottom:1px solid rgba(255,255,255,0.05);':''}">
+        <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;background:url('${foto}') center top/cover;border:1.5px solid ${esHoy?'#FFD700':'rgba(200,168,48,0.3)'};"></div>
+        <div style="flex:1;"><div style="color:${esHoy?'#FFD700':'white'};font-size:12px;font-weight:bold;">${c.n}${esHoy?' 🎉':''}</div><div style="color:rgba(255,255,255,0.4);font-size:10px;">${c.d}/${c.m}</div></div>
+        <div style="color:${esHoy?'#FFD700':'rgba(255,255,255,0.5)'};font-size:11px;font-weight:bold;">${esHoy?'¡HOY!':c.dias+'d'}</div>
+      </div>`;
+    }).join('');
+  }
 }
 
 function renderBdayHomeCard(cumpleaneros) {
-    const container = document.getElementById('bdayHomeCardContainer');
-    if (!container) return;
-    const nombres = cumpleaneros.map(c => c.n);
-    const fotos = nombres.map(n => FOTOS[n] || '');
-    const avatarsHTML = nombres.map((n, i) =>
-        `<div style="width:70px;height:70px;border-radius:50%;background:url('${fotos[i]}') center top/cover;border:3px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.5);margin:0 auto 10px;position:relative;z-index:1;"></div>`
-    ).join('');
-    const titulo = nombres.length === 1 ? `¡Feliz cumple, ${nombres[0]}! 🎂` : `¡Felices cumples, ${nombres.join(' y ')}! 🎂`;
-
-    const card = document.createElement('div');
-    card.id = 'bdayHomeCard';
-    card.style.cssText = 'background:linear-gradient(135deg,#2a0e50 0%,#1a0830 50%,#2a1000 100%);border:2px solid #FFD700;border-radius:20px;padding:22px 20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;animation:cardPulse 2s ease-in-out infinite;';
-    card.innerHTML = `
-        <div id="bdayCardStars" style="position:absolute;inset:0;pointer-events:none;"></div>
-        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.04),transparent);background-size:200% 100%;animation:cardShimmer 3s linear infinite;pointer-events:none;"></div>
-        ${avatarsHTML}
-        <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:4px;position:relative;z-index:1;text-shadow:0 0 15px rgba(255,215,0,0.4);">${titulo}</div>
-        <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:14px;position:relative;z-index:1;">¡LA CULPA TE SALUDA! 🎉</div>
-        <div style="font-size:26px;letter-spacing:6px;position:relative;z-index:1;display:inline-block;animation:emojiWiggle 1.5s ease-in-out infinite;">🎉🎈🎁</div>`;
-    container.innerHTML = '';     container.appendChild(card);
-
-    // Estrellas flotantes
-    const starsEl = document.getElementById('bdayCardStars');
-    const emojis = ['✨','⭐','🌟','💫','⚡'];
-    for (let i = 0; i < 8; i++) {
-        const el = document.createElement('div');
-        el.style.cssText = `position:absolute;font-size:12px;top:${Math.random()*80+5}%;left:${Math.random()*90+5}%;animation:starFloat ${Math.random()*2+1.5}s ease-in-out ${Math.random()*2}s infinite;`;
-        el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-        starsEl.appendChild(el);
-    }
+  const container = document.getElementById('bdayHomeCardContainer');
+  if (!container) return;
+  const nombres = cumpleaneros.map(c => c.n);
+  const fotos = nombres.map(n => FOTOS[n] || '');
+  const avatarsHTML = nombres.map((n,i) =>
+    `<div style="width:70px;height:70px;border-radius:50%;background:url('${fotos[i]}') center top/cover;border:3px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.5);margin:0 auto 10px;position:relative;z-index:1;"></div>`
+  ).join('');
+  const titulo = nombres.length === 1 ? `¡Feliz cumple, ${nombres[0]}! 🎂` : `¡Felices cumples, ${nombres.join(' y ')}! 🎂`;
+  const card = document.createElement('div');
+  card.id = 'bdayHomeCard';
+  card.style.cssText = 'background:linear-gradient(135deg,#2a0e50 0%,#1a0830 50%,#2a1000 100%);border:2px solid #FFD700;border-radius:20px;padding:22px 20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;animation:cardPulse 2s ease-in-out infinite;';
+  card.innerHTML = `
+    <div id="bdayCardStars" style="position:absolute;inset:0;pointer-events:none;"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.04),transparent);background-size:200% 100%;animation:cardShimmer 3s linear infinite;pointer-events:none;"></div>
+    ${avatarsHTML}
+    <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:4px;position:relative;z-index:1;text-shadow:0 0 15px rgba(255,215,0,0.4);">${titulo}</div>
+    <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:14px;position:relative;z-index:1;">¡LA CULPA TE SALUDA! 🎉</div>
+    <div style="font-size:26px;letter-spacing:6px;position:relative;z-index:1;display:inline-block;animation:emojiWiggle 1.5s ease-in-out infinite;">🎉🎈🎁</div>`;
+  container.innerHTML = '';
+  container.appendChild(card);
+  const starsEl = document.getElementById('bdayCardStars');
+  const emojis = ['✨','⭐','🌟','💫','⚡'];
+  for (let i = 0; i < 8; i++) {
+    const el = document.createElement('div');
+    el.style.cssText = `position:absolute;font-size:12px;top:${Math.random()*80+5}%;left:${Math.random()*90+5}%;animation:starFloat ${Math.random()*2+1.5}s ease-in-out ${Math.random()*2}s infinite;`;
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    starsEl.appendChild(el);
+  }
 }
 
-// ── Helpers para la animación de cumpleaños ──
 function _bdayGetEmoji(terna) {
-    const t = (terna || '').toUpperCase();
-    if (t.includes('CULPOSO DE ORO'))  return '🏆';
-    if (t.includes('TROLO'))           return '🏳️‍🌈';
-    if (t.includes('ASISTENCIA'))      return '📋';
-    if (t.includes('EXITOSO'))         return '💼';
-    if (t.includes('CHEF'))         return '👨🏾‍🍳';
-    if (t.includes('POLLERA'))         return '👗';
-    if (t.includes('CUMPLE'))          return '🎂';
-    if (t.includes('DEPORTISTA'))         return '⚽';
-    return '🥇';
+  const t = (terna || '').toUpperCase();
+  if (t.includes('CULPOSO DE ORO')) return '🏆';
+  if (t.includes('TROLO')) return '🏳️‍🌈';
+  if (t.includes('ASISTENCIA')) return '📋';
+  if (t.includes('EXITOSO')) return '💼';
+  if (t.includes('CHEF')) return '👨🏾‍🍳';
+  if (t.includes('POLLERA')) return '👗';
+  if (t.includes('CUMPLE')) return '🎂';
+  if (t.includes('DEPORTISTA')) return '⚽';
+  return '🥇';
 }
-function _bdayEsOro(terna) {
-    return (terna || '').toUpperCase().includes('CULPOSO DE ORO');
-}
+function _bdayEsOro(terna) { return (terna||'').toUpperCase().includes('CULPOSO DE ORO'); }
 function _bdayOrdenar(premios) {
-    const norm = premios.filter(p => !_bdayEsOro(p.Terna)).sort((a,b) => (a.Año||0)-(b.Año||0));
-    const oro  = premios.filter(p =>  _bdayEsOro(p.Terna)).sort((a,b) => (a.Año||0)-(b.Año||0));
-    return [...norm, ...oro];
+  const norm = premios.filter(p => !_bdayEsOro(p.Terna)).sort((a,b) => (a.Año||0)-(b.Año||0));
+  const oro  = premios.filter(p =>  _bdayEsOro(p.Terna)).sort((a,b) => (a.Año||0)-(b.Año||0));
+  return [...norm, ...oro];
 }
 
 function renderBdayHomeCardAnimada(cumpleaneros) {
-    const container = document.getElementById('bdayHomeCardContainer');
-    if (!container) return;
-
-    const MENSAJES_ESPECIALES = {
-        'Caamaño':'DAMN MIKE!','Mateo':'El de La Culpa...','Tirri':'joven doctor',
-        'Santi':'el duende verde','Rama':'el japonés','Zabala':'el niño cosmopolita',
-        'Toto':'EL TOTORRO','Toti':'el meriendas',
-    };
-
-    const nombres = cumpleaneros.map(c => c.n);
-    const todosLosPremios = [];
-    nombres.forEach(nombre => {
-        const premios = (window.premiosData || [])
-            .filter(p => p.Ganador && p.Ganador.trim() === nombre && p.Tipo === 'Persona');
-        todosLosPremios.push(...premios);
-    });
-    const premiosOrdenados = _bdayOrdenar(todosLosPremios);
-    const mensajeEspecial = nombres.length === 1 ? (MENSAJES_ESPECIALES[nombres[0]] || null) : null;
-
-    if (!document.getElementById('bdayAnimStyles')) {
-        const st = document.createElement('style');
-        st.id = 'bdayAnimStyles';
-        st.textContent = `
-        @keyframes bdaySparkFloat { 0%{opacity:0;transform:translateY(100vh) scale(0)} 15%{opacity:.6} 85%{opacity:.2} 100%{opacity:0;transform:translateY(-30px) scale(1.5)} }
-        @keyframes bdayPremioEntrar { 0%{opacity:0;transform:scale(0.55) translateY(40px);filter:blur(8px)} 60%{filter:blur(0)} 100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)} }
-        @keyframes bdayPremioSalir  { 0%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)} 100%{opacity:0;transform:scale(1.1) translateY(-30px);filter:blur(4px)} }
-        @keyframes bdayEmojiGlowOro { 0%,100%{filter:drop-shadow(0 0 14px rgba(255,215,0,.5));transform:scale(1)} 50%{filter:drop-shadow(0 0 32px rgba(255,215,0,.9));transform:scale(1.07)} }
-        @keyframes bdayEmojiGlow    { from{filter:drop-shadow(0 0 0 rgba(200,168,48,0))} to{filter:drop-shadow(0 0 18px rgba(200,168,48,.55))} }
-        @keyframes bdayCardEntrar   { from{opacity:0;transform:scale(0.88) translateY(24px)} to{opacity:1;transform:scale(1) translateY(0)} }
-        @keyframes bdayPalItemEntra { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:translateX(0)} }`;
-        document.head.appendChild(st);
-    }
-
-    let flashEl = document.getElementById('bdayLuzFlash');
-    if (!flashEl) {
-        flashEl = document.createElement('div');
-        flashEl.id = 'bdayLuzFlash';
-        flashEl.style.cssText = 'position:fixed;inset:0;z-index:9900;pointer-events:none;background:rgba(255,255,255,0);';
-        document.body.appendChild(flashEl);
-    }
-    function bdayFlash(color, dur) {
-        flashEl.style.transition='none'; flashEl.style.background=color;
-        setTimeout(()=>{ flashEl.style.transition=`background ${dur}ms ease`; flashEl.style.background='rgba(255,255,255,0)'; },80);
-    }
-
-    // ── OVERLAY ──
-    const overlay = document.createElement('div');
-    overlay.id = 'bdaySuspensoOverlay';
-    overlay.style.cssText = 'position:fixed;inset:0;background:#060210;z-index:9800;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity 0.7s ease;';
-
-    const vignette = document.createElement('div');
-    vignette.style.cssText = 'position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 25%,rgba(0,0,0,0.85) 100%);pointer-events:none;z-index:1;';
-    overlay.appendChild(vignette);
-
-    const sparks = document.createElement('div');
-    sparks.style.cssText = 'position:absolute;inset:0;z-index:0;';
-    for (let i=0;i<18;i++) {
-        const s = document.createElement('div');
-        const sz = Math.random()>.5?2:1;
-        s.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;background:#C8A830;opacity:0;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:bdaySparkFloat ${4+Math.random()*5}s ease-in-out ${Math.random()*4}s infinite;`;
-        sparks.appendChild(s);
-    }
-    overlay.appendChild(sparks);
-
-    const slot = document.createElement('div');
-    slot.style.cssText = 'position:relative;z-index:2;width:min(340px,88vw);min-height:220px;display:flex;align-items:center;justify-content:center;text-align:center;';
-    overlay.appendChild(slot);
-    document.body.appendChild(overlay);
-
-    const DURACION = 2200, SALIDA = 450;
-
-    function mostrarItemSlot(html, esOroItem) {
-        const prev = slot.querySelector('.bdayPremioItem');
-        if (prev) { prev.style.animation='bdayPremioSalir 0.45s ease-in forwards'; setTimeout(()=>prev.remove(),500); }
-        setTimeout(()=>{
-            const el = document.createElement('div');
-            el.className = 'bdayPremioItem';
-            el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0;position:absolute;width:100%;padding:0 24px;';
-            el.innerHTML = html;
-            slot.appendChild(el);
-            setTimeout(()=>{
-                el.style.animation='bdayPremioEntrar 0.7s cubic-bezier(0.2,0.8,0.4,1) forwards';
-                if(esOroItem) bdayFlash('rgba(255,240,120,0.4)',900);
-            },30);
-        }, prev?550:0);
-    }
-
-    // Sin premios ni mensaje → directo a card
-    if (!premiosOrdenados.length && !mensajeEspecial) {
-        overlay.style.opacity = '0';
-        setTimeout(()=>{ overlay.remove(); _bdayMostrarCardHome(cumpleaneros, premiosOrdenados, container); },900);
-        return;
-    }
-
-    // Mostrar premios
-    premiosOrdenados.forEach((premio, i) => {
-        const oro = _bdayEsOro(premio.Terna);
-        setTimeout(()=>{
-            mostrarItemSlot(`
-                <div style="font-size:82px;line-height:1;animation:${oro?'bdayEmojiGlowOro 2s ease-in-out infinite':'bdayEmojiGlow 0.5s ease forwards'};animation-delay:0.2s;">${_bdayGetEmoji(premio.Terna)}</div>
-                <div style="font-family:'Cinzel',serif;font-size:${oro?17:13}px;color:${oro?'#FFD700':'rgba(200,168,48,0.75)'};letter-spacing:4px;text-transform:uppercase;">${oro?'Culposo de Oro':premio.Terna}</div>
-                <div style="font-family:'Cinzel',serif;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:5px;">${premio.Año||''}</div>`, oro);
-        }, 500 + i*DURACION);
-    });
-
-    const tDespremios = 500 + premiosOrdenados.length*DURACION + 400;
-    const tExtra = mensajeEspecial ? 3000 : 0;
-
-    // Mensaje especial
-    if (mensajeEspecial) {
-        setTimeout(()=>{
-            mostrarItemSlot(`<div class="bdayMsgEsp" style="font-family:'Cinzel',serif;font-size:clamp(22px,6vw,34px);font-weight:900;color:#C8A830;letter-spacing:3px;text-align:center;text-shadow:0 0 20px rgba(200,168,48,0.4);">${mensajeEspecial}</div>`, false);
-            setTimeout(()=>{
-                const txt = slot.querySelector('.bdayMsgEsp');
-                if(txt){ txt.style.transition='transform 0.5s ease,text-shadow 0.5s ease'; txt.style.transform='scale(1.07)'; txt.style.textShadow='0 0 30px rgba(200,168,48,0.7)'; }
-                bdayFlash('rgba(200,168,48,0.15)',800);
-            },1200);
-        }, tDespremios);
-    }
-
-    // ── CARD COMO ÚLTIMA SLIDE ──
-    const tCard = tDespremios + tExtra;
-
+  const container = document.getElementById('bdayHomeCardContainer');
+  if (!container) return;
+  const MENSAJES_ESPECIALES = {
+    'Caamaño':'DAMN MIKE!','Mateo':'El de La Culpa...','Tirri':'joven doctor',
+    'Santi':'el duende verde','Rama':'el japonés','Zabala':'el niño cosmopolita',
+    'Toto':'EL TOTORRO','Toti':'el meriendas',
+  };
+  const nombres = cumpleaneros.map(c => c.n);
+  const todosLosPremios = [];
+  nombres.forEach(nombre => {
+    const premios = (window.premiosData || []).filter(p => p.Ganador && p.Ganador.trim() === nombre && p.Tipo === 'Persona');
+    todosLosPremios.push(...premios);
+  });
+  const premiosOrdenados = _bdayOrdenar(todosLosPremios);
+  const mensajeEspecial = nombres.length === 1 ? (MENSAJES_ESPECIALES[nombres[0]] || null) : null;
+  if (!document.getElementById('bdayAnimStyles')) {
+    const st = document.createElement('style');
+    st.id = 'bdayAnimStyles';
+    st.textContent = `
+    @keyframes bdaySparkFloat { 0%{opacity:0;transform:translateY(100vh) scale(0)} 15%{opacity:.6} 85%{opacity:.2} 100%{opacity:0;transform:translateY(-30px) scale(1.5)} }
+    @keyframes bdayPremioEntrar { 0%{opacity:0;transform:scale(0.55) translateY(40px);filter:blur(8px)} 60%{filter:blur(0)} 100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)} }
+    @keyframes bdayPremioSalir  { 0%{opacity:1;transform:scale(1) translateY(0);filter:blur(0)} 100%{opacity:0;transform:scale(1.1) translateY(-30px);filter:blur(4px)} }
+    @keyframes bdayEmojiGlowOro { 0%,100%{filter:drop-shadow(0 0 14px rgba(255,215,0,.5));transform:scale(1)} 50%{filter:drop-shadow(0 0 32px rgba(255,215,0,.9));transform:scale(1.07)} }
+    @keyframes bdayEmojiGlow    { from{filter:drop-shadow(0 0 0 rgba(200,168,48,0))} to{filter:drop-shadow(0 0 18px rgba(200,168,48,.55))} }
+    @keyframes bdayCardEntrar   { from{opacity:0;transform:scale(0.88) translateY(24px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    @keyframes bdayPalItemEntra { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:translateX(0)} }`;
+    document.head.appendChild(st);
+  }
+  let flashEl = document.getElementById('bdayLuzFlash');
+  if (!flashEl) {
+    flashEl = document.createElement('div');
+    flashEl.id = 'bdayLuzFlash';
+    flashEl.style.cssText = 'position:fixed;inset:0;z-index:9900;pointer-events:none;background:rgba(255,255,255,0);';
+    document.body.appendChild(flashEl);
+  }
+  function bdayFlash(color, dur) {
+    flashEl.style.transition='none'; flashEl.style.background=color;
+    setTimeout(()=>{ flashEl.style.transition=`background ${dur}ms ease`; flashEl.style.background='rgba(255,255,255,0)'; },80);
+  }
+  const overlay = document.createElement('div');
+  overlay.id = 'bdaySuspensoOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:#060210;z-index:9800;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity 0.7s ease;';
+  const vignette = document.createElement('div');
+  vignette.style.cssText = 'position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 25%,rgba(0,0,0,0.85) 100%);pointer-events:none;z-index:1;';
+  overlay.appendChild(vignette);
+  const sparks = document.createElement('div');
+  sparks.style.cssText = 'position:absolute;inset:0;z-index:0;';
+  for (let i=0;i<18;i++) {
+    const s = document.createElement('div');
+    const sz = Math.random()>.5?2:1;
+    s.style.cssText=`position:absolute;width:${sz}px;height:${sz}px;border-radius:50%;background:#C8A830;opacity:0;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:bdaySparkFloat ${4+Math.random()*5}s ease-in-out ${Math.random()*4}s infinite;`;
+    sparks.appendChild(s);
+  }
+  overlay.appendChild(sparks);
+  const slot = document.createElement('div');
+  slot.style.cssText = 'position:relative;z-index:2;width:min(340px,88vw);min-height:220px;display:flex;align-items:center;justify-content:center;text-align:center;';
+  overlay.appendChild(slot);
+  document.body.appendChild(overlay);
+  const DURACION = 2200;
+  function mostrarItemSlot(html, esOroItem) {
+    const prev = slot.querySelector('.bdayPremioItem');
+    if (prev) { prev.style.animation='bdayPremioSalir 0.45s ease-in forwards'; setTimeout(()=>prev.remove(),500); }
     setTimeout(()=>{
-        const prev = slot.querySelector('.bdayPremioItem');
-        if(prev){ prev.style.animation='bdayPremioSalir 0.4s ease-in forwards'; setTimeout(()=>prev.remove(),450); }
-
+      const el = document.createElement('div');
+      el.className = 'bdayPremioItem';
+      el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0;position:absolute;width:100%;padding:0 24px;';
+      el.innerHTML = html;
+      slot.appendChild(el);
+      setTimeout(()=>{
+        el.style.animation='bdayPremioEntrar 0.7s cubic-bezier(0.2,0.8,0.4,1) forwards';
+        if(esOroItem) bdayFlash('rgba(255,240,120,0.4)',900);
+      },30);
+    }, prev?550:0);
+  }
+  if (!premiosOrdenados.length && !mensajeEspecial) {
+    overlay.style.opacity = '0';
+    setTimeout(()=>{ overlay.remove(); _bdayMostrarCardHome(cumpleaneros, premiosOrdenados, container); },900);
+    return;
+  }
+  premiosOrdenados.forEach((premio, i) => {
+    const oro = _bdayEsOro(premio.Terna);
+    setTimeout(()=>{
+      mostrarItemSlot(`
+        <div style="font-size:82px;line-height:1;animation:${oro?'bdayEmojiGlowOro 2s ease-in-out infinite':'bdayEmojiGlow 0.5s ease forwards'};animation-delay:0.2s;">${_bdayGetEmoji(premio.Terna)}</div>
+        <div style="font-family:'Cinzel',serif;font-size:${oro?17:13}px;color:${oro?'#FFD700':'rgba(200,168,48,0.75)'};letter-spacing:4px;text-transform:uppercase;">${oro?'Culposo de Oro':premio.Terna}</div>
+        <div style="font-family:'Cinzel',serif;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:5px;">${premio.Año||''}</div>`, oro);
+    }, 500 + i*DURACION);
+  });
+  const tDespremios = 500 + premiosOrdenados.length*DURACION + 400;
+  const tExtra = mensajeEspecial ? 3000 : 0;
+  if (mensajeEspecial) {
+    setTimeout(()=>{
+      mostrarItemSlot(`<div class="bdayMsgEsp" style="font-family:'Cinzel',serif;font-size:clamp(22px,6vw,34px);font-weight:900;color:#C8A830;letter-spacing:3px;text-align:center;text-shadow:0 0 20px rgba(200,168,48,0.4);">${mensajeEspecial}</div>`, false);
+      setTimeout(()=>{
+        const txt = slot.querySelector('.bdayMsgEsp');
+        if(txt){ txt.style.transition='transform 0.5s ease,text-shadow 0.5s ease'; txt.style.transform='scale(1.07)'; txt.style.textShadow='0 0 30px rgba(200,168,48,0.7)'; }
+        bdayFlash('rgba(200,168,48,0.15)',800);
+      },1200);
+    }, tDespremios);
+  }
+  const tCard = tDespremios + tExtra;
+  setTimeout(()=>{
+    const prev = slot.querySelector('.bdayPremioItem');
+    if(prev){ prev.style.animation='bdayPremioSalir 0.4s ease-in forwards'; setTimeout(()=>prev.remove(),450); }
+    setTimeout(()=>{
+      slot.style.minHeight = 'auto';
+      const cardEl = _bdayBuildCard(cumpleaneros, premiosOrdenados);
+      cardEl.style.cssText += 'opacity:0;transform:scale(0.88) translateY(24px);transition:opacity 0.7s ease,transform 0.7s cubic-bezier(0.2,0.8,0.4,1);';
+      slot.appendChild(cardEl);
+      setTimeout(()=>{
+        cardEl.style.opacity = '1';
+        cardEl.style.transform = 'scale(1) translateY(0)';
+        cardEl.querySelectorAll('.bdayPalItem').forEach((el,i)=>{
+          setTimeout(()=>{ el.style.opacity='1'; el.style.transform='translateX(0)'; },350+i*120);
+        });
+      },50);
+      setTimeout(()=>{
+        overlay.style.opacity = '0';
         setTimeout(()=>{
-            slot.style.minHeight = 'auto';
-            const cardEl = _bdayBuildCard(cumpleaneros, premiosOrdenados);
-            cardEl.style.cssText += 'opacity:0;transform:scale(0.88) translateY(24px);transition:opacity 0.7s ease,transform 0.7s cubic-bezier(0.2,0.8,0.4,1);';
-            slot.appendChild(cardEl);
-
-            setTimeout(()=>{
-                cardEl.style.opacity = '1';
-                cardEl.style.transform = 'scale(1) translateY(0)';
-                cardEl.querySelectorAll('.bdayPalItem').forEach((el,i)=>{
-                    setTimeout(()=>{ el.style.opacity='1'; el.style.transform='translateX(0)'; },350+i*120);
-                });
-            },50);
-
-            // Fade out overlay → card queda en Home
-            setTimeout(()=>{
-                overlay.style.opacity = '0';
-                setTimeout(()=>{
-                    overlay.remove();
-                    _bdayMostrarCardHome(cumpleaneros, premiosOrdenados, container);
-                },750);
-            }, 2800);
-
-        }, prev?500:0);
-    }, tCard);
+          overlay.remove();
+          _bdayMostrarCardHome(cumpleaneros, premiosOrdenados, container);
+        },750);
+      }, 2800);
+    }, prev?500:0);
+  }, tCard);
 }
 
 function _bdayBuildCard(cumpleaneros, premiosOrdenados) {
-    const nombres = cumpleaneros.map(c => c.n);
-    const fotos   = nombres.map(n => FOTOS[n] || '');
-    const titulo  = nombres.length===1 ? `¡Feliz cumple, ${nombres[0]}! 🎂` : `¡Felices cumples, ${nombres.join(' y ')}! 🎂`;
-
-    const palHTML = premiosOrdenados.length ? `
-        <div style="background:rgba(0,0,0,0.22);border:1px solid rgba(200,168,48,0.18);border-radius:12px;padding:12px 14px;margin-bottom:14px;text-align:left;">
-            ${premiosOrdenados.map((p,i)=>`
-            <div class="bdayPalItem" style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:${i<premiosOrdenados.length-1?'1px solid rgba(255,255,255,0.05)':'none'};opacity:0;transform:translateX(-10px);transition:opacity 0.35s ease,transform 0.35s ease;">
-                <span style="font-size:20px;flex-shrink:0;">${_bdayGetEmoji(p.Terna)}</span>
-                <div>
-                    <div style="font-size:11px;font-weight:bold;color:${_bdayEsOro(p.Terna)?'#FFD700':'rgba(255,255,255,0.8)'};text-transform:uppercase;letter-spacing:.5px;">${_bdayEsOro(p.Terna)?'🏆 Culposo de Oro':p.Terna}</div>
-                    <div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:1px;">${p.Año||''}</div>
-                </div>
-            </div>`).join('')}
-        </div>` : '';
-
-    const avatarsHTML = nombres.map((n,i)=>
-        `<div style="width:70px;height:70px;border-radius:50%;background:url('${fotos[i]}') center top/cover;border:3px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.5);margin:0 auto 10px;position:relative;z-index:1;"></div>`
-    ).join('');
-
-    const card = document.createElement('div');
-    card.className = 'bdayHomeCard';
-    card.style.cssText = 'background:linear-gradient(135deg,#2a0e50 0%,#1a0830 50%,#2a1000 100%);border:2px solid #FFD700;border-radius:20px;padding:22px 20px;text-align:center;position:relative;overflow:hidden;animation:cardPulse 2s ease-in-out infinite;width:100%;box-sizing:border-box;';
-    card.innerHTML = `
-        <div id="bdayCardStars" style="position:absolute;inset:0;pointer-events:none;"></div>
-        <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.04),transparent);background-size:200% 100%;animation:cardShimmer 3s linear infinite;pointer-events:none;"></div>
-        ${avatarsHTML}
-        <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:4px;position:relative;z-index:1;text-shadow:0 0 15px rgba(255,215,0,0.4);">${titulo}</div>
-        <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:${premiosOrdenados.length?'14px':'0'};position:relative;z-index:1;">¡LA CULPA TE SALUDA! 🎉</div>
-        ${palHTML}
-        <div style="font-size:26px;letter-spacing:6px;position:relative;z-index:1;display:inline-block;animation:emojiWiggle 1.5s ease-in-out infinite;">🎉🎈🎁</div>`;
-
-    // Estrellas
-    const starsEl = card.querySelector('#bdayCardStars');
-    if (starsEl) {
-        ['✨','⭐','🌟','💫','⚡','✨','⭐','🌟'].forEach(em=>{
-            const el = document.createElement('div');
-            el.style.cssText=`position:absolute;font-size:12px;top:${Math.random()*80+5}%;left:${Math.random()*90+5}%;animation:starFloat ${Math.random()*2+1.5}s ease-in-out ${Math.random()*2}s infinite;`;
-            el.textContent=em; starsEl.appendChild(el);
-        });
-    }
-    return card;
+  const nombres = cumpleaneros.map(c => c.n);
+  const fotos   = nombres.map(n => FOTOS[n] || '');
+  const titulo  = nombres.length===1 ? `¡Feliz cumple, ${nombres[0]}! 🎂` : `¡Felices cumples, ${nombres.join(' y ')}! 🎂`;
+  const palHTML = premiosOrdenados.length ? `
+    <div style="background:rgba(0,0,0,0.22);border:1px solid rgba(200,168,48,0.18);border-radius:12px;padding:12px 14px;margin-bottom:14px;text-align:left;">
+      ${premiosOrdenados.map((p,i)=>`
+      <div class="bdayPalItem" style="display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:${i<premiosOrdenados.length-1?'1px solid rgba(255,255,255,0.05)':'none'};opacity:0;transform:translateX(-10px);transition:opacity 0.35s ease,transform 0.35s ease;">
+        <span style="font-size:20px;flex-shrink:0;">${_bdayGetEmoji(p.Terna)}</span>
+        <div>
+          <div style="font-size:11px;font-weight:bold;color:${_bdayEsOro(p.Terna)?'#FFD700':'rgba(255,255,255,0.8)'};text-transform:uppercase;letter-spacing:.5px;">${_bdayEsOro(p.Terna)?'🏆 Culposo de Oro':p.Terna}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:1px;">${p.Año||''}</div>
+        </div>
+      </div>`).join('')}
+    </div>` : '';
+  const avatarsHTML = nombres.map((n,i)=>
+    `<div style="width:70px;height:70px;border-radius:50%;background:url('${fotos[i]}') center top/cover;border:3px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.5);margin:0 auto 10px;position:relative;z-index:1;"></div>`
+  ).join('');
+  const card = document.createElement('div');
+  card.className = 'bdayHomeCard';
+  card.style.cssText = 'background:linear-gradient(135deg,#2a0e50 0%,#1a0830 50%,#2a1000 100%);border:2px solid #FFD700;border-radius:20px;padding:22px 20px;text-align:center;position:relative;overflow:hidden;animation:cardPulse 2s ease-in-out infinite;width:100%;box-sizing:border-box;';
+  card.innerHTML = `
+    <div id="bdayCardStars" style="position:absolute;inset:0;pointer-events:none;"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,215,0,0.04),transparent);background-size:200% 100%;animation:cardShimmer 3s linear infinite;pointer-events:none;"></div>
+    ${avatarsHTML}
+    <div style="color:#FFD700;font-size:20px;font-weight:bold;margin-bottom:4px;position:relative;z-index:1;text-shadow:0 0 15px rgba(255,215,0,0.4);">${titulo}</div>
+    <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:${premiosOrdenados.length?'14px':'0'};position:relative;z-index:1;">¡LA CULPA TE SALUDA! 🎉</div>
+    ${palHTML}
+    <div style="font-size:26px;letter-spacing:6px;position:relative;z-index:1;display:inline-block;animation:emojiWiggle 1.5s ease-in-out infinite;">🎉🎈🎁</div>`;
+  const starsEl = card.querySelector('#bdayCardStars');
+  if (starsEl) {
+    ['✨','⭐','🌟','💫','⚡','✨','⭐','🌟'].forEach(em=>{
+      const el = document.createElement('div');
+      el.style.cssText=`position:absolute;font-size:12px;top:${Math.random()*80+5}%;left:${Math.random()*90+5}%;animation:starFloat ${Math.random()*2+1.5}s ease-in-out ${Math.random()*2}s infinite;`;
+      el.textContent=em; starsEl.appendChild(el);
+    });
+  }
+  return card;
 }
 
 function _bdayMostrarCardHome(cumpleaneros, premiosOrdenados, container) {
-    const card = _bdayBuildCard(cumpleaneros, premiosOrdenados);
-    card.style.marginBottom = '16px';
-    container.innerHTML = '';
-    container.appendChild(card);
-    // Pal items visibles inmediatamente
-    card.querySelectorAll('.bdayPalItem').forEach(el=>{
-        el.style.opacity='1'; el.style.transform='translateX(0)';
-    });
+  const card = _bdayBuildCard(cumpleaneros, premiosOrdenados);
+  card.style.marginBottom = '16px';
+  container.innerHTML = '';
+  container.appendChild(card);
+  card.querySelectorAll('.bdayPalItem').forEach(el=>{
+    el.style.opacity='1'; el.style.transform='translateX(0)';
+  });
 }
+
 function spawnConfetti() {
-    const existing = document.getElementById('confettiContainer');
-    if (existing) return;
-    const container = document.createElement('div');
-    container.id = 'confettiContainer';
-    container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;';
-    document.body.appendChild(container);
-    const colors = ['#FFD700','#C8A830','#C8A830','#a855f7','#60a5fa','#34d399','#f97316'];
-    for (let i = 0; i < 60; i++) {
-        const el = document.createElement('div');
-        el.style.cssText = `position:absolute;left:${Math.random()*100}vw;width:${Math.random()*8+4}px;height:${Math.random()*8+4}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'2px'};animation:confettiFall ${Math.random()*3+3}s ${Math.random()*5}s linear infinite;opacity:0;`;
-        container.appendChild(el);
-    }
+  if (document.getElementById('confettiContainer')) return;
+  const container = document.createElement('div');
+  container.id = 'confettiContainer';
+  container.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;';
+  document.body.appendChild(container);
+  const colors = ['#FFD700','#C8A830','#C8A830','#a855f7','#60a5fa','#34d399','#f97316'];
+  for (let i = 0; i < 60; i++) {
+    const el = document.createElement('div');
+    el.style.cssText = `position:absolute;left:${Math.random()*100}vw;width:${Math.random()*8+4}px;height:${Math.random()*8+4}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'2px'};animation:confettiFall ${Math.random()*3+3}s ${Math.random()*5}s linear infinite;opacity:0;`;
+    container.appendChild(el);
+  }
 }
 
 function toggleBday() {
-    const panel = document.getElementById('bdayPanel');
-    if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  const panel = document.getElementById('bdayPanel');
+  if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
 }
 
 // Iniciar cuando carguen los datos
-const _origLoadData = loadData;
+const _origLoadData2 = loadData;
 loadData = async function() {
-    await _origLoadData.apply(this, arguments);
-    initBdayWidget();
+  await _origLoadData2.apply(this, arguments);
+  initBdayWidget();
 };
 initBdayWidget();
-   
 </script>
 
+<!-- ===== FIN PLAYER PRO ===== -->
+    
 <!-- WIDGET CUMPLEAÑOS -->
 <div id="bdayWidget" onclick="toggleBday()" style="position:fixed;bottom:80px;right:14px;z-index:1500;cursor:pointer;user-select:none;">
     <div id="bdayChip" style="background:linear-gradient(135deg,#2a1455,#1a0830);border:1.5px solid rgba(200,168,48,0.4);border-radius:20px;padding:7px 12px;display:flex;align-items:center;gap:8px;box-shadow:0 4px 15px rgba(0,0,0,0.5);min-width:140px;">
