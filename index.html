@@ -669,7 +669,7 @@ body {
     </div>
     
     <!-- Título LA CULPA con efecto de aparición escalonada -->
-    <div style="position:relative;z-index:1;font-family:'Cinzel',Georgia,serif;font-size:38px;font-weight:900;letter-spacing:10px;margin-top:16px;background:linear-gradient(180deg,#FFE566 0%,#C8A830 40%,#A07820 80%,#6B4D10 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;animation:splashTitleGlow 1.2s ease-out 0.7s both;filter:drop-shadow(0 2px 15px rgba(200,168,48,0.5));">LA CULPA</div>
+    <div style="position:relative;z-index:1;font-family:'Cinzel',Georgia,serif;font-size:38px;font-weight:900;letter-spacing:10px;margin-top:16px;background:linear-gradient(180deg,#FFE566 0%,#C8A830 40%,#A07820 80%,#6B4D10 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;animation:splashTitleGlow 1.2s ease-out 0.7s both;filter:drop-shadow(0 2px 15px rgba(200,168,48,0.5));">LA CULPA</div> 
     
     <!-- Subtítulo con efecto typewriter -->
     <div style="position:relative;z-index:1;font-family:'Cinzel',Georgia,serif;color:#C8A830;font-size:12px;letter-spacing:6px;text-transform:uppercase;margin-top:10px;opacity:0;animation:splashReveal 0.8s ease-out 1s forwards;">8 &nbsp; R E Y E S</div>
@@ -1774,39 +1774,102 @@ function toggleEncuestaFields() {
         if (!res.success) { console.error(res.error); return []; }
         muroPostsCache = res.rows;
         
-        // ── POST DE CIERRE WORDLE (se crea una sola vez) ──
-        const postCierreKey = 'wordle_cierre_posteado';
-        if (!localStorage.getItem(postCierreKey)) {
-            try {
-                await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        accion: 'crear_post',
-                        autor: 'La Culpa',
-                        texto: `🏆 WORDLE CULPOSO · CIERRE OFICIAL
+// ── POST DE CIERRE WORDLE (se crea una sola vez) ──
+const postCierreKey = 'wordle_cierre_posteado';
+if (!localStorage.getItem(postCierreKey)) {
+    try {
+        const htmlPost = '<div style="background:linear-gradient(135deg,#160D2E,#1E1040);border:1.5px solid rgba(107,45,145,0.3);border-radius:16px;overflow:hidden;font-family:-apple-system,sans-serif;max-width:100%;padding:0;">' +
+'<div style="display:flex;align-items:center;gap:10px;padding:12px 14px 9px;">' +
+'  <div style="width:36px;height:36px;border-radius:50%;flex-shrink:0;border:2px solid #C8A830;background:url(https://i.imgur.com/czObXpX.png) center/cover;"></div>' +
+'  <div style="flex:1;">' +
+'    <div style="color:#C8A830;font-size:13px;font-weight:bold;">La Culpa</div>' +
+'    <div style="color:rgba(255,255,255,0.3);font-size:11px;">hoy</div>' +
+'  </div>' +
+'  <div style="font-size:10px;padding:3px 9px;border-radius:10px;background:rgba(200,168,48,0.15);color:#C8A830;border:1px solid rgba(200,168,48,0.35);">🏆 post</div>' +
+'</div>' +
+'<div style="padding:0 14px 16px;">' +
+'  <div style="text-align:center;padding:20px 0 16px;">' +
+'    <div style="font-size:48px;margin-bottom:8px;">🏆</div>' +
+'    <div style="font-family:Cinzel,Georgia,serif;font-size:18px;font-weight:900;color:#FFD700;letter-spacing:2px;margin-bottom:4px;">WORDLE CULPOSO</div>' +
+'    <div style="color:rgba(200,168,48,0.6);font-size:11px;letter-spacing:4px;text-transform:uppercase;">128 palabras · Cierre oficial</div>' +
+'  </div>' +
+'  <div style="height:1px;background:linear-gradient(to right,transparent,rgba(200,168,48,0.3),transparent);margin-bottom:16px;"></div>' +
+'  <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,165,0,0.08));border:1.5px solid rgba(255,215,0,0.4);border-radius:14px;padding:16px;margin-bottom:16px;text-align:center;">' +
+'    <div style="width:70px;height:70px;border-radius:50%;margin:0 auto 10px;background:url(https://i.imgur.com/7E7f3Xy.png) center top/cover;border:3px solid #FFD700;box-shadow:0 0 20px rgba(255,215,0,0.4);"></div>' +
+'    <div style="color:rgba(255,255,255,0.5);font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;">🥇 Campeón</div>' +
+'    <div style="color:#FFD700;font-size:24px;font-weight:bold;margin-bottom:2px;">CAAMAÑO</div>' +
+'    <div style="color:rgba(255,255,255,0.5);font-size:12px;">128/128 · 100% de victorias</div>' +
+'  </div>' +
+'  <div style="color:rgba(255,255,255,0.4);font-size:10px;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">🏅 Ranking final</div>' +
+'  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">' +
+'    <div style="display:grid;grid-template-columns:24px 1fr 36px 36px 40px 40px;gap:4px;align-items:center;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);border-radius:10px;padding:8px 10px;">' +
+'      <div style="color:#FFD700;font-size:15px;font-weight:bold;">🥇</div>' +
+'      <div style="display:flex;align-items:center;gap:7px;">' +
+'        <div style="width:26px;height:26px;border-radius:50%;background:url(https://i.imgur.com/7E7f3Xy.png) center top/cover;border:1.5px solid #FFD700;flex-shrink:0;"></div>' +
+'        <div style="color:#FFD700;font-size:13px;font-weight:bold;">Caamaño</div>' +
+'      </div>' +
+'      <div style="color:#4CAF50;font-size:12px;font-weight:bold;text-align:center;">128</div>' +
+'      <div style="color:#4CAF50;font-size:12px;font-weight:bold;text-align:center;">128</div>' +
+'      <div style="color:#C8A830;font-size:12px;text-align:center;">3.6</div>' +
+'      <div style="color:#C8A830;font-size:12px;text-align:center;">3:02</div>' +
+'    </div>' +
+'    <div style="display:grid;grid-template-columns:24px 1fr 36px 36px 40px 40px;gap:4px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(107,45,145,0.3);border-radius:10px;padding:8px 10px;">' +
+'      <div style="color:rgba(255,255,255,0.4);font-size:14px;">🥈</div>' +
+'      <div style="display:flex;align-items:center;gap:7px;">' +
+'        <div style="width:26px;height:26px;border-radius:50%;background:url(https://i.imgur.com/fOVTNio.png) center top/cover;border:1.5px solid rgba(200,168,48,0.3);flex-shrink:0;"></div>' +
+'        <div style="color:rgba(255,255,255,0.85);font-size:13px;">Toti</div>' +
+'      </div>' +
+'      <div style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;">127</div>' +
+'      <div style="color:#4CAF50;font-size:12px;text-align:center;">127</div>' +
+'      <div style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;">2.4</div>' +
+'      <div style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;">0:58</div>' +
+'    </div>' +
+'    <div style="display:grid;grid-template-columns:24px 1fr 36px 36px 40px 40px;gap:4px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(107,45,145,0.3);border-radius:10px;padding:8px 10px;">' +
+'      <div style="color:rgba(255,255,255,0.4);font-size:14px;">🥉</div>' +
+'      <div style="display:flex;align-items:center;gap:7px;">' +
+'        <div style="width:26px;height:26px;border-radius:50%;background:url(https://i.imgur.com/Y8NOVgH.png) center top/cover;border:1.5px solid rgba(200,168,48,0.3);flex-shrink:0;"></div>' +
+'        <div style="color:rgba(255,255,255,0.85);font-size:13px;">Toto</div>' +
+'      </div>' +
+'      <div style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;">125</div>' +
+'      <div style="color:#4CAF50;font-size:12px;text-align:center;">125</div>' +
+'      <div style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;">3.3</div>' +
+'      <div style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;">2:28</div>' +
+'    </div>' +
+'    <div style="display:grid;grid-template-columns:24px 1fr 36px 36px 40px 40px;gap:4px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(107,45,145,0.3);border-radius:10px;padding:8px 10px;">' +
+'      <div style="color:rgba(255,255,255,0.4);font-size:14px;">4</div>' +
+'      <div style="display:flex;align-items:center;gap:7px;">' +
+'        <div style="width:26px;height:26px;border-radius:50%;background:url(https://i.imgur.com/BzDK66B.png) center top/cover;border:1.5px solid rgba(200,168,48,0.3);flex-shrink:0;"></div>' +
+'        <div style="color:rgba(255,255,255,0.85);font-size:13px;">Manu</div>' +
+'      </div>' +
+'      <div style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;">121</div>' +
+'      <div style="color:#4CAF50;font-size:12px;text-align:center;">121</div>' +
+'      <div style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;">3.3</div>' +
+'      <div style="color:rgba(255,255,255,0.6);font-size:12px;text-align:center;">2:45</div>' +
+'    </div>' +
+'  </div>' +
+'  <div style="height:1px;background:linear-gradient(to right,transparent,rgba(200,168,48,0.2),transparent);margin-bottom:12px;"></div>' +
+'  <div style="color:rgba(255,255,255,0.4);font-size:12px;text-align:center;line-height:1.6;">Gracias a todos los que participaron. 👑</div>' +
+'  <div style="color:rgba(255,255,255,0.25);font-size:10px;text-align:center;margin-top:4px;">128 palabras · 2026</div>' +
+'</div></div>';
 
-CAMPEÓN: CAAMAÑO 🥇
-128/128 · 100% de victorias
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                accion: 'crear_post',
+                autor: 'La Culpa',
+                texto: htmlPost
+            })
+        });
+        localStorage.setItem(postCierreKey, '1');
+    } catch(e) {
+        console.error('Error creando post de cierre Wordle:', e);
+    }
+} // cierra if postCierreKey
 
-🏅 RANKING FINAL:
-🥇 Caamaño  128/128  (3.6 avg · 3:02)
-🥈 Toti     127/127  (2.4 avg · 0:58)
-🥉 Toto     125/125  (3.3 avg · 2:28)
-4° Manu     121/121  (3.3 avg · 2:45)
+    return muroPostsCache;
+} catch(e) { console.error(e); return []; }
+}  // cierra cargarMuroHome
 
-Gracias a todos los que participaron. 👑
-128 palabras · 2026`
-                    })
-                });
-                localStorage.setItem(postCierreKey, '1');
-            } catch(e) {
-                console.error('Error creando post de cierre Wordle:', e);
-            }
-        }
-        
-        return res.rows;
-    } catch(e) { console.error(e); return []; }
-}
 function renderPostFeedHTML(p, allRows, idx) {
     const safeId = idx;
     const postId = p.ID2 || p.ID || p.id || '';
@@ -1878,9 +1941,9 @@ const votando = window._pollVoting.has(postId);
             ${(esMio||esAdmin) ? `<button onclick="eliminarPost('${postId}')" style="background:none;border:1px solid rgba(244,67,54,0.2);color:rgba(244,67,54,0.5);font-size:11px;cursor:pointer;padding:3px 7px;border-radius:6px;margin-left:4px;">🗑</button>` : ''}
         </div>
 
-        <div style="color:rgba(255,255,255,0.9);font-size:15px;line-height:1.5;padding:0 14px 12px;font-weight:${esEncuesta ? 'bold' : 'normal'};">
-            ${p.Texto}
-        </div>
+       <div style="color:rgba(255,255,255,0.9);font-size:15px;line-height:1.5;padding:0 14px 12px;font-weight:${esEncuesta ? 'bold' : 'normal'};">
+    ${p.Texto && p.Texto.startsWith('<') ? p.Texto : (p.Texto ? p.Texto.replace(/\n/g, '<br>') : '')}
+</div>
 
         ${esEncuesta ? `
         <div style="padding:0 14px 12px;display:flex;flex-direction:column;gap:9px;">
