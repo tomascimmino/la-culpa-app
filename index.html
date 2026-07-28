@@ -2201,7 +2201,7 @@ const col = (p => p>=90?'#4CAF50':p>=75?'#8BC34A':p>=60?'#FFD700':p>=45?'#FF9800
     const tieneFoto = j['Foto Juntada'] || j['Foto juntada'];
     
     // Incluir si tiene foto (y quorum) o si la fecha ya pasó (y quorum)
-    return ((tieneFoto || f < hoy) && tieneQuorum(j)) && !j._informal;
+    return (tieneFoto && tieneQuorum(j)) || (f < hoy && tieneQuorum(j));
 }).slice().sort((a, b) => parseFecha(b.Fecha) - parseFecha(a.Fecha));
     let totalBannerHTML = '';
     if (nombreUsuario && pasadas.length > 0) {
