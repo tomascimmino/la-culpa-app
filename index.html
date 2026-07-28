@@ -1199,24 +1199,22 @@ function avHTML(nombre) {
         const juntadasFuturas = [];
         const juntadasPasadas = [];
 
+ const juntadasOficiales = [];
    juntadasData.forEach((j, i) => {
     if (!j.Fecha) return;
     const f = parseFecha(j.Fecha);
     if (!f) return;
     
     const tieneFoto = j['Foto Juntada'] || j['Foto juntada'];
+    const esRealizada = (tieneFoto || f < hoy);
     
-    // Una juntada es "realizada" (pasada) si:
-    // - tiene foto (y quorum) [confirmación temprana], o
-    // - la fecha ya pasó (y quorum) [normal]
-    if (tieneFoto && tieneQuorum(j)) {
+    if (esRealizada && tieneQuorum(j)) {
         juntadasPasadas.push(j);
-    }
-    else if (!tieneFoto && f < hoy && tieneQuorum(j)) {
-        juntadasPasadas.push(j);
-    }
-    // Las que no son realizadas y son futuras (sin foto) van a agenda
-    else if (!tieneFoto && f >= hoy) {
+        juntadasOficiales.push(j);
+    } else if (esRealizada && !tieneQuorum(j)) {
+        j._informal = true;
+        juntadasPasadas.push(j); // aparece en feed, no cuenta
+    } else if (!tieneFoto && f >= hoy) {
         juntadasFuturas.push({ j, i });
     }
 });
@@ -1231,7 +1229,7 @@ function avHTML(nombre) {
             proximaIndex   = juntadasFuturas[0].i;
         }
 
-        document.getElementById('totalJuntadas').textContent = juntadasPasadas.length;
+        document.getElementById('totalJuntadas').textContent = juntadasOficiales.length;
 
         const usuario = getUsuarioActual();
         if (usuario) {
@@ -1432,6 +1430,7 @@ ${puedeConfirmarJuntada(proximaJuntada) ? `
         const reinasC = REINAS_F.filter(n => esConfirmadoPositivo(j[n])).length;
         const totalC = parseInt(j['N° Asist'] || '0');
         const hayQ = reyesC >= 4;
+        const informalBadge = j._informal ? '<span style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);">🌙 informal</span>' : '';
         const inter = window.juntadasInteracciones[jid] || {};
         const likes = inter.likes || [];
         const coronas = inter.coronas || [];
