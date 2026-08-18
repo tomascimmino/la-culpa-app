@@ -1282,18 +1282,17 @@ function avHTML(nombre) {
                         <div class="card-details" style="margin:10px 0;">
                             <span>🏠 ${getGuarida(proximaJuntada.Host)}</span>
                             ${proximaJuntada.Categoría || proximaJuntada.Categoria ? `<span>🏷️ ${proximaJuntada.Categoría || proximaJuntada.Categoria}</span>` : ''}
-                            ${proximaJuntada.Hora ? `<span>🕐 ${proximaJuntada.Hora.slice(0,5)}</span>` : ''}
-                        </div>
-                        ${renderContadorAsistencia(proximaJuntada)}
-${estadoHTML}${botonesProxima}
-${puedeConfirmarJuntada(proximaJuntada) ? `
+           ${puedeConfirmarJuntada(proximaJuntada) ? `
     <button onclick="abrirModalSubirFoto(${proximaIndex})" 
         style="width:100%;margin-top:10px;background:linear-gradient(135deg,#4CAF50 0%,#2E7D32 100%);border:none;color:white;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
         📸 CONFIRMAR JUNTADA CON FOTO
     </button>
+    <p style="font-size:11px;color:#888;margin:6px 0 0;text-align:center;line-height:1.4;">
+        📌 Subí la foto a <a href="https://imgur.com/" target="_blank" style="color:#aaa;">imgur.com</a>, 
+        abrí la imagen, mantené presionado y copiá el link directo.<br>
+        Tiene que terminar en .jpeg o .png
+    </p>
 ` : ''}
-                    </div>`;
-            }
         }
 
         // ── AGENDA: futuras siguientes ──
