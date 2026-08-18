@@ -1282,15 +1282,16 @@ function avHTML(nombre) {
                         <div class="card-details" style="margin:10px 0;">
                             <span>🏠 ${getGuarida(proximaJuntada.Host)}</span>
                             ${proximaJuntada.Categoría || proximaJuntada.Categoria ? `<span>🏷️ ${proximaJuntada.Categoría || proximaJuntada.Categoria}</span>` : ''}
-         ${puedeConfirmarJuntada(proximaJuntada) ? `
-    <button onclick="abrirModalSubirFoto(${proximaIndex})" 
-        style="width:100%;margin-top:10px;background:linear-gradient(135deg,#4CAF50 0%,#2E7D32 100%);border:none;color:white;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
-        📸 CONFIRMAR JUNTADA CON FOTO
-    </button>
-` : ''}
                         </div>
                         ${renderContadorAsistencia(proximaJuntada)}
-                        ${estadoHTML}${botonesProxima}
+                        ${estadoHTML}
+                        ${botonesProxima}
+                        ${puedeConfirmarJuntada(proximaJuntada) ? `
+                            <button onclick="abrirModalSubirFoto(${proximaIndex})" 
+                                style="width:100%;margin-top:12px;background:linear-gradient(135deg,#4CAF50 0%,#2E7D32 100%);border:none;color:white;padding:12px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;">
+                                📸 CONFIRMAR JUNTADA CON FOTO
+                            </button>
+                        ` : ''}
                     </div>`;
             }
         }
