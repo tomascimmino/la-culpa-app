@@ -47,10 +47,10 @@ Two important behaviors:
 | Sheet | Purpose |
 | --- | --- |
 | `Hoja 1` | Meetups (columns detailed in `docs/DATA-MODEL.md`) |
-| `CULPOSOS` | Member roster (`Nombre`, `Email`, `Bio`, `FCMToken`, …) |
+| `CULPOSOS` | Member roster (`Nombre`, `Email`, `Bio`, …). A legacy `FCMToken` column may exist but is **no longer read** — tokens live in `TOKENS`. |
 | `COMENTARIOS` | Muro: posts, polls, comments, meetup interactions |
 | `LEYES` | Statute proposals + per-voter columns + vote totals |
-| `TOKENS` | FCM tokens (`Email`, `Token`, `Fecha`), created on demand |
+| `TOKENS` | FCM tokens (`Email`, `Token`, `Fecha`), **one row per (email, token)** so multiple devices per person work. Created on demand. |
 | `REPRODUCCIONES` | Song play counts (`Canción`, `Count`, `Fecha`), created on demand |
 | `WORDLE` | Wordle results (backend-only; current frontend does not call it) |
 
@@ -78,10 +78,11 @@ here. Payload: `{ email, fila, asistira?:boolean, valor?:1|2 }`.
 1. Finds the member by `email` in `CULPOSOS` to get their `Nombre`.
 2. Finds the matching column in `Hoja 1` headers (a column named after the member) and
    writes `valor` (or `asistira ? 1 : 2`).
-3. Quorum side-effect: if col23 (Drive ID) is empty, counts the 8 original kings
+3. Quorum side-effect: counts the 8 original kings
    (`Mateo, Rama, Tirri, Toti, Toto, Caamaño, Zabala, Santi`) confirmed as
-   `TRUE`/`1`/`'1'`; if ≥ 4, creates the Drive folder (col23) and, if col25 is empty,
-   sets `QUORUM_NOTIF_SENT` and sends the quorum push.
+   `TRUE`/`'TRUE'`/`✓`/`true`/`1`/`'1'`. If ≥ 4: creates the Drive folder (col23) only if
+   col23 is empty, and — independently of the folder — if col25 does **not** already
+   contain `QUORUM_NOTIF_SENT`, sets that marker and sends the quorum push.
 
 → `{ success, mensaje:'Confirmación guardada' }`.
 
@@ -96,11 +97,9 @@ Row ID resolution: `getIdFila(row) = row[8] || row[0]`.
 | `crear_post` | `{ autor, texto }` | Appends a `post` row with id `post_<timestamp>`, `Destinatario=MURO`. → `{ success, id }` |
 | `crear_encuesta` | `{ autor, pregunta, opciones:[..] }` | Requires ≥ 2 options; joins with `|` in col9; id `enc_<timestamp>`, `Tipo=encuesta`. → `{ success, id }` |
 | `votar_encuesta` | `{ id, email, opcionIdx }` | Replaces that email's vote in col10 (`email:idx` pairs). → `{ success, votos }` |
-| `comentar_post` | `{ postId, autor, texto }` | Appends a `comentario` row (id `com_<timestamp>`). Sends push notifications: to the profile owner if `postId` is a member name; to the post author if `postId` is a post/poll; to other commenters if `postId` starts with `juntada_`. → `{ success, id }` |
+| `comentar_post` | `{ postId, autor, texto }` | Appends a `comentario` row (id `com_<timestamp>`). Sends push notifications, via `getTokensDe(email)` (all of the recipient's devices): to the profile owner if `postId` is a member name; to the post author if `postId` is a post/poll; to other commenters if `postId` starts with `juntada_`. → `{ success, id }` |
 | `comentar` | `{ destinatario, autor, texto }` | Legacy profile comment. Appends a `comentario` row. → `{ success, mensaje }` |
-| `reaccionar_post` | `{ id, tipo:'like'\|'corona', email }` | Toggles the email in col5 (`like`) or col6 (`corona`). → `{ success }` |
-| `reaccionar_comentario` | `{ id, tipo, email }` | Same toggle, separate handler for compatibility. → `{ success }` |
-| `likear_comentario` | `{ id, email }` | **Legacy**: internally rewrites to `reaccionar_comentario` with `tipo='like'`. |
+| `reaccionar_post` / `reaccionar_comentario` / `likear_comentario` | `{ id, tipo:'like'\|'corona', email }` | All three route to `toggleReaccion_(id, email, tipo)`, which toggles the email in col5 (`like`) or col6 (`corona`). `likear_comentario` is legacy and forces `tipo='like'`. → `{ success }` |
 | `crear_interaccion_juntada` | `{ juntadaId, tipo, email }` | Creates the interaction row id `juntadaId + '_reac'`, `Tipo=juntada`, only once. → `{ success }` |
 | `eliminar_post` | `{ id, email }` | Deletes the post row (author or admin only) and all its comments. → `{ success }` |
 | `eliminar_comentario` | `{ id, email }` | Deletes one comment (author or admin only). → `{ success, mensaje }` |
@@ -136,7 +135,7 @@ Vote codes: `1` favor, `2` contra, `3` abstención. `VOTANTES` (15): the 8 kings
 | `accion` | Request | Behavior / response |
 | --- | --- | --- |
 | `guardar_bio` | `{ email, bio }` | Finds the member by email in `CULPOSOS` and writes the `Bio` column. → `{ success }` or `err('Columna Bio no existe')` |
-| `guardar_token` | `{ email, token }` | Upserts the device token in `TOKENS` (`Email`, `Token`, `Fecha`). → `{ success }` |
+| `guardar_token` | `{ email, token }` | Appends the device token in `TOKENS` if the `(email, token)` pair is new, else just refreshes `Fecha`. Multiple devices per person are kept. → `{ success }` |
 
 ### Wordle (backend-only, unused by the current frontend)
 
@@ -148,10 +147,18 @@ only shows a static Wordle summary post). Kept for a future/removed feature.
 
 ## Server-side helpers
 
+- **Tokens:** `getTokens()` returns all unique tokens, `getTokensDe(email)` the tokens of
+  one member, `guardarToken(email, token)` upserts a `(email, token)` pair and
+  `eliminarToken_(token)` prunes a row. All notification reads go through these — the old
+  `CULPOSOS.FCMToken` column is no longer used.
 - **FCM:** `getFcmAccessToken()` signs a JWT with the service-account private key and
-  exchanges it for an OAuth token; `enviarNotificacion(token, title, body)` posts to the
-  FCM v1 API. `enviarNotificacionNuevaJuntada` and `enviarNotificacionQuorum` broadcast to
-  every token in `TOKENS`.
+  exchanges it for an OAuth token (cached in memory across a batch);
+  `enviarNotificacion(token, title, body)` posts a **data-only** message to the FCM v1 API
+  (`data: { title, body }`, no `notification` field — the service worker renders it, which
+  avoids double notifications). On HTTP 404 / `UNREGISTERED` it prunes the token.
+  `enviarNotificacionNuevaJuntada` and `enviarNotificacionQuorum` broadcast to every token.
+- **Diagnostics:** `diagnosticoTokens()` logs token counts only (no sends); safe to run from
+  the editor to verify registrations.
 - **Drive:** `crearCarpetaJuntada(fecha, descripcion)` creates `Mes/<d-m-yyyy descripcion>`
   under `DRIVE_FOTOS_ROOT` and sets `ANYONE_WITH_LINK` + `EDIT` sharing. Returns the folder
   ID. Utilities `arreglarCarpetasAnteriores()` and `diagnostico()` exist for maintenance.

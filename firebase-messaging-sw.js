@@ -17,7 +17,7 @@ const messaging = firebase.messaging();
 // Cuando la app está en foreground, Firebase suprime este handler
 // automáticamente — así evitamos la notificación doble.
 messaging.onBackgroundMessage(payload => {
-    const { title, body, icon } = payload.notification || {};
+    const { title, body, icon } = payload.data || {};
 
     // Cerrar notificaciones anteriores con el mismo tag (evita acumulación)
     self.registration.getNotifications({ tag: 'la-culpa-notif' })

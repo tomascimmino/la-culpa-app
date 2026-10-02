@@ -3779,14 +3779,41 @@ function showTab(tabName, el) {
     };
     const VAPID_KEY = "BLTKtmHW3u6CS-uITlN19AF0IWzlQmOBSwWarERODdaqPZ0jXSoVvhqvz2E64w_Jue5Sa3cazO8gkFHXRfb1Zzs";
     let messagingInstance = null;
+    let swRegistration = null;
+
+    async function registrarServiceWorker() {
+        if (!('serviceWorker' in navigator)) return null;
+        if (swRegistration) return swRegistration;
+        const swUrl = new URL('firebase-messaging-sw.js', location.href).href;
+        swRegistration = await navigator.serviceWorker.register(swUrl);
+        await navigator.serviceWorker.ready;
+        return swRegistration;
+    }
+
+    async function guardarTokenActual() {
+        if (!messagingInstance || !currentUser) return null;
+        const swReg = await registrarServiceWorker();
+        const tokenOpts = { vapidKey: VAPID_KEY };
+        if (swReg) tokenOpts.serviceWorkerRegistration = swReg;
+        const token = await messagingInstance.getToken(tokenOpts);
+        if (!token) return null;
+        const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'guardar_token', email:currentUser, token }) });
+        const res = await r.json();
+        if (!res.success) throw new Error('Error guardando token');
+        localStorage.setItem('fcmToken', token);
+        return token;
+    }
 
     async function initFirebase() {
         try {
             firebase.initializeApp(FIREBASE_CONFIG);
             messagingInstance = firebase.messaging();
             messagingInstance.onMessage(payload => {
-                const { title, body } = payload.notification || {};
+                const { title, body } = payload.data || {};
                 if (title) showInAppNotification(title, body);
+            });
+            messagingInstance.onTokenRefresh(() => {
+                guardarTokenActual().catch(e => console.warn('Error refrescando token:', e));
             });
         } catch(e) { console.warn('Firebase init error:', e); }
        
@@ -3801,23 +3828,12 @@ function showTab(tabName, el) {
     }
 
     async function pedirPermisoNotificaciones() {
-        if (!messagingInstance) return;
+        if (!messagingInstance || !currentUser) return;
         try {
+            if (Notification.permission === 'granted') { await guardarTokenActual(); return; }
             const perm = await Notification.requestPermission();
             if (perm !== 'granted') return;
-            let swReg = null;
-            if ('serviceWorker' in navigator) {
-                swReg = await navigator.serviceWorker.register('/la-culpa-app/firebase-messaging-sw.js');
-                await navigator.serviceWorker.ready;
-            }
-            const tokenOpts = { vapidKey: VAPID_KEY };
-            if (swReg) tokenOpts.serviceWorkerRegistration = swReg;
-            const token = await messagingInstance.getToken(tokenOpts);
-            if (!token) return;
-            const saved = localStorage.getItem('fcmToken');
-            if (saved === token) return;
-            await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'guardar_token', email:currentUser, token }) });
-            localStorage.setItem('fcmToken', token);
+            await guardarTokenActual();
         } catch(e) { console.warn('Error registrando notificaciones:', e); }
     }
 
@@ -3826,24 +3842,12 @@ function showTab(tabName, el) {
         const status = document.getElementById('notifStatus');
         if (btn) btn.disabled = true;
         if (status) status.textContent = '⏳ Registrando...';
-        localStorage.removeItem('fcmToken');
         try {
             if (!messagingInstance) throw new Error('Firebase no inicializado');
             const perm = await Notification.requestPermission();
             if (perm !== 'granted') throw new Error('Permiso denegado: ' + perm);
-            let swReg = null;
-            if ('serviceWorker' in navigator) {
-                swReg = await navigator.serviceWorker.register('/la-culpa-app/firebase-messaging-sw.js', { scope:'/la-culpa-app/' });
-                await navigator.serviceWorker.ready;
-            }
-            const tokenOpts = { vapidKey: VAPID_KEY };
-            if (swReg) tokenOpts.serviceWorkerRegistration = swReg;
-            const token = await messagingInstance.getToken(tokenOpts);
+            const token = await guardarTokenActual();
             if (!token) throw new Error('Token vacío');
-            const r = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify({ accion:'guardar_token', email:currentUser, token }) });
-            const res = await r.json();
-            if (!res.success) throw new Error('Error guardando token');
-            localStorage.setItem('fcmToken', token);
             if (btn) { btn.textContent='✅ Notificaciones activas'; btn.style.borderColor='#4CAF50'; btn.style.color='#4CAF50'; btn.disabled=false; }
             if (status) status.textContent='Este dispositivo va a recibir avisos de nuevas juntadas 🔔';
         } catch(e) {

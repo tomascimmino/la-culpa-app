@@ -168,7 +168,12 @@ Session state (`iniciado`, `leyActiva`) lives in Apps Script **Script Properties
 ## Sheet `TOKENS` — FCM device tokens
 
 Created on demand by `guardar_token`. Physical columns: `1 Email · 2 Token · 3 Fecha`.
-One row per email (upsert by email).
+**One row per `(email, token)`** (upsert by pair), so a member can register several
+devices. `getTokens()` returns unique tokens; `getTokensDe(email)` those of one member.
+Tokens are pruned automatically on FCM `UNREGISTERED` / HTTP 404.
+
+Push payloads are **data-only** (`data: { title, body }`, no `notification` field); the
+service worker builds the visible notification to avoid duplicates.
 
 ## Sheet `REPRODUCCIONES` — play counts
 

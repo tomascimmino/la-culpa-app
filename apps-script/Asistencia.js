@@ -172,60 +172,16 @@ function doPost(e) {
       return err('Encuesta no encontrada');
     }
 
-    // ── LIKEAR COMENTARIO (legacy) → REDIRIGE A reaccionar_comentario ──
-    if (data.accion === 'likear_comentario') {
-      // Compatibilidad histórica: redirigir al sistema unificado
-      data.accion = 'reaccionar_comentario';
-      data.tipo = 'like'; // likear_comentario siempre es 'like'
-      // Continúa al bloque reaccionar_comentario abajo
-    }
-
     // ── REACCIONAR (like/corona) A POST, COMENTARIO O INTERACCIÓN JUNTADA ──
-    // Unificado: sirve para posts, comentarios del muro, comentarios de perfil y juntadas
- if (data.accion === 'reaccionar_post') {
-  const sheet = ss.getSheetByName('COMENTARIOS');
-  const rows  = sheet.getDataRange().getValues();
-  const idBuscado = normId(data.id);
-
-  const dataRows = rows.slice(1);
-  const index = dataRows.findIndex(row => normId(getIdFila(row)) === idBuscado);
-
-  if (index === -1) return err('Fila no encontrada: ' + data.id);
-
-  const row = dataRows[index];
-  const col = data.tipo === 'like' ? 5 : 6; // 5=Likes, 6=Coronas
-  let arr = row[col] ? String(row[col]).split(',').filter(Boolean) : [];
-  const idx = arr.indexOf(data.email);
-
-  if (idx > -1) arr.splice(idx, 1);
-  else arr.push(data.email);
-
-  sheet.getRange(index + 2, col + 1).setValue(arr.join(','));
-  return ok({});
-}
-
-    // ── REACCIONAR A COMENTARIO (alias de reaccionar_post, mantener compatibilidad) ──
-   if (data.accion === 'reaccionar_comentario') {
-  const sheet = ss.getSheetByName('COMENTARIOS');
-  const rows  = sheet.getDataRange().getValues();
-  const idBuscado = normId(data.id);
-
-  const dataRows = rows.slice(1);
-  const index = dataRows.findIndex(row => normId(getIdFila(row)) === idBuscado);
-
-  if (index === -1) return err('Comentario no encontrado: ' + data.id);
-
-  const row = dataRows[index];
-  const col = data.tipo === 'like' ? 5 : 6;
-  let arr = row[col] ? String(row[col]).split(',').filter(Boolean) : [];
-  const idx = arr.indexOf(data.email);
-
-  if (idx > -1) arr.splice(idx, 1);
-  else arr.push(data.email);
-
-  sheet.getRange(index + 2, col + 1).setValue(arr.join(','));
-  return ok({});
-}
+    // Unificado: posts, comentarios del muro, comentarios de perfil y juntadas.
+    // likear_comentario se mantiene como alias legacy (siempre 'like').
+    if (data.accion === 'reaccionar_post' ||
+        data.accion === 'reaccionar_comentario' ||
+        data.accion === 'likear_comentario') {
+      const tipo = data.accion === 'likear_comentario' ? 'like' : (data.tipo === 'like' ? 'like' : 'corona');
+      const r = toggleReaccion_(data.id, data.email, tipo);
+      return r.ok ? ok({}) : err(r.error);
+    }
 
     // ── COMENTAR EN POST DEL MURO O EN JUNTADA ───────────
     if (data.accion === 'comentar_post') {
@@ -240,7 +196,6 @@ function doPost(e) {
         const cH        = culposos[0];
         const emailCol  = cH.indexOf('Email');
         const nombreCol = cH.indexOf('Nombre');
-        const tokenCol  = cH.indexOf('FCMToken');
         if (emailCol === -1 || nombreCol === -1) throw new Error('Columnas CULPOSOS no encontradas');
 
         const autorRow    = culposos.slice(1).find(r => r[emailCol] && String(r[emailCol]).toLowerCase() === String(data.autor).toLowerCase());
@@ -250,9 +205,8 @@ function doPost(e) {
         if (esPerfilComentario) {
           const destRow = culposos.slice(1).find(r => String(r[nombreCol]) === String(data.postId));
           if (destRow && destRow[emailCol] &&
-              String(destRow[emailCol]).toLowerCase() !== String(data.autor).toLowerCase() &&
-              destRow[tokenCol]) {
-            enviarNotificacion(destRow[tokenCol], '💬 Nuevo comentario en tu perfil', `${autorNombre}: "${String(data.texto).slice(0,80)}"`);
+              String(destRow[emailCol]).toLowerCase() !== String(data.autor).toLowerCase()) {
+            getTokensDe(destRow[emailCol]).forEach(t => enviarNotificacion(t, '💬 Nuevo comentario en tu perfil', `${autorNombre}: "${String(data.texto).slice(0,80)}"`));
           }
         }
 
@@ -260,10 +214,7 @@ function doPost(e) {
         const postIdNorm = normId(String(data.postId));
         const postRow    = comRows.slice(1).find(r => getIdFila(r) === postIdNorm && (r[7] === 'post' || r[7] === 'encuesta'));
         if (postRow && postRow[2] && String(postRow[2]).toLowerCase() !== String(data.autor).toLowerCase()) {
-          const destRow = culposos.slice(1).find(r => r[emailCol] && String(r[emailCol]).toLowerCase() === String(postRow[2]).toLowerCase());
-          if (destRow && destRow[tokenCol]) {
-            enviarNotificacion(destRow[tokenCol], '💬 Respondieron tu estado', `${autorNombre}: "${String(data.texto).slice(0,80)}"`);
-          }
+          getTokensDe(postRow[2]).forEach(t => enviarNotificacion(t, '💬 Respondieron tu estado', `${autorNombre}: "${String(data.texto).slice(0,80)}"`));
         }
 
         if (String(data.postId).startsWith('juntada_')) {
@@ -274,10 +225,7 @@ function doPost(e) {
               .map(r => r[2])
           )];
           yaComentaron.forEach(emailOtro => {
-            const destRow = culposos.slice(1).find(r => r[emailCol] && String(r[emailCol]).toLowerCase() === emailOtro.toLowerCase());
-            if (destRow && destRow[tokenCol]) {
-              enviarNotificacion(destRow[tokenCol], '💬 Nuevo comentario en una juntada', `${autorNombre}: "${String(data.texto).slice(0,80)}"`);
-            }
+            getTokensDe(emailOtro).forEach(t => enviarNotificacion(t, '💬 Nuevo comentario en una juntada', `${autorNombre}: "${String(data.texto).slice(0,80)}"`));
           });
         }
       } catch(notifErr) { Logger.log('Error notif comentario: ' + notifErr); }
@@ -544,28 +492,27 @@ function doPost(e) {
     sheetJuntadas.getRange(data.fila, columna).setValue(valorFinal);
 
     try {
-      const filaData = sheetJuntadas.getRange(data.fila, 1, 1, 25).getValues()[0];
-      const driveIdExistente = filaData[22];
-      if (!driveIdExistente) {
-        const headersRow = sheetJuntadas.getRange(1, 1, 1, sheetJuntadas.getLastColumn()).getValues()[0];
-        const culpososOriginales = ['Mateo','Rama','Tirri','Toti','Toto','Caamaño','Zabala','Santi'];
-        let conteo = 0;
-        culpososOriginales.forEach(nombre => {
-          const col = headersRow.indexOf(nombre);
-          if (col !== -1 && (filaData[col] === true || filaData[col] === 1 || filaData[col] === '1')) conteo++;
-        });
-        if (conteo >= 4) {
-          const fecha = filaData[0] instanceof Date
-            ? `${filaData[0].getDate()}/${filaData[0].getMonth()+1}/${filaData[0].getFullYear()}`
-            : String(filaData[0]);
-          const descripcion = filaData[18] || '';
+      const filaData   = sheetJuntadas.getRange(data.fila, 1, 1, 25).getValues()[0];
+      const headersRow = sheetJuntadas.getRange(1, 1, 1, sheetJuntadas.getLastColumn()).getValues()[0];
+      const culpososOriginales = ['Mateo','Rama','Tirri','Toti','Toto','Caamaño','Zabala','Santi'];
+      let conteo = 0;
+      culpososOriginales.forEach(nombre => {
+        const col = headersRow.indexOf(nombre);
+        if (col !== -1 && (filaData[col] === true || filaData[col] === 1 || filaData[col] === '1' || filaData[col] === 'TRUE' || filaData[col] === '✓')) conteo++;
+      });
+      if (conteo >= 4) {
+        const fecha = filaData[0] instanceof Date
+          ? `${filaData[0].getDate()}/${filaData[0].getMonth()+1}/${filaData[0].getFullYear()}`
+          : String(filaData[0]);
+        const descripcion = filaData[18] || '';
+        if (!filaData[22]) {
           const driveId = crearCarpetaJuntada(fecha, descripcion);
           if (driveId) sheetJuntadas.getRange(data.fila, 23).setValue(driveId);
-          const yaNotifQuorum = filaData[24];
-          if (!yaNotifQuorum) {
-            sheetJuntadas.getRange(data.fila, 25).setValue('QUORUM_NOTIF_SENT');
-            enviarNotificacionQuorum(fecha, descripcion, filaData[1] || '');
-          }
+        }
+        const yaNotifQuorum = String(filaData[24] || '').indexOf('QUORUM_NOTIF_SENT') !== -1;
+        if (!yaNotifQuorum) {
+          sheetJuntadas.getRange(data.fila, 25).setValue('QUORUM_NOTIF_SENT');
+          enviarNotificacionQuorum(fecha, descripcion, filaData[1] || '');
         }
       }
     } catch(driveErr) { Logger.log('Error Drive quorum: ' + driveErr); }
@@ -580,30 +527,103 @@ function doPost(e) {
 // ════════════════════════════════════════════════════════════════
 // TOKENS FCM
 // ════════════════════════════════════════════════════════════════
-function guardarToken(email, token) {
-  const ss  = SpreadsheetApp.openById(SHEET_ID);
+function getTokensSheet_() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
   let sheet = ss.getSheetByName('TOKENS');
   if (!sheet) {
     sheet = ss.insertSheet('TOKENS');
     sheet.getRange(1,1,1,3).setValues([['Email','Token','Fecha']]);
   }
-  const rows = sheet.getDataRange().getValues();
+  return sheet;
+}
+
+// Una fila por (email, token): soporta varios dispositivos por persona.
+function guardarToken(email, token) {
+  if (!email || !token) return;
+  const sheet = getTokensSheet_();
+  const rows  = sheet.getDataRange().getValues();
   for (let i = 1; i < rows.length; i++) {
-    if (rows[i][0] === email) { sheet.getRange(i+1,2).setValue(token); sheet.getRange(i+1,3).setValue(new Date()); return; }
+    if (String(rows[i][0]).toLowerCase().trim() === String(email).toLowerCase().trim() &&
+        String(rows[i][1]) === String(token)) {
+      sheet.getRange(i+1, 3).setValue(new Date());
+      return;
+    }
   }
   sheet.appendRow([email, token, new Date()]);
+}
+
+function getTokens() {
+  const sheet = getTokensSheet_();
+  const rows  = sheet.getDataRange().getValues();
+  const seen  = {}, out = [];
+  for (let i = 1; i < rows.length; i++) {
+    const t = String(rows[i][1] || '').trim();
+    if (t && !seen[t]) { seen[t] = true; out.push(t); }
+  }
+  return out;
+}
+
+function getTokensDe(email) {
+  const e = String(email || '').toLowerCase().trim();
+  if (!e) return [];
+  const sheet = getTokensSheet_();
+  const rows  = sheet.getDataRange().getValues();
+  const seen  = {}, out = [];
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][0] || '').toLowerCase().trim() !== e) continue;
+    const t = String(rows[i][1] || '').trim();
+    if (t && !seen[t]) { seen[t] = true; out.push(t); }
+  }
+  return out;
+}
+
+function eliminarToken_(token) {
+  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('TOKENS');
+  if (!sheet) return;
+  const rows = sheet.getDataRange().getValues();
+  for (let i = rows.length - 1; i >= 1; i--) {
+    if (String(rows[i][1]) === String(token)) { sheet.deleteRow(i + 1); return; }
+  }
+}
+
+// Reacciones unificadas (like/corona) para posts, comentarios y juntadas.
+function toggleReaccion_(id, email, tipo) {
+  const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName('COMENTARIOS');
+  const rows  = sheet.getDataRange().getValues();
+  const idBuscado = normId(id);
+  const dataRows = rows.slice(1);
+  const index = dataRows.findIndex(row => normId(getIdFila(row)) === idBuscado);
+  if (index === -1) return { ok: false, error: 'Fila no encontrada: ' + id };
+  const col = tipo === 'like' ? 5 : 6;
+  let arr = dataRows[index][col] ? String(dataRows[index][col]).split(',').filter(Boolean) : [];
+  const idx = arr.indexOf(email);
+  if (idx > -1) arr.splice(idx, 1); else arr.push(email);
+  sheet.getRange(index + 2, col + 1).setValue(arr.join(','));
+  return { ok: true };
+}
+
+// Diagnóstico de tokens: solo lee y loguea, no envía nada.
+function diagnosticoTokens() {
+  const tokens = getTokens();
+  const rows = getTokensSheet_().getDataRange().getValues().slice(1).filter(r => r[0] || r[1]);
+  Logger.log('TOKENS únicos: ' + tokens.length + ' | filas: ' + rows.length);
+  rows.forEach(r => Logger.log('  ' + r[0] + ' → ' + String(r[1]).slice(0, 14) + '… (' + r[2] + ')'));
 }
 
 // ════════════════════════════════════════════════════════════════
 // FCM
 // ════════════════════════════════════════════════════════════════
-function getFcmAccessToken() {
-  const now     = Math.floor(Date.now() / 1000);
+let _fcmAccessTokenCache = null;
+let _fcmAccessTokenExp   = 0;
+
+function getFcmAccessToken(forceRefresh) {
+  const nowSec = Math.floor(Date.now() / 1000);
+  if (!forceRefresh && _fcmAccessTokenCache && nowSec < _fcmAccessTokenExp - 60) return _fcmAccessTokenCache;
   const header  = Utilities.base64EncodeWebSafe(JSON.stringify({ alg:'RS256', typ:'JWT' }));
   const payload = Utilities.base64EncodeWebSafe(JSON.stringify({
     iss: SA_CLIENT_EMAIL, sub: SA_CLIENT_EMAIL,
     aud: 'https://oauth2.googleapis.com/token',
-    iat: now, exp: now + 3600,
+    iat: nowSec, exp: nowSec + 3600,
     scope: 'https://www.googleapis.com/auth/firebase.messaging'
   }));
   const signInput = header + '.' + payload;
@@ -614,35 +634,41 @@ function getFcmAccessToken() {
     payload: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
     muteHttpExceptions: true
   });
-  return JSON.parse(res.getContentText()).access_token;
+  const json = JSON.parse(res.getContentText());
+  if (!json.access_token) throw new Error('FCM OAuth falló: ' + res.getContentText().slice(0, 200));
+  _fcmAccessTokenCache = json.access_token;
+  _fcmAccessTokenExp   = nowSec + 3600;
+  return _fcmAccessTokenCache;
 }
 
+// Data-only: el service worker arma la notificación (evita duplicados).
 function enviarNotificacion(token, title, body) {
+  if (!token) return false;
   try {
     const accessToken = getFcmAccessToken();
-    UrlFetchApp.fetch(`https://fcm.googleapis.com/v1/projects/${FCM_PROJECT_ID}/messages:send`, {
+    const res = UrlFetchApp.fetch(`https://fcm.googleapis.com/v1/projects/${FCM_PROJECT_ID}/messages:send`, {
       method: 'post', contentType: 'application/json',
       headers: { Authorization: 'Bearer ' + accessToken },
-      payload: JSON.stringify({ message: { token, notification: { title, body },
-        webpush: { notification: { icon: 'https://i.imgur.com/czObXpX.png' },
-          fcm_options: { link: 'https://tomascimmino.github.io/la-culpa-app/' } } } }),
+      payload: JSON.stringify({ message: { token, data: { title, body },
+        webpush: { fcm_options: { link: 'https://tomascimmino.github.io/la-culpa-app/' } } } }),
       muteHttpExceptions: true
     });
-  } catch(e) { Logger.log('Error enviarNotificacion: ' + e); }
+    const code = res.getResponseCode();
+    if (code === 200) return true;
+    const text = res.getContentText();
+    Logger.log(`FCM ${code} token=${String(token).slice(0, 12)}…: ${text.slice(0, 200)}`);
+    if (code === 401) _fcmAccessTokenCache = null;
+    if (code === 404 || /UNREGISTERED/i.test(text)) eliminarToken_(token);
+    return false;
+  } catch(e) { Logger.log('Error enviarNotificacion: ' + e); return false; }
 }
 
 function enviarNotificacionNuevaJuntada(fecha, host, descripcion) {
-  const ss    = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('TOKENS'); if (!sheet) return;
-  const tokens = sheet.getDataRange().getValues().slice(1).map(r=>r[1]).filter(Boolean);
-  tokens.forEach(t => enviarNotificacion(t, '🎉 Nueva Juntada — LA CULPA', `${descripcion} · ${fecha} · Host: ${host}`));
+  getTokens().forEach(t => enviarNotificacion(t, '🎉 Nueva Juntada — LA CULPA', `${descripcion} · ${fecha} · Host: ${host}`));
 }
 
 function enviarNotificacionQuorum(fecha, descripcion, host) {
-  const ss    = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('TOKENS'); if (!sheet) return;
-  const tokens = sheet.getDataRange().getValues().slice(1).map(r=>r[1]).filter(Boolean);
-  tokens.forEach(t => enviarNotificacion(t, '👑 ¡HAY QUORUM! — LA CULPA', `${descripcion} · ${fecha} · No duermas en confirmar 👀`));
+  getTokens().forEach(t => enviarNotificacion(t, '👑 ¡HAY QUORUM! — LA CULPA', `${descripcion} · ${fecha} · No duermas en confirmar 👀`));
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -667,12 +693,12 @@ function crearCarpetaJuntada(fecha, descripcion) {
 // TRIGGERS
 // ════════════════════════════════════════════════════════════════
 function verificarQuorumYNotificar() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const jSheet = ss.getSheetByName('Hoja 1'), cSheet = ss.getSheetByName('CULPOSOS');
-  const jRows = jSheet.getDataRange().getValues(), cRows = cSheet.getDataRange().getValues();
-  const jHeaders = jRows[0], cHeaders = cRows[0];
-  const tokenCol = cHeaders.indexOf('FCMToken');
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const jSheet = ss.getSheetByName('Hoja 1');
+  const jRows = jSheet.getDataRange().getValues();
+  const jHeaders = jRows[0];
   const REYES = ['Toto','Caamaño','Rama','Zabala','Santi','Mateo','Tirri','Toti'];
+  const tokens = getTokens();
   const hoy = new Date(); hoy.setHours(0,0,0,0);
   jRows.slice(1).forEach((j, idx) => {
     const fila = idx + 2;
@@ -680,23 +706,23 @@ function verificarQuorumYNotificar() {
     const p = String(fechaStr).split('/'); if (p.length !== 3) return;
     const fechaJ = new Date(p[2], p[1]-1, p[0]); if (fechaJ < hoy) return;
     let reyesConf = 0;
-    REYES.forEach(n => { const col = jHeaders.indexOf(n); if (col !== -1 && (j[col]==='TRUE'||j[col]==='✓'||j[col]===1||j[col]==='1')) reyesConf++; });
+    REYES.forEach(n => { const col = jHeaders.indexOf(n); if (col !== -1 && (j[col]==='TRUE'||j[col]==='✓'||j[col]===true||j[col]===1||j[col]==='1')) reyesConf++; });
     if (reyesConf < 4) return;
     const propKey = 'quorum_fila_' + fila;
     if (PropertiesService.getScriptProperties().getProperty(propKey)) return;
     const descCol = jHeaders.indexOf('Descripción') !== -1 ? jHeaders.indexOf('Descripción') : jHeaders.indexOf('Descripcion');
     const desc = j[descCol]||'Juntada', fecha = j[jHeaders.indexOf('Fecha')]||'', host = j[jHeaders.indexOf('Host')]||'';
-    cRows.slice(1).map(r=>r[tokenCol]).filter(Boolean).forEach(t => enviarNotificacion(t, '👑 ¡HAY QUORUM!', `${desc} · ${fecha} · 🏠 ${host}`));
+    tokens.forEach(t => enviarNotificacion(t, '👑 ¡HAY QUORUM!', `${desc} · ${fecha} · 🏠 ${host}`));
     PropertiesService.getScriptProperties().setProperty(propKey, 'true');
   });
 }
 
 function recordatorioJuntadaHoy() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const jSheet = ss.getSheetByName('Hoja 1'), cSheet = ss.getSheetByName('CULPOSOS');
-  const jRows = jSheet.getDataRange().getValues(), cRows = cSheet.getDataRange().getValues();
-  const jHeaders = jRows[0], cHeaders = cRows[0];
-  const tokenCol = cHeaders.indexOf('FCMToken');
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const jSheet = ss.getSheetByName('Hoja 1');
+  const jRows = jSheet.getDataRange().getValues();
+  const jHeaders = jRows[0];
+  const tokens = getTokens();
   const hoy = new Date(); hoy.setHours(0,0,0,0);
   jRows.slice(1).forEach(j => {
     const fechaStr = j[jHeaders.indexOf('Fecha')]; if (!fechaStr) return;
@@ -705,7 +731,7 @@ function recordatorioJuntadaHoy() {
     if (fechaJ.getTime() !== hoy.getTime()) return;
     const descCol = jHeaders.indexOf('Descripción') !== -1 ? jHeaders.indexOf('Descripción') : jHeaders.indexOf('Descripcion');
     const desc = j[descCol]||'Juntada', host = j[jHeaders.indexOf('Host')]||'', hora = j[jHeaders.indexOf('Hora')]||'';
-    cRows.slice(1).map(r=>r[tokenCol]).filter(Boolean).forEach(t => enviarNotificacion(t, '🎉 ¡HOY HAY JUNTADA!', `${desc}${hora?' a las '+hora:''} · 🏠 ${host}`));
+    tokens.forEach(t => enviarNotificacion(t, '🎉 ¡HOY HAY JUNTADA!', `${desc}${hora?' a las '+hora:''} · 🏠 ${host}`));
   });
 }
 
