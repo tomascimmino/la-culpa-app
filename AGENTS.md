@@ -8,9 +8,10 @@ grep for the function name** since the file is edited by hand and numbers drift.
 
 - The entire app is **one file: `index.html`** (~4,600 lines). No build, no framework,
   no npm, no tests. Edit it directly.
-- Backend is an **external Google Apps Script Web App**. Its source is **not in this
-  repo**. Never assume/rewrite server logic; only call it through `APPS_SCRIPT_URL` with
-  an `accion` field.
+- Backend is an **external Google Apps Script Web App**, called through `APPS_SCRIPT_URL`
+  with an `accion` field. A **redacted reference copy** is in `apps-script/` (see its
+  README): do not `clasp push` it, and never commit the real secrets. The full contract is
+  in `docs/BACKEND.md`.
 - Data comes from a **public Google Sheet** via the `gviz/tq?tqx=out:csv` endpoint.
 - The app is Spanish-language and full of inline styles and inline `onclick` handlers.
   Match that style; do not introduce modules, bundlers, or CSS files.
@@ -111,12 +112,17 @@ or extend that wrapper.
 - All calls are `fetch(APPS_SCRIPT_URL, { method:'POST', body: JSON.stringify({ accion, ... }) })`
   except the public CSV reads against the Sheet.
 - Expected response shape is generally `{ success: boolean, error?: string, ...data }`.
-- See `docs/BACKEND.md` for the full list of `accion` values and payloads. It is a TODO
-  skeleton because the Apps Script source is external.
-- **Do not invent new `accion` values** unless you can also add them to the Apps Script
-  project; the frontend alone cannot change server behavior.
+- `docs/BACKEND.md` has the full, real list of `accion` values and payloads (taken from the
+  live source mirrored in `apps-script/`).
+- **Do not invent new `accion` values** unless you also add them to the Apps Script project;
+  the frontend alone cannot change server behavior.
+- **Attendance confirmation has no `accion`.** It hits the `doPost` fallback branch with
+  `{ email, fila, asistira, valor }`. Don't "fix" it by adding an action name unless the
+  backend is updated too.
 - Row addressing: meetup row index `i` maps to sheet row `i + 2` (header is row 1). This
   appears as `fila: index + 2` in edit/delete/confirm calls.
+- Backend calls are unauthenticated: the web app is deployed `ANYONE_ANONYMOUS` and only
+  checks `email` strings (admin / Zabala). Treat all inputs as untrusted.
 
 ## Data gotchas
 

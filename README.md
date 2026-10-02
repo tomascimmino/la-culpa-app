@@ -39,7 +39,7 @@ birthday widget that plays a full-screen animated "palmarés" sequence.
 | --- | --- | --- |
 | UI | Vanilla HTML/CSS/JS | Everything inline in `index.html`, no framework, no bundler |
 | Hosting | GitHub Pages | Serves `index.html` at the repo root; no CI workflow |
-| Backend | Google Apps Script Web App | External; source is **not** in this repo. Called via `APPS_SCRIPT_URL` |
+| Backend | Google Apps Script Web App | Deployed externally; a **redacted reference copy** is mirrored in `apps-script/`. Called via `APPS_SCRIPT_URL` |
 | Database | Google Sheets | `SHEET_ID` is public-read via the `gviz/tq` CSV endpoint |
 | Realtime-ish | Polling | The Cónclave polls every 4s for admins |
 | Notifications | Firebase Cloud Messaging | `firebase-messaging-sw.js` service worker |
@@ -57,10 +57,15 @@ birthday widget that plays a full-screen animated "palmarés" sequence.
 ├── google0145b332920248a3.html    # Google Search Console site-verification file
 ├── README.md                      # This file
 ├── AGENTS.md                      # Guide for AI coding agents
+├── .gitignore
+├── apps-script/                   # Redacted reference copy of the live backend
+│   ├── Asistencia.js              #   secrets replaced by placeholders (see README inside)
+│   ├── appsscript.json            #   manifest (timezone, webapp config)
+│   └── README.md                  #   redaction + deploy rules
 └── docs/
     ├── ARCHITECTURE.md            # Layers, boot flow, data flow
     ├── DATA-MODEL.md              # Sheets, columns, muro rows, derived rules
-    ├── BACKEND.md                 # Apps Script contract (TODO: paste source)
+    ├── BACKEND.md                 # Apps Script contract (real, from source)
     └── FEATURES.md                # Per-feature deep dive with code references
 ```
 
@@ -105,9 +110,12 @@ These values are hardcoded in `index.html` (see the top of the main `<script>`):
 
 ## External resources
 
-- **Google Sheet:** `161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE` (tabs `Hoja 1`, `CULPOSOS`, `PREMIOS`)
-- **Apps Script endpoint:** a `script.google.com/macros/s/.../exec` deployment
-- **Firebase project:** `la-culpa`
+- **Google Sheet:** `161VeGFs7DuavtXRwt0QRgnoObuD-QeNDnfXnJvlESZE`. Tabs read by the frontend:
+  `Hoja 1`, `CULPOSOS`, `PREMIOS`. Managed by the backend: `COMENTARIOS`, `LEYES`,
+  `TOKENS`, `REPRODUCCIONES`, `WORDLE`.
+- **Apps Script endpoint:** a `script.google.com/macros/s/.../exec` deployment, deployed as
+  `USER_DEPLOYING` with access `ANYONE_ANONYMOUS`. Source mirrored (redacted) in `apps-script/`.
+- **Firebase project:** `la-culpa` (FCM sent server-side by the Apps Script)
 - **Music files:** GitHub Release tag `v1.0-music` under `tomascimmino/la-culpa-app`
 
 ---
@@ -121,9 +129,16 @@ This is a private friends app, but the repo is public. Be aware:
   keys and the Imgur client ID are inherently public/client-side, but you should still
   restrict them (HTTP referrer restrictions, API scoping) and rotate the Imgur one if it
   was ever issued as anything other than a public client.
+- **Backend secrets never go in git.** The live Apps Script hardcodes a Firebase
+  service-account private key (`SA_PRIVATE_KEY`) and client email. The committed
+  `apps-script/` copy has these **redacted**; the real values live only in the live
+  project and the maintainer's local backup. Never `clasp push` the redacted copy.
 - **No real authentication.** "Login" only verifies an email exists in the `CULPOSOS`
-  sheet and stores it in `localStorage`. All write actions trust the payload; there is no
-  server-side session or token check.
+  sheet and stores it in `localStorage`. The web app is deployed `ANYONE_ANONYMOUS` and all
+  write actions trust the payload; the only server checks are string comparisons against
+  `ADMIN_EMAIL` / a member named `Zabala`. There is no session or token.
+- **Drive photo folders are shared `ANYONE_WITH_LINK` + `EDIT`** by the backend's
+  `crearCarpetaJuntada`. Anyone with the link can edit event photos.
 - **User-generated content is rendered with `innerHTML` without escaping** (posts,
   comments, bios, law proposals). This is a stored-XSS risk. See
   `docs/ARCHITECTURE.md` → Known weaknesses.

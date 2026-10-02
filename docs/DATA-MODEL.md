@@ -5,10 +5,9 @@ The app has two kinds of storage:
 1. **Google Sheets** (`SHEET_ID`) — read directly over the public `gviz` CSV endpoint for
    members, meetups, and awards. Read by `loadData` (index.html:1080), `login` (1052), and
    `recargarJuntadas` (2538).
-2. **Muro / leyes / conclave / reproducciones** — stored in sheets internal to the Apps
-   Script project and exposed as JSON through `APPS_SCRIPT_URL`. The exact sheet layout is
-   owned by the backend (see `docs/BACKEND.md`); the **row shape** the frontend expects is
-   documented below.
+2. **Muro / leyes / conclave / reproducciones / tokens** — stored in additional sheets of
+   the **same spreadsheet**, written and read through `APPS_SCRIPT_URL`. Layouts below are
+   taken from the live backend source, mirrored (redacted) in `apps-script/Asistencia.js`.
 
 All CSV parsing is done by `parseCSV` (1101) and `parseCSVLine` (1130). A leading UTF-8
 BOM is stripped; values starting with `'` have that quote stripped (Google Sheets CSV
@@ -20,7 +19,25 @@ quirk).
 
 Header row is row 1, so meetup index `i` in `juntadasData` is sheet **row `i + 2`**.
 
-| Column | Used as | Notes |
+**Physical column map (1-indexed)**, from the backend's `getRange` calls:
+
+| Col | Field | 
+| --- | --- |
+| 1 | `Fecha` |
+| 2 | `Host` |
+| 3–17 | One confirmation column per culposo (15 names: 8 kings + 6 queens + Matu) |
+| 18 | (unverified — likely `N° Asist`) |
+| 19 | `Descripción` |
+| 20 | `Categoría` |
+| 21 | `N° Culposos` (quorum) |
+| 22 | `Foto Juntada` |
+| 23 | `Drive ID` (auto-created folder) |
+| 24 | `Hora` |
+| 25 | Marker: `CONFIRMADA` / `QUORUM_NOTIF_SENT` / empty |
+
+The frontend reads columns **by header name**, so the table below is what matters at runtime.
+
+| Column (header) | Used as | Notes |
 | --- | --- | --- |
 | `Fecha` | `j.Fecha` | `d/m/yyyy` (also tolerated: ISO). Parsed by `parseFecha` (985) |
 | `Host` | `j.Host` | One of `CULPOSOS_HOSTS` (857): Pastor, El Bachi, CJ, Corregidores, El 22, Castelar Sarmiento, Castelar Elflein, Perón, Malaver, Otro lugar |
@@ -66,6 +83,7 @@ Helpers: `esConfirmadoPositivo` (1027), `esConfirmadoNegativo` (1028),
 | `Porcentaje` | ranking | Attendance % (source of truth for ordering) |
 | `Asistencias` | stats | Attended count |
 | `Total Juntadas` | stats | Denominator |
+| `FCMToken` | backend | Device token; the backend reads it to send notifications (also mirrored in `TOKENS`) |
 
 `getUsuarioActual` (982) resolves the logged-in email to a member row.
 
@@ -78,9 +96,27 @@ Helpers: `esConfirmadoPositivo` (1027), `esConfirmadoNegativo` (1028),
 | `Ganador` | winner | Person name (matches `CULPOSOS.Nombre`) or meetup description |
 | `Tipo` | category | `Persona` or `Juntada` |
 
-## Sheet(s) behind `get_muro`
+## Sheet `COMENTARIOS` — muro (posts, polls, comments, meetup interactions)
 
-`get_muro` returns `{ success, rows: [...] }`. Each row is a heterogeneous record
+Physical columns (0-indexed, from the backend):
+
+| Idx | Field |
+| --- | --- |
+| 0 | `ID` (legacy) |
+| 1 | `Destinatario` |
+| 2 | `Autor` (email) |
+| 3 | `Texto` |
+| 4 | `Fecha` (`dd/MM/yyyy HH:mm`) |
+| 5 | `Likes` (comma-separated emails) |
+| 6 | `Coronas` (comma-separated emails) |
+| 7 | `Tipo` |
+| 8 | `ID2` (prefixed: `post_*`, `enc_*`, `com_*`, `<juntada>_reac`) |
+| 9 | `Opciones` (poll options, `\|`-separated) |
+| 10 | `Votos` (poll votes, `email:index` comma-separated) |
+
+Row ID resolution in the backend: `getIdFila(row) = row[8] || row[0]`. `get_muro` returns
+these rows as `{ ID, Destinatario, Autor, Texto, Fecha, Likes, Coronas, Tipo, Opciones,
+Votos }` (ID2 already collapsed into `ID`). Each row is a heterogeneous record
 distinguished by `Tipo` + `Destinatario`:
 
 | `Tipo` | Meaning | Key fields |
@@ -103,19 +139,47 @@ builds a deterministic fallback key when no ID exists.
 sheet row, so the interaction record stays addressable even if the frontend array order
 changes.
 
-## Laws and Cónclave (backend JSON)
+## Sheet `LEYES` — statutes and votes
+
+Physical columns (1-indexed):
+
+| Col | Field |
+| --- | --- |
+| 1 | `Nombre` (proposer) |
+| 2 | `Titulo` |
+| 3 | `Descripcion` |
+| 4 | `Timestamp` |
+| 5–19 | Vote of each of the 15 `VOTANTES` (roster order, see below) |
+| 20 | `favor` (recount) |
+| 21 | `contra` (recount) |
+| 22 | `abstenciones` (recount) |
+
+Vote codes: `1` favor, `2` contra, `3` abstención. `VOTANTES` (15) in order:
+`Toto, Caamaño, Rama, Zabala, Santi, Mateo, Tirri, Toti, Cata, Lola, Sami, Leila, Juli, Manu,
+Matu` (same roster as the frontend's `VOTANTES_CONCLAVE`, 3068).
+
+Session state (`iniciado`, `leyActiva`) lives in Apps Script **Script Properties**
+(`conclave_iniciado`, `conclave_ley_activa`), not in the sheet.
 
 - `get_leyes` → `{ success, leyes: [{ nombre, titulo, descripcion, timestamp }] }`
-- `get_conclave` → `{ success, iniciado, leyActiva, leyes: [{ index, titulo, descripcion,
-  nombre, votos: { <nombre>: <voto> }, favor, contra, abstenciones }] }`
+- `get_conclave` → `{ success, iniciado, leyActiva, leyes: [{ index, nombre, titulo,
+  descripcion, votos: { <nombre>: <voto> }, favor, contra, abstenciones }] }`
 
-Vote codes: `1` = favor, `2` = contra, `3` = abstención. The voter roster is the hardcoded
-`VOTANTES_CONCLAVE` (3068): the 8 kings + 6 queens + Matu = 15.
+## Sheet `TOKENS` — FCM device tokens
 
-## Play counts (backend JSON)
+Created on demand by `guardar_token`. Physical columns: `1 Email · 2 Token · 3 Fecha`.
+One row per email (upsert by email).
 
-- `get_reproducciones` → `{ success, total, canciones: [{ cancion, reproducciones }] }`
-- `registrar_reproduccion` returns the updated count for the song.
+## Sheet `REPRODUCCIONES` — play counts
+
+Physical columns: `1 Canción · 2 Reproducciones · 3 Fecha`. One row per song title.
+`get_reproducciones` returns `{ success, total, canciones:[{ cancion, reproducciones }] }`.
+
+## Sheet `WORDLE` — Wordle results (backend-only)
+
+Physical columns: `1 Fecha · 2 Nombre · 3 Intentos · 4 Tiempo · 5 Gano (SI/NO) · 6 Palabra`.
+Used by `guardar_wordle` / `get_wordle_dia` / `get_wordle_historial`, which the current
+frontend does **not** call.
 
 ---
 
@@ -136,8 +200,11 @@ Vote codes: `1` = favor, `2` = contra, `3` = abstención. The voter roster is th
 | `PAREJAS` | 2925, 3002 | Couples, prioritized in settlement to minimize transfers |
 | `CUMPLES` | 4267 | Birthdays (`d`, `m`) |
 
-The three original sheets and these dictionaries are the effective "schema". If a member is
-renamed, both the `Hoja 1` column header **and** the dictionaries/rosters must be updated.
+These dictionaries plus the physical sheet layouts above are the effective "schema". Member
+rosters are duplicated in **both** the frontend (`REYES`, `REINAS`, `VOTANTES_CONCLAVE`,
+`TODOS_NOMBRES`, `PAREJAS`, `CUMPLES`, `FOTOS`, …) and the backend (`VOTANTES`, the
+`culpososOriginales` quorum list). Renaming or adding a member means updating the
+`Hoja 1`/`CULPOSOS` columns **and** every roster on both sides.
 
 ## Derived rules
 

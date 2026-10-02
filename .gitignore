@@ -1,0 +1,8 @@
+# Apps Script / clasp local state
+.clasp.json
+.clasprc.json
+*.pem
+*.key
+
+# Local scratch clone of the live Apps Script (contains the real secrets)
+.tmp-appscript/
