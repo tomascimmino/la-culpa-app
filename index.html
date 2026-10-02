@@ -1065,7 +1065,7 @@ function puedeConfirmarJuntada(j) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         loadData();
-        setTimeout(pedirPermisoNotificaciones, 3000);
+        setTimeout(sincronizarTokenSiPermitido, 3000);
     }
 
     function logout() {
@@ -3827,14 +3827,13 @@ function showTab(tabName, el) {
         setTimeout(() => el.remove(), 5000);
     }
 
-    async function pedirPermisoNotificaciones() {
+    // Solo sincroniza el token si el permiso YA fue dado. Nunca pide permiso sin
+    // gesto del usuario: Chrome deniega esos pedidos automáticos.
+    async function sincronizarTokenSiPermitido() {
         if (!messagingInstance || !currentUser) return;
-        try {
-            if (Notification.permission === 'granted') { await guardarTokenActual(); return; }
-            const perm = await Notification.requestPermission();
-            if (perm !== 'granted') return;
-            await guardarTokenActual();
-        } catch(e) { console.warn('Error registrando notificaciones:', e); }
+        if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+        try { await guardarTokenActual(); }
+        catch(e) { console.warn('Error sincronizando token:', e); }
     }
 
     async function activarNotificaciones() {
@@ -3844,8 +3843,10 @@ function showTab(tabName, el) {
         if (status) status.textContent = '⏳ Registrando...';
         try {
             if (!messagingInstance) throw new Error('Firebase no inicializado');
+            if (typeof Notification === 'undefined') throw new Error('Este navegador no soporta notificaciones');
+            if (Notification.permission === 'denied') throw new Error('Notificaciones bloqueadas para este sitio. Activalas desde la configuración del navegador (candado en la barra de dirección) y volvé a intentar.');
             const perm = await Notification.requestPermission();
-            if (perm !== 'granted') throw new Error('Permiso denegado: ' + perm);
+            if (perm !== 'granted') throw new Error('Permiso no concedido (' + perm + '). Revisá la configuración de notificaciones del sitio.');
             const token = await guardarTokenActual();
             if (!token) throw new Error('Token vacío');
             if (btn) { btn.textContent='✅ Notificaciones activas'; btn.style.borderColor='#4CAF50'; btn.style.color='#4CAF50'; btn.disabled=false; }
