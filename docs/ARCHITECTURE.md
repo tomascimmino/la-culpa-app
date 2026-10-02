@@ -135,9 +135,10 @@ Meetup interactions reuse the same muro table with `Destinatario = juntada_<fila
 (`getJuntadaId`). `reaccionarJuntada` (1643) lazily creates the interaction row via
 `crear_interaccion_juntada`, then re-fetches and applies `reaccionar_post`.
 
-One special case: `cargarMuroHome` silently creates a one-time promotional "Wordle cierre"
-post guarded by `localStorage.wordle_cierre_posteado` (index.html:1777–1858). This is
-legacy and can be removed if no longer wanted.
+`cargarMuroHome` used to silently create a one-time promotional "Wordle cierre" post guarded
+by `localStorage.wordle_cierre_posteado`. The guard was per-device, so any member with a
+fresh/cleared `localStorage` re-created the post after deletion. That auto-creation block was
+removed; never guard one-shot global actions with `localStorage` alone.
 
 ### Meetups
 

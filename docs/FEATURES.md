@@ -66,11 +66,13 @@ rows whose `Destinatario` starts with `juntada_`. Likes/crowns map to the same
 `reaccionar_post` backend, but the first reaction lazily creates the row via
 `crear_interaccion_juntada` (1643).
 
-### Legacy: Wordle closing post
+### Removed: Wordle closing post
 
-`cargarMuroHome` (1769) auto-creates one promotional post on first run, guarded by
-`localStorage.wordle_cierre_posteado` (1777–1858). It is hardcoded HTML and can be removed
-if no longer desired.
+`cargarMuroHome` used to auto-create one promotional "Wordle cierre" post guarded by
+`localStorage.wordle_cierre_posteado`. Because the flag was per-device, every member with a
+fresh/cleared `localStorage` re-created the post (it kept reappearing after deletion). The
+auto-creation block was removed; do not reintroduce a local-storage-only guard. The static
+HTML still exists in git history if it must be published manually once.
 
 ---
 
